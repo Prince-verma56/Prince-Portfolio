@@ -187,7 +187,7 @@ export default function Navbar() {
 
       {/* ── Left Side: Blurred Backdrop ── */}
       <div
-        className="menu-backdrop fixed inset-0 w-full h-screen bg-black/60 backdrop-blur-md z-[9998] invisible opacity-0 cursor-pointer"
+        className="menu-backdrop fixed inset-0 w-full h-screen bg-black/60 backdrop-blur-md z-[9998] invisible opacity-0 cursor-none"
         onClick={() => setIsMenuOpen(false)}
       />
 
@@ -219,7 +219,7 @@ export default function Navbar() {
               <Link
                 href={link.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="menu-link-item group flex items-center gap-4 text-white text-[clamp(3.5rem,9vw,5rem)] font-black uppercase tracking-tighter leading-none hover:pl-4 transition-all duration-300 cursor-pointer"
+                className="menu-link-item group flex items-center gap-4 text-white text-[clamp(3.5rem,9vw,5rem)] font-black uppercase tracking-tighter leading-none hover:pl-4 transition-all duration-300 cursor-none"
               >
                 {link.label}
                 <span className="w-2 h-2 md:w-3 md:h-3 bg-[#f04e00] opacity-0 group-hover:opacity-100 transition-opacity rounded-sm" />
@@ -245,12 +245,12 @@ export default function Navbar() {
           <div className="menu-meta flex flex-col gap-4 items-end text-right">
             <span className="text-white/40 text-[10px] font-mono tracking-widest uppercase">(Connect)</span>
             <div className="flex flex-col gap-3 items-end">
-              <a href="mailto:hello@Prince.com" className="text-[#f04e00] text-sm md:text-base font-bold hover:opacity-80 transition-opacity cursor-pointer">
-                hello@Prince.com
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=ritikarawat3225@gmail.com" target="_blank" rel="noopener noreferrer" className="text-[#f04e00] text-sm md:text-base font-bold hover:opacity-80 transition-opacity cursor-none">
+                ritikarawat3225@gmail.com
               </a>
               <div className="flex flex-col gap-1.5 items-end">
                 {["X/Twitter", "LinkedIn", "GitHub"].map((social) => (
-                  <Link key={social} href="/contact" className="text-white/70 text-xs md:text-sm hover:text-white transition-colors flex items-center gap-1 group cursor-pointer">
+                  <Link key={social} href="/contact" className="text-white/70 text-xs md:text-sm hover:text-white transition-colors flex items-center gap-1 group cursor-none">
                     <span className="opacity-0 group-hover:opacity-100 group-hover:-translate-x-1 transition-all text-[10px]">↗</span> {social}
                   </Link>
                 ))}

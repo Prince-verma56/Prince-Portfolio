@@ -1,38 +1,55 @@
+"use client";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useLoader } from "@/context/LoaderContext";
 import ClientLiquidHero from "@/components/ClientLiquidHero";
-import AboutSection from "@/components/sections/AboutSection";
+import HeroContent from "@/components/HeroContent";
+import TechStackSection from "@/components/sections/TechStackSection";
+import ServicesSection from "@/components/sections/ServicesSection";
 import WorkSection from "@/components/sections/WorkSection";
 import AchievementsSection from "@/components/sections/AchievementsSection";
-import HeroContent from "@/components/HeroContent";
-import FooterSection from "@/components/sections/FooterSection";
-import ServicesSection from "@/components/sections/ServicesSection";
 import SocialFooter from "@/components/SocialFooter";
+import AboutSection from "@/components/sections/AboutSection";
+import FooterSection from "@/components/sections/FooterSection";
 
 export default function Home() {
-  return (
-    <>
-      <main className="bg-black">
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { isLoaderFinished } = useLoader();
 
-        {/* ════════════════════════════════
-            1. HERO — Fuel-inspired layout
-            ════════════════════════════════ */}
+  useGSAP(() => {
+    if (isLoaderFinished) {
+      gsap.to(heroRef.current, { 
+        opacity: 1, 
+        duration: 1.5, 
+        ease: "power2.out" 
+      });
+    }
+  }, [isLoaderFinished]);
+
+  return (
+    <main className="bg-black">
+      <div ref={heroRef} className="opacity-0">
         <ClientLiquidHero
-          imageUrl="/Images/Ritika Landing page image.jpeg"
+          // UNCOMMENT/COMMENT AS NEEDED:
+          // imageUrl="https://res.cloudinary.com/..."
+          videoUrl="https://res.cloudinary.com/dtslaveid/video/upload/v1780721714/LandingePage_video3Blink_gqqorm.mp4" 
           strength={0.12}
           brushRadius={0.18}
           dissipation={0.97}
         >
           <HeroContent />
         </ClientLiquidHero>
-
-        {/* ════════ Sections ════════ */}
+      </div>
+      
+             {/* ════════ Sections ════════ */}
         <AboutSection />
+        <TechStackSection />
         <ServicesSection />
         <WorkSection />
-        <AchievementsSection />
+        <AchievementsSection /> 
         <SocialFooter />
         <FooterSection />
-
-      </main>
-    </>
+    </main>
   );
 }

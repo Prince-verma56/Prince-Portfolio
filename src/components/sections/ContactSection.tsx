@@ -15,27 +15,32 @@ import { toast } from "sonner";
 gsap.registerPlugin(ScrollTrigger);
 
 const faqs = [
-  {
-    question: "What’s your typical process for a new project?",
-    answer: "We start with a discovery phase to understand your goals, audience, and competitors. From there, we move into strategy, design, and development—keeping you in the loop at every stage. Each service has its own milestones, but collaboration is constant throughout.",
-  },
-  {
-    question: "How long does a project usually take?",
-    answer: "Project timelines vary widely. A branding sprint might take 4-6 weeks, while a complex web application can span 3-6 months. We will provide a detailed timeline during the proposal phase.",
-  },
-  {
-    question: "Do you offer packages or custom quotes?",
-    answer: "While we have some standard starting packages for specific services, the vast majority of our work is custom-quoted to ensure you only pay for exactly what you need to achieve your goals.",
-  },
-  {
-    question: "What’s included in a branding package?",
-    answer: "Our core branding package typically includes logo design (variants), typography system, color palette, brand guidelines, and key asset application (e.g., business cards, social headers). It's designed to give your brand a fully realized, professional identity.",
-  },
-  {
-    question: "Can you work with our existing dev or marketing team?",
-    answer: "Absolutely. We often collaborate with internal teams, acting as a specialized extension. We are comfortable providing pure design assets, strategy, or partial development to integrate seamlessly with your current workflows.",
-  },
+{
+question: "What kind of projects do you work on?",
+answer: "I primarily build modern web applications, AI-powered products, automation systems, and immersive 3D web experiences. I enjoy turning complex ideas into polished, user-focused digital products.",
+},
+{
+question: "What technologies do you specialize in?",
+answer: "My core stack includes React, Next.js, Node.js, MongoDB, Three.js, Tailwind CSS, and modern AI APIs. I focus on building scalable, performant, and visually engaging applications.",
+},
+{
+question: "Can you build a complete product from scratch?",
+answer: "Yes. From planning and UI/UX design to development, deployment, and AI integration, I can take a product from an idea to a production-ready solution.",
+},
+{
+question: "Do you work with AI and automation?",
+answer: "Absolutely. I build AI-powered applications, intelligent workflows, custom automations, and agentic systems that help businesses and users save time and work more efficiently.",
+},
+{
+question: "What makes your work different?",
+answer: "I combine engineering, design, and user experience into a single process. My goal isn't just to build software, but to create products that feel fast, intuitive, and memorable.",
+},
+{
+question: "Are you available for freelance or collaboration opportunities?",
+answer: "Yes. I'm open to freelance projects, startup collaborations, internships, and opportunities where I can contribute to meaningful products and challenging problems.",
+},
 ];
+
 
 interface ContactSectionProps {
   isStandalonePage?: boolean;

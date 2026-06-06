@@ -3,34 +3,45 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const services = [
   {
     id: "01",
-    title: "Web design & development",
-    subtitle: "Logos, colors, type, your brand, fully alive.",
-    tags: ["Responsive Design", "Interactive Design"],
-    image: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1800&q=90",
-    year: "Frame 7",
+    title: "Full Stack Products",
+    subtitle: "Building scalable web applications from idea to deployment with modern technologies.",
+    tags: ["React", "Node.js"],
   },
   {
     id: "02",
-    title: "Social Media",
-    subtitle: "Can handle different Social Media Account at different platforms.",
-    tags: ["Instagram Design", "Content Templates"],
-    image: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=1800&q=90",
-    year: "Frame 8",
+    title: "3D Web Experiences",
+    subtitle: "Creating immersive, interactive websites using Three.js, WebGL, and modern animations.",
+    tags: ["Three.js", "GSAP"],
   },
   {
     id: "03",
-    title: "Branding",
-    subtitle: "Can handle different Social Media Account at different platforms.",
-    tags: ["Logo Design", "Color System"],
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1800&q=90",
-    year: "Frame 9",
+    title: "UI/UX Design",
+    subtitle: "Designing intuitive interfaces that balance aesthetics, usability, and business goals.",
+    tags: ["Figma", "Design Systems"],
+  },
+  {
+    id: "04",
+    title: "AI-Powered Solutions",
+    subtitle: "Integrating AI models, APIs, and intelligent workflows into real-world applications.",
+    tags: ["LLMs", "AI Integration"],
+  },
+  {
+    id: "05",
+    title: "Automation Systems",
+    subtitle: "Eliminating repetitive work through smart automations, workflows, and custom tools.",
+    tags: ["Workflows", "APIs"],
+  },
+  {
+    id: "06",
+    title: "Agentic AI Systems",
+    subtitle: "Developing autonomous AI agents capable of reasoning, planning, and executing tasks.",
+    tags: ["AI Agents", "Multi-Agent"],
   },
 ];
 
@@ -151,7 +162,7 @@ export default function ServicesSection() {
                 key={service.id}
                 ref={(el) => { itemRefs.current[index] = el; }}
                 onClick={() => setActiveIndex(isOpen ? null : index)}
-                className="relative border-b border-white/10 group cursor-pointer py-10 md:py-14 w-full transition-colors hover:bg-white/[0.02]"
+                className="relative border-b border-white/10 group py-10 md:py-14 w-full transition-colors hover:bg-white/[0.02]"
               >
                 
                 {/* ── Animated Toggle Icon (+ / -) ── */}
@@ -197,27 +208,9 @@ export default function ServicesSection() {
 
                     {/* 2. Expanded State */}
                     <div className="expanded-body h-0 overflow-hidden w-full">
-                      {/* Using a wider grid gap since we have more space now */}
-                      <div className="inner-content grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-10 lg:gap-20 pt-8 pb-4">
-                        
-                        {/* Left: Image Container */}
-                        <div className="flex flex-col gap-3">
-                          <span className="text-[#0388d1] text-[10px] font-medium tracking-widest pl-1">
-                            {service.year}
-                          </span>
-                          <div className="relative aspect-square md:aspect-[4/5] rounded-xl overflow-hidden border border-[#0388d1]/30 shadow-2xl">
-                            <Image
-                              src={service.image}
-                              alt={service.title}
-                              fill
-                              className="object-cover"
-                              sizes="(max-width: 1024px) 100vw, 400px"
-                              priority={index === 0}
-                            />
-                          </div>
-                        </div>
+                      <div className="inner-content pt-8 pb-4">
 
-                        {/* Right: Detailed Content */}
+                        {/* Detailed Content */}
                         <div className="flex flex-col gap-8 justify-center">
                           <h3 className="text-5xl md:text-6xl lg:text-7xl font-black text-[#f04e00] leading-[0.9] tracking-tight">
                             {service.title}

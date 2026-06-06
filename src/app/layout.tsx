@@ -7,9 +7,10 @@ import Preloader from "@/components/Preloader";
 import { LoaderProvider } from "@/context/LoaderContext";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
+import { SmoothCursor } from "@/components/ui/smooth-cursor";
 import "sonner/dist/styles.css";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -18,7 +19,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Prince Rawat — Portfolio",
+  title: "Prince Verma — Portfolio",
   description: "B.Tech AI & Data Analytics — Developer, Designer, Builder",
 };
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         style={{ fontFamily: "var(--font-space), sans-serif" }}
         suppressHydrationWarning
       >
+        <SmoothCursor />
         <LoaderProvider>
           <Preloader />
           <Navbar />

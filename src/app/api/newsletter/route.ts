@@ -199,7 +199,7 @@ export async function POST(request: Request) {
 
     // ── 5. EMAIL TO SUBSCRIBER (WELCOME) ──
     const subscriberMailOptions = {
-      from: `"Prince Rawat" <${emailUser}>`,
+      from: `"Prince Verma" <${emailUser}>`,
       to: sanitizedEmail,
       subject: "Welcome to Prince",
       html: `

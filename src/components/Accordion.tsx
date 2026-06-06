@@ -31,7 +31,7 @@ export default function Accordion({ index, title, content, activeFaq, setActiveF
       {/* Clickable Header */}
       <button
         onClick={() => setActiveFaq(isOpen ? null : index)}
-        className="w-full flex items-center justify-between p-6 md:p-8 text-left cursor-pointer transition-colors duration-300 hover:bg-white/[0.02]"
+        className="w-full flex items-center justify-between p-6 md:p-8 text-left cursor-none transition-colors duration-300 hover:bg-white/[0.02]"
       >
         <h4 className="text-xl md:text-2xl font-bold text-white transition-colors group-hover:text-[#f04e00]">
           {title}

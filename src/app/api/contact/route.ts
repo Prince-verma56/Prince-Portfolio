@@ -300,7 +300,7 @@ export async function POST(request: Request) {
 
     // ── 6. AUTO-REPLY EMAIL TO VISITOR ──
     const userMailOptions = {
-      from: `"Prince Rawat" <${emailUser}>`,
+      from: `"Prince Verma" <${emailUser}>`,
       to: sanitizedEmail,
       subject: "Thank You For Reaching Out",
       headers: {

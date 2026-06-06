@@ -221,6 +221,15 @@ canvas {
   html {
     @apply font-sans;
   }
+
+  /* 
+   * Aggressively hide the system pointer on ALL interactive elements.
+   * This completely eliminates the "double cursor" issue and ensures 
+   * ONLY the custom SmoothCursor is shown everywhere.
+   */
+  a, button, summary, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], .cursor-pointer, .cursor-none {
+    cursor: none !important;
+  }
 }
 
 /* ── Browser Input Autofill Styles Override ── */

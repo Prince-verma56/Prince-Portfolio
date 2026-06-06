@@ -32,7 +32,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
     if (tiltWrapperRef.current) {
       gsap.set(tiltWrapperRef.current, {
         transformPerspective: 1200,
-        transformOrigin: "50% 50%", 
+        transformOrigin: "50% 50%",
       });
     }
 
@@ -47,7 +47,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top bottom",
-            end: "top top", 
+            end: "top top",
             scrub: 1,
           }
         }
@@ -63,7 +63,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top bottom",
-            end: "top 10%", 
+            end: "top 10%",
             scrub: 1.5,
           },
         }
@@ -76,7 +76,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
       const tl = gsap.timeline({ paused: true });
       tl.to(textElements, {
         y: "0%",
-        opacity: 1, 
+        opacity: 1,
         rotate: 0,
         duration: 1.2,
         stagger: 0.1,
@@ -87,12 +87,12 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
       textElements.forEach((el: any) => {
         gsap.to(el, {
           y: "0%",
-          opacity: 1, 
+          opacity: 1,
           rotate: 0,
           duration: 1.2,
           ease: "expo.out",
           scrollTrigger: {
-            trigger: el.parentElement, 
+            trigger: el.parentElement,
             start: "top 85%",
           }
         });
@@ -157,20 +157,18 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
     <section
       ref={sectionRef}
       id="about"
-      className={`relative z-20 bg-[#050505] text-white pb-40 w-full will-change-transform overflow-hidden ${
-        isStandalonePage ? "pt-8" : "pt-24"
-      }`}
+      className={`relative z-20 bg-[#050505] text-white pb-40 w-full will-change-transform overflow-hidden ${isStandalonePage ? "pt-8" : "pt-24"
+        }`}
       style={isStandalonePage ? {} : {
         clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
       }}
     >
-      <div 
-        ref={contentRef} 
-        className={`max-w-[1400px] mx-auto flex flex-col will-change-transform ${
-          isStandalonePage ? "pt-0" : "pt-12 md:pt-20"
-        }`}
+      <div
+        ref={contentRef}
+        className={`max-w-[1400px] mx-auto flex flex-col will-change-transform ${isStandalonePage ? "pt-0" : "pt-12 md:pt-20"
+          }`}
       >
-        
+
         {/* Top Meta Row */}
         {/* Border switched to white/10 */}
         <div className="px-6 md:px-12 border-b border-white/10 pb-6 mb-16 md:mb-24">
@@ -191,21 +189,37 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
               <span className="whitespace-pre"> </span>
               <ShimmerText as="span" hoverOnly={true} text="Prince" className="inline-flex font-black text-[#f04e00]" />
               <span className="whitespace-pre"> </span>
-              <ShimmerText as="span" hoverOnly={true} text="– a B.Tech AI & Data" className="inline-flex font-medium bg-gradient-to-r from-white via-neutral-400 to-white" />
+              <ShimmerText as="span" hoverOnly={true} text="– a software developer" className="inline-flex font-medium bg-gradient-to-r from-white via-neutral-400 to-white" />
             </h2>
+          </div>
+
+          {/*  */}
+          <div className="overflow-hidden pb-2">
+            <ShimmerText
+              as="h2"
+              text="passionate about crafting exceptional"
+              hoverOnly={true}
+              className="mask-reveal-inner opacity-0 translate-y-[120%] rotate-2 text-[clamp(2rem,5vw,5.5rem)] font-medium leading-[1.05] tracking-tight inline-flex bg-gradient-to-r from-white via-neutral-400 to-white"
+            />
           </div>
           <div className="overflow-hidden pb-2">
             <ShimmerText
               as="h2"
-              text="Analytics student who ships real things."
+              text="digital experiences through AI and design."
               hoverOnly={true}
               className="mask-reveal-inner opacity-0 translate-y-[120%] rotate-2 text-[clamp(2rem,5vw,5.5rem)] font-medium leading-[1.05] tracking-tight inline-flex bg-gradient-to-r from-white via-neutral-400 to-white"
             />
           </div>
           <div className="overflow-hidden pb-2 mt-4 md:mt-8">
+
+
+            {/* text="Building full-stack products,"
+text="immersive 3D experiences,"
+text="and AI-powered solutions." */}
+
             <ShimmerText
               as="h2"
-              text="I build across the stack: ML pipelines,"
+              text="Building full-stack products,"
               hoverOnly={true}
               className="mask-reveal-inner opacity-0 translate-y-[120%] rotate-2 text-[clamp(1.5rem,4vw,4.5rem)] font-light leading-[1.1] tracking-tight bg-gradient-to-r from-neutral-400 via-white to-neutral-400 inline-flex"
             />
@@ -213,7 +227,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
           <div className="overflow-hidden pb-2">
             <ShimmerText
               as="h2"
-              text="mobile apps, IoT dashboards, and"
+              text="immersive 3D experiences,"
               hoverOnly={true}
               className="mask-reveal-inner opacity-0 translate-y-[120%] rotate-2 text-[clamp(1.5rem,4vw,4.5rem)] font-light leading-[1.1] tracking-tight bg-gradient-to-r from-neutral-400 via-white to-neutral-400 inline-flex"
             />
@@ -221,7 +235,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
           <div className="overflow-hidden pb-2">
             <ShimmerText
               as="h2"
-              text="interfaces people actually want to use."
+              text="and AI-powered solutions."
               hoverOnly={true}
               className="mask-reveal-inner opacity-0 translate-y-[120%] rotate-2 text-[clamp(1.5rem,4vw,4.5rem)] font-light leading-[1.1] tracking-tight bg-gradient-to-r from-neutral-400 via-white to-neutral-400 inline-flex"
             />
@@ -239,8 +253,8 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
         <div ref={marqueeRef} className="flex whitespace-nowrap gap-12 md:gap-16 will-change-transform pl-12">
           {/* We duplicate the array 3 times so it never runs out of text while scrolling */}
           {[...techStack, ...techStack, ...techStack, ...techStack].map((tech, idx) => (
-            <span 
-              key={idx} 
+            <span
+              key={idx}
               // Marquee text flipped to crisp white
               className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white flex items-center gap-12 md:gap-16"
             >

@@ -142,6 +142,24 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
         });
       }
 
+      // ── GSAP PINNING FOR LEFT COLUMN ──
+      const leftCol = item.querySelector(".left-col");
+      const rightCol = item.querySelector(".right-col");
+      
+      let mm = gsap.matchMedia();
+      mm.add("(min-width: 1024px)", () => {
+        if (leftCol && rightCol) {
+          ScrollTrigger.create({
+            trigger: leftCol,
+            start: "top 140px", // Defines how far from the top it should pin (below navbar)
+            endTrigger: rightCol,
+            end: "bottom bottom", // Unpins exactly when the right column finishes scrolling
+            pin: true,
+            pinSpacing: false, // Ensures it doesn't push the right column down
+          });
+        }
+      });
+
       if (imgInner) {
         gsap.fromTo(
           imgInner,
@@ -206,7 +224,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
             >
 
               {/* Left Side: Sticky Navigation Index */}
-              <div className="flex flex-col gap-10 lg:sticky lg:top-40 pt-4">
+              <div className="left-col flex flex-col gap-10 pt-4 h-fit">
                 <div className="overflow-hidden pb-2">
                   <span className="mask-text block translate-y-[110%] opacity-0 text-[clamp(5rem,8vw,7rem)] font-black text-white leading-none tracking-tighter">
                     {project.id}.
@@ -239,7 +257,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
               </div>
 
               {/* Right Side: Media & Meta */}
-              <div className="flex flex-col w-full">
+              <div className="right-col flex flex-col w-full">
 
                 <div className="overflow-hidden mb-6 flex justify-between items-end">
                   <div className="flex flex-col gap-1">
