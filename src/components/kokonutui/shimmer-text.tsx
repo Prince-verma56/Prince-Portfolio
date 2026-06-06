@@ -46,7 +46,7 @@ export default function ShimmerText({
           : undefined
       }
       className={cn(
-        "bg-[length:200%_100%] bg-clip-text text-transparent inline-flex",
+        "bg-[length:200%_100%] bg-clip-text text-transparent inline",
         className
       )}
     >

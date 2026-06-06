@@ -13,6 +13,7 @@ import SocialFooter from "@/components/SocialFooter";
 import AboutSection from "@/components/sections/AboutSection";
 import FooterSection from "@/components/sections/FooterSection";
 import GitContributionSection from "@/components/sections/GitContributionSection";
+import PhilosophyJourneySection from "@/components/sections/PhilosophyJourneySection";
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -45,6 +46,7 @@ export default function Home() {
 
       {/* ════════ Sections ════════ */}
       <AboutSection />
+      <PhilosophyJourneySection/>
       <TechStackSection />
       <GitContributionSection />
       <ServicesSection />

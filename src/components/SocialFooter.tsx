@@ -5,8 +5,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Link from "next/link";
 import Image from "next/image";
-import ButtonWithIcon from "./ButtonWithIcon"; 
-import SlideTextButton from "./kokonutui/slide-text-button"; 
+import ButtonWithIcon from "./ButtonWithIcon";
+import SlideTextButton from "./kokonutui/slide-text-button";
 import { toast } from "sonner";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -99,7 +99,7 @@ export default function SocialFooter() {
       start: "top 60%", // Triggers when footer is 40% up the screen
       onEnter: () => {
         const tl = gsap.timeline();
-        
+
         // Massive text slices up
         tl.to(".footer-mask-text", {
           y: "0%",
@@ -109,22 +109,22 @@ export default function SocialFooter() {
           stagger: 0.1,
           ease: "expo.out"
         })
-        // Smaller items and grid fade in beautifully
-        .to(".footer-fade", {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          stagger: 0.1,
-          ease: "power3.out"
-        }, "-=0.8"); // Overlap animation for fluidity
+          // Smaller items and grid fade in beautifully
+          .to(".footer-fade", {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            stagger: 0.1,
+            ease: "power3.out"
+          }, "-=0.8"); // Overlap animation for fluidity
       }
     });
 
   }, { scope: footerRef });
 
   return (
-    <footer 
-      ref={footerRef} 
+    <footer
+      ref={footerRef}
       className="relative w-full bg-[#050505] text-white pt-40 pb-12 px-6 md:px-12 lg:px-20 border-t border-white/10 overflow-hidden will-change-transform"
       style={{ clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" }}
     >
@@ -132,10 +132,10 @@ export default function SocialFooter() {
       {/* Container is explicitly oversized (-top-[20%] and h-[120%]) to allow panning room */}
       <div className="absolute inset-0 -top-[20%] h-[120%] z-0 pointer-events-none footer-bg-image will-change-transform">
         <Image
-          src="https://res.cloudinary.com/dtslaveid/image/upload/v1780617640/6fc4c5a6-3511-4f77-afa0-590a46fc9e63_lbsaxq.png" 
+          src="https://res.cloudinary.com/dtslaveid/image/upload/v1780617640/6fc4c5a6-3511-4f77-afa0-590a46fc9e63_lbsaxq.png"
           alt="Footer Background"
           fill
-          className="object-cover opacity-40" 
+          className="object-cover opacity-40"
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-[#050505]/40" />
@@ -143,11 +143,11 @@ export default function SocialFooter() {
 
       {/* ── FOREGROUND CONTENT ── */}
       <div className="relative z-10 max-w-[1400px] mx-auto flex flex-col gap-32">
-        
+
         {/* ── TOP: Massive CTA ── */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
           <div className="flex flex-col gap-6 max-w-2xl">
-            
+
             {/* The Text Mask Wrappers */}
             <h2 className="text-[clamp(4rem,10vw,8rem)] font-black uppercase leading-[0.85] tracking-tighter">
               <div className="overflow-hidden pb-2">
@@ -157,12 +157,12 @@ export default function SocialFooter() {
                 <span className="footer-mask-text block origin-top-left text-[#f04e00]">Together</span>
               </div>
             </h2>
-            
+
             <p className="footer-fade text-white/80 text-lg md:text-xl font-medium max-w-md">
               Have a project in mind? We'd love to hear about it. Let’s create something great together!
             </p>
           </div>
-          
+
           <div className="footer-fade">
             <ButtonWithIcon label="Get in Touch" href="/contact" />
           </div>
@@ -170,13 +170,13 @@ export default function SocialFooter() {
 
         {/* ── BOTTOM: Links & Socials ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pt-16 border-t border-white/10">
-          
+
           {/* Email / Phone */}
           <div className="flex flex-col gap-6 footer-fade">
             <div className="flex flex-col gap-2">
               <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest">(Email)</span>
-              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=ritikarawat3225@gmail.com" target="_blank" rel="noopener noreferrer" className="text-[#f04e00] text-lg font-bold hover:text-white transition-colors">
-                ritikarawat3225@gmail.com
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=princeverma.dev96@gmail.com" target="_blank" rel="noopener noreferrer" className="text-[#f04e00] text-lg font-bold hover:text-white transition-colors">
+                princeverma.dev96@gmail.com
               </a>
             </div>
             <div className="flex flex-col gap-2">
@@ -211,38 +211,38 @@ export default function SocialFooter() {
 
           {/* Newsletter */}
           <div className="flex flex-col gap-4 footer-fade">
-             <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-2">(Newsletter)</span>
-             <p className="text-white/60 text-sm">Sign up for latest insights and updates.</p>
-             <form onSubmit={handleSubscribe} className="w-full">
-               <input
-                 type="text"
-                 name="botField"
-                 value={botField}
-                 onChange={(e) => setBotField(e.target.value)}
-                 className="hidden"
-                 tabIndex={-1}
-                 autoComplete="off"
-               />
-               <div className="flex border-b border-white/20 pb-2 mt-2">
-                 <input 
-                   type="email" 
-                   value={email}
-                   onChange={(e) => setEmail(e.target.value)}
-                   disabled={isSubmitting}
-                   placeholder="Enter email address" 
-                   className="bg-transparent w-full text-sm outline-none placeholder:text-white/30 text-white disabled:opacity-50" 
-                 />
-                 <SlideTextButton
-                   type="submit"
-                   variant="custom"
-                   text={isSubmitting ? "..." : "Subscribe"}
-                   hoverText={isSubmitting ? "..." : "Subscribe"}
-                   animateEntrance={false}
-                   disabled={isSubmitting}
-                   className="text-[10px] font-bold tracking-widest uppercase hover:text-[#f04e00] transition-colors bg-transparent border-none p-0 text-white cursor-pointer disabled:opacity-50"
-                 />
-               </div>
-             </form>
+            <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-2">(Newsletter)</span>
+            <p className="text-white/60 text-sm">Sign up for latest insights and updates.</p>
+            <form onSubmit={handleSubscribe} className="w-full">
+              <input
+                type="text"
+                name="botField"
+                value={botField}
+                onChange={(e) => setBotField(e.target.value)}
+                className="hidden"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+              <div className="flex border-b border-white/20 pb-2 mt-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
+                  placeholder="Enter email address"
+                  className="bg-transparent w-full text-sm outline-none placeholder:text-white/30 text-white disabled:opacity-50"
+                />
+                <SlideTextButton
+                  type="submit"
+                  variant="custom"
+                  text={isSubmitting ? "..." : "Subscribe"}
+                  hoverText={isSubmitting ? "..." : "Subscribe"}
+                  animateEntrance={false}
+                  disabled={isSubmitting}
+                  className="text-[10px] font-bold tracking-widest uppercase hover:text-[#f04e00] transition-colors bg-transparent border-none p-0 text-white cursor-pointer disabled:opacity-50"
+                />
+              </div>
+            </form>
           </div>
 
         </div>

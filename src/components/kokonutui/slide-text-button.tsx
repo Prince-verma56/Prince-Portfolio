@@ -10,13 +10,14 @@
  * @github: https://github.com/kokonut-labs/kokonutui
  */
 
+import React from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface SlideTextButtonProps extends Omit<React.HTMLAttributes<HTMLElement>, "onClick"> {
-  text?: string;
-  hoverText?: string;
+  text?: React.ReactNode;
+  hoverText?: React.ReactNode;
   href?: string;
   className?: string;
   variant?: "default" | "ghost" | "custom";
@@ -24,20 +25,26 @@ interface SlideTextButtonProps extends Omit<React.HTMLAttributes<HTMLElement>, "
   onClick?: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>;
   disabled?: boolean;
   animateEntrance?: boolean;
+  target?: string;
+  rel?: string;
 }
 
-export default function SlideTextButton({
-  text = "Browse Components",
-  hoverText,
-  href,
-  className,
-  variant = "default",
-  type = "button",
-  onClick,
-  disabled,
-  animateEntrance = true,
-  ...props
-}: SlideTextButtonProps) {
+const SlideTextButton = React.forwardRef<HTMLElement, SlideTextButtonProps>(
+  (
+    {
+      text = "Browse Components",
+      hoverText,
+      href,
+      className,
+      variant = "default",
+      type = "button",
+      onClick,
+      disabled,
+      animateEntrance = true,
+      ...props
+    },
+    ref
+  ) => {
   const slideText = hoverText ?? text;
   const variantStyles =
     variant === "ghost"
@@ -71,6 +78,7 @@ export default function SlideTextButton({
       className={buttonClasses}
       href={href}
       onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>}
+      ref={ref as React.RefObject<HTMLAnchorElement>}
       {...(props as any)}
     >
       {innerContent}
@@ -81,6 +89,7 @@ export default function SlideTextButton({
       className={buttonClasses}
       disabled={disabled}
       onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
+      ref={ref as React.RefObject<HTMLButtonElement>}
       {...(props as any)}
     >
       {innerContent}
@@ -100,4 +109,8 @@ export default function SlideTextButton({
   }
 
   return <div className="relative w-fit">{buttonElement}</div>;
-}
+});
+
+SlideTextButton.displayName = "SlideTextButton";
+
+export default SlideTextButton;

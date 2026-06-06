@@ -17,7 +17,7 @@ const projects = [
     subtitle: "Indian Heritage & Travel Platform",
     tags: ["Next.js", "WebGL", "Travel"],
     image: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1800&q=90",
-    link: "/works/adhayaya", 
+    link: "/works/adhayaya",
     year: "2024",
   },
   {
@@ -127,27 +127,27 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
       const imgInner = item.querySelector(".img-inner");
 
       const tl = gsap.timeline({ paused: true });
-      
+
       // Accelerated duration and switched to 'power3.out' for snappier initial reaction
-      tl.to(imgWrap, { 
-        clipPath: "inset(0% 0 0 0)", 
-        duration: 0.9, 
-        ease: "power3.out" 
+      tl.to(imgWrap, {
+        clipPath: "inset(0% 0 0 0)",
+        duration: 0.9,
+        ease: "power3.out"
       })
-      .to(maskedTexts, { 
-        y: "0%", 
-        opacity: 1, 
-        duration: 0.7, 
-        stagger: 0.04, 
-        ease: "power4.out" 
-      }, "-=0.75") // Tight overlap execution
-      .to(menuItems, { 
-        opacity: 1, 
-        x: 0, 
-        stagger: 0.03, 
-        duration: 0.5, 
-        ease: "power2.out" 
-      }, "-=0.5");
+        .to(maskedTexts, {
+          y: "0%",
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.04,
+          ease: "power4.out"
+        }, "-=0.75") // Tight overlap execution
+        .to(menuItems, {
+          opacity: 1,
+          x: 0,
+          stagger: 0.03,
+          duration: 0.5,
+          ease: "power2.out"
+        }, "-=0.5");
 
       if (isStandalonePage && index === 0) {
         firstProjectTlRef.current = tl;
@@ -162,7 +162,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
       // Left Column Pinning Mechanics
       const leftCol = item.querySelector(".left-col");
       const rightCol = item.querySelector(".right-col");
-      
+
       let mm = gsap.matchMedia();
       mm.add("(min-width: 1024px)", () => {
         if (leftCol && rightCol) {
@@ -218,9 +218,8 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
     <section
       ref={sectionRef}
       id="work"
-      className={`relative z-30 bg-[#050505] px-6 md:px-16 overflow-hidden w-full will-change-transform ${
-        isStandalonePage ? "pt-8 pb-32" : "py-32"
-      }`}
+      className={`relative z-30 bg-[#050505] px-6 md:px-16 overflow-hidden w-full will-change-transform ${isStandalonePage ? "pt-8 pb-32" : "py-32"
+        }`}
       style={isStandalonePage ? {} : {
         clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
       }}
@@ -244,7 +243,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
               {/* Left Side: Sticky Navigation Index */}
               <div className="left-col flex flex-col gap-10 pt-4 h-fit">
                 <div className="overflow-hidden pb-2">
-                  <span className="mask-text block translate-y-[110%] opacity-0 text-[clamp(5rem,8vw,7rem)] font-black text-white leading-none tracking-tighter">
+                  <span className="mask-text block translate-y-[110%] opacity-0 text-[clamp(5rem,8vw,7rem)] font-black text-[#f04e00] leading-none tracking-tighter">
                     {project.id}.
                   </span>
                 </div>
@@ -253,18 +252,16 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                   {projects.map((p) => {
                     const isActive = p.id === project.id;
                     return (
-                      <div key={p.id} className="menu-item opacity-0 -translate-x-[20px] flex items-center gap-6 group cursor-default">
+                      <div key={p.id} className="menu-item opacity-0 translate-x-[-20px] flex items-center gap-6 group cursor-default">
                         <div
-                          className={`h-[2px] transition-all duration-500 ease-out ${
-                            isActive ? "w-16 bg-white" : "w-8 bg-neutral-800"
-                          }`}
+                          className={`h-[2px] transition-all duration-500 ease-out ${isActive ? "w-16 bg-white" : "w-8 bg-neutral-800"
+                            }`}
                         />
                         <span
-                          className={`text-lg md:text-xl transition-all duration-500 tracking-wide ${
-                            isActive 
-                              ? "text-white font-bold underline decoration-2 underline-offset-[6px] decoration-white/30" 
-                              : "text-neutral-500 font-medium"
-                          }`}
+                          className={`text-lg md:text-xl transition-all duration-500 tracking-wide ${isActive
+                            ? "text-[#f04e00] font-bold underline decoration-2 underline-offset-[6px] decoration-white/30"
+                            : "text-neutral-500 font-medium"
+                            }`}
                         >
                           {p.title}
                         </span>
@@ -282,7 +279,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                     <span className="mask-text translate-y-[110%] opacity-0 text-neutral-500 font-mono text-xs uppercase tracking-widest">
                       Year — {project.year}
                     </span>
-                    <span className="mask-text translate-y-[110%] opacity-0 text-white/80 text-sm md:text-base font-light tracking-wide">
+                    <span className="mask-text translate-y-[110%] opacity-0 text-[#f04e00] text-sm md:text-base font-light tracking-wide">
                       {project.subtitle}
                     </span>
                   </div>

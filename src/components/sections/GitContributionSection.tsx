@@ -6,6 +6,7 @@ import { useGSAP } from "@gsap/react";
 import Link from "next/link";
 import { ContributionGraph, type ContributionData } from "../ui/smoothui/contribution-graph/index"; 
 import { Button } from "@/components/ui/button";
+import SlideTextButton from "@/components/kokonutui/slide-text-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 import {
@@ -50,6 +51,22 @@ export default function GitContributionSection() {
 
   useGSAP(() => {
     if (!sectionRef.current) return;
+
+    // ── NEW: Section Un-slanting (Sheet Effect) ──
+    gsap.fromTo(
+      sectionRef.current,
+      { clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" },
+      {
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "top top",
+          scrub: 1,
+        }
+      }
+    );
 
     gsap.set(".git-graph-card", { opacity: 0, y: 40, scale: 0.95 });
     gsap.set(".git-fade-item", { opacity: 0, y: 20 });
@@ -119,13 +136,22 @@ export default function GitContributionSection() {
   }, { scope: sectionRef });
 
   return (
-    <section 
-      ref={sectionRef} 
-      className="relative z-20 w-full bg-[#050505] text-white py-32 md:py-48 overflow-hidden border-t border-white/5"
-    >
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20">
+    <div className="w-full relative z-20 drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]">
+      <section 
+        ref={sectionRef} 
+        className="relative w-full bg-[#050505] text-white py-32 md:py-48 overflow-hidden will-change-transform"
+        style={{
+          clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
+        }}
+      >
+        {/* ── Ultra Premium Edge Lighting (Left Focused) ── */}
+        <div className="absolute top-[-150px] left-[-10%] w-[50%] h-[300px] bg-[#f04e00] opacity-[0.15] blur-[120px] pointer-events-none rounded-[100%]" />
+        <div className="absolute top-[-50px] left-[-5%] w-[30%] h-[150px] bg-[#f04e00] opacity-[0.25] blur-[80px] pointer-events-none rounded-[100%]" />
+        <div className="absolute top-[-20px] left-0 w-[20%] h-[50px] bg-white opacity-[0.1] blur-[30px] pointer-events-none rounded-[100%]" />
+
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 relative z-10">
         
-        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-16 lg:gap-24 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_0.9fr] gap-16 lg:gap-28 xl:gap-40 items-center">
           
           {/* ── LEFT SIDE: Graph Card Box ── */}
           <div className="git-parallax-left min-w-0">
@@ -203,43 +229,67 @@ export default function GitContributionSection() {
               <div className="git-fade-item mt-4">
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="border-white/20 bg-transparent text-white hover:bg-white hover:text-black font-bold uppercase tracking-widest px-8 rounded-full transition-all duration-300 h-12"
-                    >
-                      View GitHub Profile
-                    </Button>
+                    <SlideTextButton 
+                      text="View GitHub Profile"
+                      hoverText="View GitHub Profile"
+                      variant="custom"
+                      className="whitespace-nowrap border border-white/20 bg-transparent text-white hover:bg-white hover:text-black font-bold uppercase tracking-widest px-8 rounded-full transition-all duration-300 h-12"
+                      animateEntrance={false}
+                    />
                   </DialogTrigger>
                   
-                  <DialogContent className="bg-[#0a0a0a] border border-white/10 shadow-2xl rounded-3xl p-8 max-w-[400px] w-[90vw] mx-auto text-white backdrop-blur-2xl duration-500">
-                    <div className="flex justify-center mb-6">
-                      <div className="w-16 h-16 rounded-full overflow-hidden border border-white/10 flex items-center justify-center shadow-inner">
-                        <img 
-                          src="https://github.com/Prince-verma56.png" 
-                          alt="Avatar" 
-                          className="w-full h-full object-cover"
-                        />
+                  <DialogContent className="bg-[#050505] border border-white/10 shadow-[0_0_80px_rgba(240,78,0,0.15)] rounded-3xl p-0 max-w-[420px] w-[90vw] mx-auto text-white overflow-hidden duration-500">
+                    
+                    {/* ── Premium Header Background ── */}
+                    <div className="relative w-full h-32 bg-gradient-to-br from-[#f04e00]/20 via-[#0a0a0a] to-[#050505] flex items-center justify-center border-b border-white/5">
+                      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay"></div>
+                      <div className="absolute -bottom-10 flex justify-center w-full">
+                        <div className="relative group">
+                          {/* Animated Glow */}
+                          <div className="absolute inset-0 bg-[#f04e00] blur-xl rounded-full opacity-40 group-hover:opacity-70 transition-opacity duration-500 animate-pulse"></div>
+                          {/* Avatar Box */}
+                          <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-[#050505] flex items-center justify-center shadow-2xl bg-[#0a0a0a] transition-transform duration-500 group-hover:scale-105">
+                            <img 
+                              src="https://github.com/Prince-verma56.png" 
+                              alt="Avatar" 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <DialogHeader>
-                      <DialogTitle className="text-3xl font-black text-center text-white tracking-tight">Prince Verma</DialogTitle>
-                      <DialogDescription className="text-center text-white/60 mt-4 text-sm leading-relaxed">
-                        100+ collection of repositories and public contributions. Spend no time on setup and focus on shipping.
-                      </DialogDescription>
-                    </DialogHeader>
-                    
-                    <div className="flex flex-col gap-3 mt-8">
-                      <Link href="https://github.com/Prince-verma56" target="_blank" className="w-full">
-                        <Button className="w-full bg-[#f04e00] hover:bg-[#f04e00]/80 text-white font-bold h-12 rounded-xl text-base shadow-[0_0_20px_rgba(240,78,0,0.3)] transition-all hover:shadow-[0_0_30px_rgba(240,78,0,0.5)]">
-                          View GitHub Profile
-                        </Button>
-                      </Link>
-                      <DialogClose asChild>
-                        <Button variant="ghost" className="w-full text-white/50 hover:text-white hover:bg-white/10 font-medium h-12 rounded-xl text-base transition-colors">
-                          Maybe Later
-                        </Button>
-                      </DialogClose>
+                    <div className="px-8 pt-16 pb-8">
+                      <DialogHeader>
+                        <DialogTitle className="text-3xl font-black text-center text-white tracking-tighter flex flex-col items-center gap-3">
+                          Prince Verma
+                          <span className="flex items-center gap-1.5 text-xs font-semibold text-[#26a641] bg-[#26a641]/10 px-3 py-1.5 rounded-full border border-[#26a641]/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#26a641] animate-pulse" />
+                            Available for Open Source
+                          </span>
+                        </DialogTitle>
+                        <DialogDescription className="text-center text-white/60 mt-6 text-sm leading-relaxed font-medium px-2">
+                          100+ repositories & public contributions. <br />
+                          <span className="text-white/80">Spend no time on setup and focus on shipping.</span>
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="flex flex-col gap-3 mt-10">
+                        <SlideTextButton 
+                          href="https://github.com/Prince-verma56"
+                          target="_blank"
+                          text="View GitHub Profile"
+                          hoverText="View GitHub Profile"
+                          variant="custom"
+                          className="whitespace-nowrap w-full bg-white text-black font-bold h-14 rounded-xl text-base shadow-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] flex items-center justify-center"
+                          animateEntrance={false}
+                        />
+                        <DialogClose asChild>
+                          <Button variant="ghost" className="w-full text-white/40 hover:text-white hover:bg-white/5 font-medium h-12 rounded-xl text-sm transition-colors mt-2">
+                            Maybe Later
+                          </Button>
+                        </DialogClose>
+                      </div>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -250,5 +300,6 @@ export default function GitContributionSection() {
         </div>
       </div>
     </section>
-  );
+  </div>
+);
 }

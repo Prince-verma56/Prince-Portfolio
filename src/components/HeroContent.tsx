@@ -63,39 +63,41 @@ export default function HeroContent() {
 
 
       {/* ── EDITORIAL HEADING (Responsive Positioning) ── */}
-      <div className="absolute bottom-[30%] left-6 text-left md:bottom-auto md:top-[30%] md:left-auto md:right-12 md:text-right">
-        <h2 className="text-[clamp(3.5rem,7vw,7rem)] font-bold leading-[1.05] tracking-tight text-white/90">
+      {/* Moved to top-[18%] on mobile to avoid overlapping the face, and adjusted text sizing */}
+      <div className="absolute top-[18%] sm:top-[20%] left-6 text-left md:bottom-auto md:top-[30%] md:left-auto md:right-12 md:text-right z-20">
+        <h2 className="text-4xl sm:text-5xl md:text-[clamp(4rem,7vw,7rem)] font-black leading-[0.95] md:leading-[1.05] tracking-tighter text-white drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)] md:drop-shadow-none">
           <div className="overflow-hidden pb-1"><span className="mask-line block translate-y-[110%]">Build</span></div>
           <div className="overflow-hidden pb-1"><span className="mask-line block translate-y-[110%]">Create</span></div>
           <div className="overflow-hidden pb-1"><span className="mask-line block text-white/50 translate-y-[110%]">Automate</span></div>
-          <div className="overflow-hidden pb-1"><span className="mask-line block translate-y-[110%] ">Scale</span></div>
-
+          <div className="overflow-hidden pb-1"><span className="mask-line block translate-y-[110%] text-[#f04e00] md:text-white">Scale</span></div>
         </h2>
       </div>
 
       {/* ── BOTTOM LEFT: DESCRIPTION & ABILITIES ── */}
-      <div className="flex flex-col gap-6 md:gap-10 max-w-[320px] md:max-w-[480px]">
+      {/* Ensure it is layered properly and has a clean layout */}
+      <div className="flex flex-col gap-6 md:gap-10 w-full max-w-[90%] sm:max-w-[400px] md:max-w-[480px] z-20 relative">
 
         {/* Description */}
-        <p className="h-desc text-white/80 text-sm md:text-lg font-medium leading-relaxed tracking-wide opacity-0 translate-y-5">
+        <p className="h-desc text-white/90 text-sm sm:text-base md:text-lg font-medium leading-relaxed tracking-wide opacity-0 translate-y-5 drop-shadow-md">
           I transform ambitious ideas into intelligent products,
-          <br className="hidden md:block" />combining cutting-edge development, immersive design, <span className="text-white/40 italic font-light"> and AI-driven innovation to create experiences that stand out.</span>
+          <br className="hidden sm:block" /> combining cutting-edge development, immersive design, <span className="text-white/50 italic font-light"> and AI-driven innovation to create experiences that stand out.</span>
         </p>
 
         {/* Highlighted Abilities (Replaced Logos) */}
+        {/* Fixed Flex-Wrap to prevent awkward text breaking on small screens */}
         <div className="h-logos flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 mt-2 md:mt-0 opacity-0 translate-y-5">
-          <span className="text-[10px] md:text-[11px] text-[#f04e00] uppercase tracking-[0.2em] font-mono font-bold">
+          <span className="text-[10px] md:text-[11px] text-[#f04e00] uppercase tracking-[0.2em] font-mono font-bold shrink-0">
             Abilities:
           </span>
 
-          <div className="flex items-center gap-3 md:gap-4 text-white/90">
-            <span className="font-bold tracking-widest text-xs md:text-sm uppercase">3D Web</span>
-            <span className="text-white/30 text-[10px]">●</span>
-            <span className="font-bold tracking-widest text-xs md:text-sm uppercase">AI Solutions</span>
-            <span className="text-white/30 text-[10px]">●</span>
-            <span className="font-bold tracking-widest text-xs md:text-sm uppercase">Full Stack</span>
-            <span className="text-white/30 text-[10px]">●</span>
-            <span className="font-bold tracking-widest text-xs md:text-sm uppercase">Agentic Systems</span>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-white/90">
+            <span className="font-bold tracking-widest text-[10px] sm:text-xs md:text-sm uppercase whitespace-nowrap">3D Web</span>
+            <span className="text-white/30 text-[8px] sm:text-[10px]">●</span>
+            <span className="font-bold tracking-widest text-[10px] sm:text-xs md:text-sm uppercase whitespace-nowrap">AI Solutions</span>
+            <span className="text-white/30 text-[8px] sm:text-[10px]">●</span>
+            <span className="font-bold tracking-widest text-[10px] sm:text-xs md:text-sm uppercase whitespace-nowrap">Full Stack</span>
+            <span className="text-white/30 text-[8px] sm:text-[10px]">●</span>
+            <span className="font-bold tracking-widest text-[10px] sm:text-xs md:text-sm uppercase whitespace-nowrap">Agentic Systems</span>
           </div>
         </div>
 

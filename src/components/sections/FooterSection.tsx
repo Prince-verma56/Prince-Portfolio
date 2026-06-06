@@ -7,12 +7,12 @@ export default function FooterSection() {
         LET'S WORK <br />TOGETHER.
       </h2>
       <a
-        href="https://mail.google.com/mail/?view=cm&fs=1&to=ritikarawat3225@gmail.com"
-        target="_blank" 
+        href="https://mail.google.com/mail/?view=cm&fs=1&to=princeverma.dev96@gmail.com"
+        target="_blank"
         rel="noopener noreferrer"
         className="text-lg md:text-2xl font-medium text-white border-b border-white/20 pb-2 hover:text-[#f04e00] hover:border-[#f04e00] transition-colors duration-300"
       >
-        ritikarawat3225@gmail.com
+        princeverma.dev96@gmail.com
       </a>
     </section>
   );

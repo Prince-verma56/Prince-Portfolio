@@ -167,15 +167,21 @@ export default function ServicesSection() {
 
 
   return (
-    <section
-      ref={sectionRef}
-      id="services"
-      className="relative z-30 bg-[#0a0a0a] py-32 px-6 md:px-12 lg:px-20 overflow-hidden w-full will-change-transform"
-      style={{
-        clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
-      }}
-    >
-      <div ref={contentRef} className="max-w-[1400px] mx-auto flex flex-col will-change-transform">
+    <div className="w-full relative z-30 drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]">
+      <section
+        ref={sectionRef}
+        id="services"
+        className="relative w-full bg-[#0a0a0a] py-32 overflow-hidden will-change-transform"
+        style={{
+          clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
+        }}
+      >
+        {/* ── Ultra Premium Edge Lighting (Right Focused) ── */}
+        <div className="absolute top-[-150px] right-[-10%] w-[50%] h-[300px] bg-[#f04e00] opacity-[0.15] blur-[120px] pointer-events-none rounded-[100%]" />
+        <div className="absolute top-[-50px] right-[-5%] w-[30%] h-[150px] bg-[#f04e00] opacity-[0.25] blur-[80px] pointer-events-none rounded-[100%]" />
+        <div className="absolute top-[-20px] right-0 w-[20%] h-[50px] bg-white opacity-[0.1] blur-[30px] pointer-events-none rounded-[100%]" />
+
+        <div ref={contentRef} className="relative z-10 max-w-[1400px] mx-auto flex flex-col will-change-transform px-6 md:px-12 lg:px-20">
 
         {/* Top Titles Section */}
         <div className="mask-title-wrapper flex flex-col items-end pb-8 mb-16 border-b border-white/10 w-full">
@@ -183,7 +189,7 @@ export default function ServicesSection() {
             (Services)
           </span>
           <h2 className="text-[clamp(3.5rem,8vw,7rem)] font-black uppercase text-white leading-none tracking-tighter text-right">
-            HOW I CAN HELP <span className="font-serif italic font-medium">?</span>
+            HOW I CAN HELP <span className="font-serif italic font-medium text-[#f04e00]">?</span>
           </h2>
         </div>
 
@@ -197,8 +203,20 @@ export default function ServicesSection() {
                 key={service.id}
                 ref={(el) => { itemRefs.current[index] = el; }}
                 onClick={() => setActiveIndex(isOpen ? null : index)}
-                className="accordion-row relative border-b border-white/10 group py-10 md:py-14 w-full transition-colors hover:bg-white/[0.02] cursor-pointer"
+                className={`accordion-row relative group py-10 md:py-14 w-full transition-colors cursor-pointer ${
+                  isOpen ? "bg-white/[0.03]" : "hover:bg-white/[0.02]"
+                }`}
               >
+                {/* ── Premium Animated Divider Lines ── */}
+                {/* Base subtle line */}
+                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 transition-colors duration-500 group-hover:bg-white/20" />
+                
+                {/* Animated glowing gradient line (triggers on hover or open) */}
+                <div 
+                  className={`absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-[#f04e00] via-[#f04e00]/50 to-transparent origin-left transition-transform duration-700 ease-out ${
+                    isOpen ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                  }`} 
+                />
                 
                 {/* ── Animated Toggle Icon (+ / -) ── */}
                 <div className="absolute top-12 md:top-16 right-4 md:right-8 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-white/20 bg-transparent transition-all duration-300 group-hover:border-white/50 z-10">
@@ -275,6 +293,7 @@ export default function ServicesSection() {
           })}
         </div>
       </div>
-    </section>
+      </section>
+    </div>
   );
 }

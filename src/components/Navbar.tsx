@@ -135,7 +135,7 @@ export default function Navbar() {
         <div className="pointer-events-auto min-w-0 max-w-[80vw] md:max-w-none shrink">
           <Link
             href="/"
-            className={"nav-logo-text font-black uppercase text-white whitespace-nowrap block " + (isHome ? "text-[20vw] sm:text-[14vw] md:text-[11vw] origin-top-left will-change-auto leading-[0.8] tracking-tighter transition-colors hover:text-white/80" : "text-2xl md:text-3xl tracking-tighter hover:text-white/80 transition-colors")}
+            className={"nav-logo-text font-black uppercase text-white whitespace-nowrap block " + (isHome ? "text-4xl sm:text-[10vw] md:text-[11vw] origin-top-left will-change-auto leading-[0.8] tracking-tighter transition-colors hover:text-white/80" : "text-2xl md:text-3xl tracking-tighter hover:text-white/80 transition-colors")}
           >
             Prince<sup className="text-[clamp(10px,2vw,1.5rem)] font-bold align-super ml-1 md:ml-2">®</sup>
           </Link>
@@ -165,7 +165,7 @@ export default function Navbar() {
             <SlideTextButton
               variant="custom"
               text="Let's Talk"
-              hoverText="Let's Talk ↗"
+              hoverText={<span className="text-[#f04e00]">Let's Talk ↗</span>}
               href="/contact"
               animateEntrance={false}
               className="hidden sm:flex items-center justify-center border border-white/20 hover:border-white/50 bg-white/5 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-6 py-2.5 rounded-full transition-all duration-300"
@@ -245,8 +245,8 @@ export default function Navbar() {
           <div className="menu-meta flex flex-col gap-4 items-end text-right">
             <span className="text-white/40 text-[10px] font-mono tracking-widest uppercase">(Connect)</span>
             <div className="flex flex-col gap-3 items-end">
-              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=ritikarawat3225@gmail.com" target="_blank" rel="noopener noreferrer" className="text-[#f04e00] text-sm md:text-base font-bold hover:opacity-80 transition-opacity cursor-none">
-                ritikarawat3225@gmail.com
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=princeverma.dev96@gmail.com" target="_blank" rel="noopener noreferrer" className="text-[#f04e00] text-sm md:text-base font-bold hover:opacity-80 transition-opacity cursor-none">
+                princeverma.dev96@gmail.com
               </a>
               <div className="flex flex-col gap-1.5 items-end">
                 {[
