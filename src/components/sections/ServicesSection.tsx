@@ -52,8 +52,9 @@ export default function ServicesSection() {
   
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  // ── 1. Initial Scroll & Parallax Animations ──
+  // ── 1. Initial Scroll, Entrance & Parallax Animations ──
   useGSAP(() => {
+    // Section un-slanting
     gsap.fromTo(
       sectionRef.current,
       { clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" },
@@ -69,6 +70,7 @@ export default function ServicesSection() {
       }
     );
 
+    // Global Container Parallax
     gsap.fromTo(
       contentRef.current,
       { y: 150 },
@@ -84,6 +86,7 @@ export default function ServicesSection() {
       }
     );
 
+    // Heading Reveal
     gsap.fromTo(
       ".mask-title-wrapper",
       { y: 60, opacity: 0 },
@@ -98,6 +101,39 @@ export default function ServicesSection() {
         },
       }
     );
+
+    // ── NEW: Accordion Rows Staggered Entrance ──
+    gsap.fromTo(
+      ".accordion-row",
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        stagger: 0.1, // This creates the "one by one" effect
+        ease: "expo.out",
+        scrollTrigger: {
+          trigger: ".accordion-list",
+          start: "top 85%",
+          once: true, // Only play once when scrolled into view
+        }
+      }
+    );
+
+    // ── NEW: Accordion Rows Continuous Parallax ──
+    // Uses yPercent so it doesn't conflict with the 'y' entrance animation
+    gsap.to(".accordion-row", {
+      yPercent: -10, // Slight upward drift as you scroll down
+      ease: "none",
+      stagger: 0.02, // Adds a slight wave effect to the parallax
+      scrollTrigger: {
+        trigger: ".accordion-list",
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 1,
+      }
+    });
+
   }, { scope: sectionRef, dependencies: [] });
 
   // ── 2. Accordion Interaction Animations ──
@@ -110,23 +146,23 @@ export default function ServicesSection() {
       const innerContent = item.querySelector(".inner-content");
 
       if (activeIndex === index) {
-        // OPENING ANIMATION
-        gsap.to(collapsedTitle, { height: 0, opacity: 0, duration: 0.4, ease: "power2.inOut" });
-        gsap.to(expandedBody, { height: "auto", duration: 0.6, ease: "power3.inOut" });
+        // OPENING ANIMATION (Upgraded to expo.inOut for premium smoothness)
+        gsap.to(collapsedTitle, { height: 0, opacity: 0, duration: 0.5, ease: "expo.inOut" });
+        gsap.to(expandedBody, { height: "auto", duration: 0.7, ease: "expo.inOut" });
         gsap.fromTo(
           innerContent, 
           { opacity: 0, y: 20 }, 
-          { opacity: 1, y: 0, duration: 0.5, delay: 0.2, ease: "power2.out", overwrite: true }
+          { opacity: 1, y: 0, duration: 0.5, delay: 0.3, ease: "power2.out", overwrite: true }
         );
       } else {
         // CLOSING ANIMATION
-        gsap.to(expandedBody, { height: 0, duration: 0.5, ease: "power3.inOut" });
+        gsap.to(expandedBody, { height: 0, duration: 0.6, ease: "expo.inOut" });
         gsap.to(innerContent, { opacity: 0, y: 0, duration: 0.2, overwrite: true });
-        gsap.to(collapsedTitle, { height: "auto", opacity: 1, duration: 0.4, delay: 0.3, ease: "power2.inOut" });
+        gsap.to(collapsedTitle, { height: "auto", opacity: 1, duration: 0.5, delay: 0.2, ease: "expo.inOut" });
       }
     });
 
-    setTimeout(() => ScrollTrigger.refresh(), 650);
+    setTimeout(() => ScrollTrigger.refresh(), 800);
   }, { scope: sectionRef, dependencies: [activeIndex] });
 
 
@@ -139,7 +175,6 @@ export default function ServicesSection() {
         clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
       }}
     >
-      {/* Increased max-w to 1400px to stretch the accordion much wider */}
       <div ref={contentRef} className="max-w-[1400px] mx-auto flex flex-col will-change-transform">
 
         {/* Top Titles Section */}
@@ -153,7 +188,7 @@ export default function ServicesSection() {
         </div>
 
         {/* Accordion List */}
-        <div className="flex flex-col w-full">
+        <div className="accordion-list flex flex-col w-full">
           {services.map((service, index) => {
             const isOpen = activeIndex === index;
 
@@ -162,7 +197,7 @@ export default function ServicesSection() {
                 key={service.id}
                 ref={(el) => { itemRefs.current[index] = el; }}
                 onClick={() => setActiveIndex(isOpen ? null : index)}
-                className="relative border-b border-white/10 group py-10 md:py-14 w-full transition-colors hover:bg-white/[0.02]"
+                className="accordion-row relative border-b border-white/10 group py-10 md:py-14 w-full transition-colors hover:bg-white/[0.02] cursor-pointer"
               >
                 
                 {/* ── Animated Toggle Icon (+ / -) ── */}
@@ -179,7 +214,6 @@ export default function ServicesSection() {
                   </div>
                 </div>
 
-                {/* Adjusted right padding so content doesn't hit the button */}
                 <div className="flex flex-col lg:flex-row gap-6 lg:gap-16 px-4 md:px-8 pr-20 md:pr-28">
                   
                   {/* Fixed Number on Left */}
@@ -198,7 +232,6 @@ export default function ServicesSection() {
 
                     {/* 1. Collapsed State */}
                     <div className="collapsed-title w-full overflow-hidden">
-                      {/* Flex justify-end pushes the title perfectly to the right side, next to the icon */}
                       <div className="flex justify-start lg:justify-end items-center h-full pt-3">
                         <h3 className="text-2xl md:text-3xl font-bold text-white transition-colors duration-300 group-hover:text-[#f04e00]">
                           {service.title}

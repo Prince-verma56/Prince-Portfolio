@@ -249,9 +249,13 @@ export default function Navbar() {
                 ritikarawat3225@gmail.com
               </a>
               <div className="flex flex-col gap-1.5 items-end">
-                {["X/Twitter", "LinkedIn", "GitHub"].map((social) => (
-                  <Link key={social} href="/contact" className="text-white/70 text-xs md:text-sm hover:text-white transition-colors flex items-center gap-1 group cursor-none">
-                    <span className="opacity-0 group-hover:opacity-100 group-hover:-translate-x-1 transition-all text-[10px]">↗</span> {social}
+                {[
+                  { name: "LinkedIn", url: "https://www.linkedin.com/in/prince-verma26/" },
+                  { name: "Instagram", url: "https://www.instagram.com/its.prince_charley/" },
+                  { name: "GitHub", url: "https://github.com/Prince-verma56" }
+                ].map((social) => (
+                  <Link key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-white/70 text-xs md:text-sm hover:text-white transition-colors flex items-center gap-1 group cursor-none">
+                    <span className="opacity-0 group-hover:opacity-100 group-hover:-translate-x-1 transition-all text-[10px]">↗</span> {social.name}
                   </Link>
                 ))}
               </div>

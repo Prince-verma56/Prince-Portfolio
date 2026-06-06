@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion } from "framer-motion";
 import type React from "react";
 import { useMemo, useState } from "react";
 
@@ -27,30 +27,15 @@ const MIN_WEEKS_FOR_DECEMBER_HEADER = 2;
 const TOOLTIP_OFFSET_X = 10;
 const TOOLTIP_OFFSET_Y = 40;
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-// Contribution level colors (similar to GitHub's)
 const CONTRIBUTION_COLORS = [
-  "bg-primary", // Level 0 - No contributions
-  "bg-brand/25", // Level 1
-  "bg-brand/50", // Level 2
-  "bg-brand/75", // Level 3
-  "bg-brand", // Level 4 - Max
+  "bg-[#161b22]", 
+  "bg-[#0e4429]", 
+  "bg-[#006d32]", 
+  "bg-[#26a641]", 
+  "bg-[#39d353]", 
 ];
 
 const LEVEL_0 = 0;
@@ -62,28 +47,14 @@ const CONTRIBUTION_LEVELS = [LEVEL_0, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4];
 const DAY_1 = 1;
 const DAY_31 = 31;
 
-// Helper function to check if date is in valid range
-const isDateInValidRange = (
-  currentDate: Date,
-  startDate: Date,
-  endDate: Date,
-  targetYear: number
-) => {
+const isDateInValidRange = (currentDate: Date, startDate: Date, endDate: Date, targetYear: number) => {
   const isInRange = currentDate >= startDate && currentDate <= endDate;
-  const isPreviousYearDecember =
-    currentDate.getFullYear() === targetYear - 1 &&
-    currentDate.getMonth() === DECEMBER_MONTH;
-  const isNextYearJanuary =
-    currentDate.getFullYear() === targetYear + 1 &&
-    currentDate.getMonth() === JANUARY_MONTH;
+  const isPreviousYearDecember = currentDate.getFullYear() === targetYear - 1 && currentDate.getMonth() === DECEMBER_MONTH;
+  const isNextYearJanuary = currentDate.getFullYear() === targetYear + 1 && currentDate.getMonth() === JANUARY_MONTH;
   return isInRange || isPreviousYearDecember || isNextYearJanuary;
 };
 
-// Helper function to create day data
-const createDayData = (
-  currentDate: Date,
-  contributionData: ContributionData[]
-): ContributionData => {
+const createDayData = (currentDate: Date, contributionData: ContributionData[]): ContributionData => {
   const dateString = currentDate.toISOString().split("T")[0];
   const existingData = contributionData.find((d) => d.date === dateString);
   return {
@@ -93,7 +64,6 @@ const createDayData = (
   };
 };
 
-// Helper function to check if month should be shown
 interface MonthHeaderCheck {
   currentMonth: number;
   currentYear: number;
@@ -101,20 +71,11 @@ interface MonthHeaderCheck {
   targetYear: number;
   weekCount: number;
 }
-const shouldShowMonthHeader = ({
-  currentYear,
-  targetYear,
-  currentMonth,
-  startDateDay,
-  weekCount,
-}: MonthHeaderCheck) =>
-  currentYear === targetYear ||
-  (currentYear === targetYear - 1 &&
-    currentMonth === DECEMBER_MONTH &&
-    startDateDay !== SUNDAY_DAY &&
-    weekCount >= MIN_WEEKS_FOR_DECEMBER_HEADER);
 
-// Helper function to calculate month headers
+const shouldShowMonthHeader = ({ currentYear, targetYear, currentMonth, startDateDay, weekCount }: MonthHeaderCheck) =>
+  currentYear === targetYear ||
+  (currentYear === targetYear - 1 && currentMonth === DECEMBER_MONTH && startDateDay !== SUNDAY_DAY && weekCount >= MIN_WEEKS_FOR_DECEMBER_HEADER);
+
 const calculateMonthHeaders = (targetYear: number) => {
   const headers: { month: string; colspan: number; startWeek: number }[] = [];
   const startDate = new Date(targetYear, JANUARY_MONTH, DAY_1);
@@ -134,21 +95,8 @@ const calculateMonthHeaders = (targetYear: number) => {
     const yearKey = weekDate.getFullYear();
 
     if (monthKey !== currentMonth || yearKey !== currentYear) {
-      if (
-        currentMonth !== -1 &&
-        shouldShowMonthHeader({
-          currentYear,
-          targetYear,
-          currentMonth,
-          startDateDay: startDate.getDay(),
-          weekCount,
-        })
-      ) {
-        headers.push({
-          month: MONTHS[currentMonth],
-          colspan: weekCount,
-          startWeek: monthStartWeek,
-        });
+      if (currentMonth !== -1 && shouldShowMonthHeader({ currentYear, targetYear, currentMonth, startDateDay: startDate.getDay(), weekCount })) {
+        headers.push({ month: MONTHS[currentMonth], colspan: weekCount, startWeek: monthStartWeek });
       }
       currentMonth = monthKey;
       currentYear = yearKey;
@@ -159,74 +107,41 @@ const calculateMonthHeaders = (targetYear: number) => {
     }
   }
 
-  // Add the last month
-  if (
-    currentMonth !== -1 &&
-    shouldShowMonthHeader({
-      currentYear,
-      targetYear,
-      currentMonth,
-      startDateDay: startDate.getDay(),
-      weekCount,
-    })
-  ) {
-    headers.push({
-      month: MONTHS[currentMonth],
-      colspan: weekCount,
-      startWeek: monthStartWeek,
-    });
+  if (currentMonth !== -1 && shouldShowMonthHeader({ currentYear, targetYear, currentMonth, startDateDay: startDate.getDay(), weekCount })) {
+    headers.push({ month: MONTHS[currentMonth], colspan: weekCount, startWeek: monthStartWeek });
   }
 
   return headers;
 };
 
-export function ContributionGraph({
-  data = [],
-  year = new Date().getFullYear(),
-  className = "",
-  showLegend = true,
-  showTooltips = true,
-}: ContributionGraphProps) {
+export function ContributionGraph({ data = [], year = new Date().getFullYear(), className = "", showLegend = true, showTooltips = true }: ContributionGraphProps) {
   const [hoveredDay, setHoveredDay] = useState<ContributionData | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const shouldReduceMotion = useReducedMotion();
 
-  // Generate all days for the year
   const yearData = useMemo(() => {
     const startDate = new Date(year, JANUARY_MONTH, DAY_1);
     const endDate = new Date(year, DECEMBER_MONTH, DAY_31);
     const days: ContributionData[] = [];
 
-    // Start from the Sunday of the first week that contains January 1st
-    // This ensures December gets proper weeks before January
     const firstSunday = new Date(startDate);
     firstSunday.setDate(startDate.getDate() - startDate.getDay());
 
-    // Generate 53 weeks (GitHub shows 53 weeks)
     for (let weekNum = 0; weekNum < WEEKS_IN_YEAR; weekNum++) {
       for (let day = 0; day < DAYS_IN_WEEK; day++) {
         const currentDate = new Date(firstSunday);
-        currentDate.setDate(
-          firstSunday.getDate() + weekNum * DAYS_IN_WEEK + day
-        );
+        currentDate.setDate(firstSunday.getDate() + weekNum * DAYS_IN_WEEK + day);
 
         if (isDateInValidRange(currentDate, startDate, endDate, year)) {
           days.push(createDayData(currentDate, data));
         } else {
-          // Add empty day for alignment
-          days.push({
-            date: "",
-            count: LEVEL_0,
-            level: LEVEL_0,
-          });
+          days.push({ date: "", count: LEVEL_0, level: LEVEL_0 });
         }
       }
     }
-
     return days;
   }, [data, year]);
 
-  // Calculate month headers with colspan
   const monthHeaders = useMemo(() => calculateMonthHeaders(year), [year]);
 
   const handleDayHover = (day: ContributionData, event: React.MouseEvent) => {
@@ -236,97 +151,74 @@ export function ContributionGraph({
     }
   };
 
-  const handleDayLeave = () => {
-    setHoveredDay(null);
-  };
+  const handleDayLeave = () => setHoveredDay(null);
 
   const formatDate = (dateString: string) => {
-    if (!dateString) {
-      return "";
-    }
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    if (!dateString) return "";
+    return new Date(dateString).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   };
 
   const getContributionText = (count: number) => {
-    if (count === LEVEL_0) {
-      return "No contributions";
-    }
-    if (count === LEVEL_1) {
-      return "1 contribution";
-    }
+    if (count === LEVEL_0) return "No contributions";
+    if (count === LEVEL_1) return "1 contribution";
     return `${count} contributions`;
   };
 
   return (
-    <div className={`contribution-graph ${className}`}>
-      <div className="overflow-x-auto">
-        <table className="border-separate border-spacing-1 text-xs">
+    <div className={`contribution-graph flex flex-col w-full ${className}`}>
+      
+      {/* ── CUSTOM HORIZONTAL SCROLLBAR CONTAINER ── */}
+      <div className="w-full overflow-x-auto pb-6 pt-2 pr-4
+        [&::-webkit-scrollbar]:h-2.5 
+        [&::-webkit-scrollbar-track]:rounded-full 
+        [&::-webkit-scrollbar-track]:bg-white/5 
+        [&::-webkit-scrollbar-thumb]:rounded-full 
+        [&::-webkit-scrollbar-thumb]:bg-white/20 
+        hover:[&::-webkit-scrollbar-thumb]:bg-white/40 
+        transition-all"
+      >
+        <table className="border-separate border-spacing-[3px] text-xs w-max">
           <caption className="sr-only">Contribution Graph for {year}</caption>
 
-          {/* Month Headers */}
           <thead>
             <tr className="h-3">
-              <td className="w-7 min-w-7" />
+              <td className="w-8 min-w-[32px]" />
               {monthHeaders.map((header) => (
-                <td
-                  className="relative text-left text-foreground"
-                  colSpan={header.colspan}
-                  key={`${header.month}-${header.startWeek}`}
-                >
-                  <span className="absolute top-0 left-1">{header.month}</span>
+                <td className="relative text-left text-white/50 font-medium" colSpan={header.colspan} key={`${header.month}-${header.startWeek}`}>
+                  <span className="absolute top-0 left-1 text-[10px] md:text-xs">{header.month}</span>
                 </td>
               ))}
             </tr>
           </thead>
 
-          {/* Day Grid */}
           <tbody>
             {Array.from({ length: DAYS_IN_WEEK }, (_, dayIndex) => (
-              <tr className="h-2.5" key={DAYS[dayIndex]}>
-                {/* Day Labels */}
-                <td className="relative w-7 min-w-7 text-foreground">
+              <tr className="h-[12px] md:h-[14px]" key={DAYS[dayIndex]}>
+                <td className="relative w-8 min-w-[32px] text-white/50 font-medium pr-2">
                   {dayIndex % 2 === 0 && (
-                    <span className="absolute -bottom-0.5 left-0 text-xs">
+                    <span className="absolute -bottom-0.5 left-0 text-[9px] md:text-[10px]">
                       {DAYS[dayIndex]}
                     </span>
                   )}
                 </td>
 
-                {/* Day Cells */}
                 {Array.from({ length: WEEKS_IN_YEAR }, (_, w) => {
                   const dayData = yearData[w * DAYS_IN_WEEK + dayIndex];
                   const cellKey = `${dayData?.date ?? "empty"}-${w}-${dayIndex}`;
                   if (!dayData?.date) {
                     return (
-                      <td className="h-2.5 w-2.5 p-0" key={cellKey}>
-                        <div className="h-2.5 w-2.5" />
+                      <td className="h-[12px] w-[12px] md:h-[14px] md:w-[14px] p-0" key={cellKey}>
+                        <div className="h-[12px] w-[12px] md:h-[14px] md:w-[14px]" />
                       </td>
                     );
                   }
 
                   return (
-                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions: Table cell is interactive for hover tooltips
-                    <td
-                      className="h-2.5 w-2.5 cursor-none p-0"
-                      key={cellKey}
-                      onMouseEnter={(e) => handleDayHover(dayData, e)}
-                      onMouseLeave={handleDayLeave}
-                      title={
-                        showTooltips
-                          ? `${formatDate(dayData.date)}: ${getContributionText(dayData.count)}`
-                          : undefined
-                      }
-                    >
+                    <td className="h-[12px] w-[12px] md:h-[14px] md:w-[14px] cursor-pointer p-0" key={cellKey} onMouseEnter={(e) => handleDayHover(dayData, e)} onMouseLeave={handleDayLeave}>
                       <div
-                        className={`h-2.5 w-2.5 rounded-sm ${
+                        className={`h-[12px] w-[12px] md:h-[14px] md:w-[14px] rounded-sm transition-all duration-300 ${
                           CONTRIBUTION_COLORS[dayData.level]
-                        } hover:ring-2 hover:ring-background`}
+                        } hover:ring-1 hover:ring-white hover:scale-110`}
                       />
                     </td>
                   );
@@ -337,46 +229,26 @@ export function ContributionGraph({
         </table>
       </div>
 
-      {/* Tooltip */}
       {showTooltips && hoveredDay && (
         <motion.div
-          animate={
-            shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
-          }
-          className="pointer-events-none fixed z-50 rounded-lg border bg-primary px-3 py-2 text-foreground text-sm shadow-lg"
-          exit={
-            shouldReduceMotion
-              ? { opacity: 0, transition: { duration: 0 } }
-              : { opacity: 0, scale: 0.8 }
-          }
-          initial={
-            shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.8 }
-          }
-          style={{
-            left: tooltipPosition.x + TOOLTIP_OFFSET_X,
-            top: tooltipPosition.y - TOOLTIP_OFFSET_Y,
-          }}
+          animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+          className="pointer-events-none fixed z-[100] rounded-lg border border-white/10 bg-[#0a0a0a] px-3 py-2 text-white text-sm shadow-xl backdrop-blur-md"
+          exit={shouldReduceMotion ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, scale: 0.8 }}
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.8 }}
+          style={{ left: tooltipPosition.x + TOOLTIP_OFFSET_X, top: tooltipPosition.y - TOOLTIP_OFFSET_Y }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2 }}
         >
-          <div className="font-semibold">
-            {getContributionText(hoveredDay.count)}
-          </div>
-          <div className="text-foreground/70">
-            {formatDate(hoveredDay.date)}
-          </div>
+          <div className="font-bold text-[#f04e00]">{getContributionText(hoveredDay.count)}</div>
+          <div className="text-white/60 text-xs mt-1 font-mono">{formatDate(hoveredDay.date)}</div>
         </motion.div>
       )}
 
-      {/* Legend */}
       {showLegend && (
-        <div className="mt-4 flex items-center justify-between text-foreground/70 text-xs">
+        <div className="mt-2 flex items-center justify-end gap-2 text-white/50 text-[10px] uppercase tracking-widest font-mono">
           <span>Less</span>
           <div className="flex items-center gap-1">
             {CONTRIBUTION_LEVELS.map((level) => (
-              <div
-                className={`h-3 w-3 rounded-sm ${CONTRIBUTION_COLORS[level]}`}
-                key={level}
-              />
+              <div className={`h-[10px] w-[10px] rounded-sm ${CONTRIBUTION_COLORS[level]}`} key={level} />
             ))}
           </div>
           <span>More</span>

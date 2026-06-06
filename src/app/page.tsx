@@ -12,6 +12,7 @@ import AchievementsSection from "@/components/sections/AchievementsSection";
 import SocialFooter from "@/components/SocialFooter";
 import AboutSection from "@/components/sections/AboutSection";
 import FooterSection from "@/components/sections/FooterSection";
+import GitContributionSection from "@/components/sections/GitContributionSection";
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -19,10 +20,10 @@ export default function Home() {
 
   useGSAP(() => {
     if (isLoaderFinished) {
-      gsap.to(heroRef.current, { 
-        opacity: 1, 
-        duration: 1.5, 
-        ease: "power2.out" 
+      gsap.to(heroRef.current, {
+        opacity: 1,
+        duration: 1.5,
+        ease: "power2.out"
       });
     }
   }, [isLoaderFinished]);
@@ -33,7 +34,7 @@ export default function Home() {
         <ClientLiquidHero
           // UNCOMMENT/COMMENT AS NEEDED:
           // imageUrl="https://res.cloudinary.com/..."
-          videoUrl="https://res.cloudinary.com/dtslaveid/video/upload/v1780721714/LandingePage_video3Blink_gqqorm.mp4" 
+          videoUrl="https://res.cloudinary.com/dtslaveid/video/upload/v1780721714/LandingePage_video3Blink_gqqorm.mp4"
           strength={0.12}
           brushRadius={0.18}
           dissipation={0.97}
@@ -41,15 +42,16 @@ export default function Home() {
           <HeroContent />
         </ClientLiquidHero>
       </div>
-      
-             {/* ════════ Sections ════════ */}
-        <AboutSection />
-        <TechStackSection />
-        <ServicesSection />
-        <WorkSection />
-        <AchievementsSection /> 
-        <SocialFooter />
-        <FooterSection />
+
+      {/* ════════ Sections ════════ */}
+      <AboutSection />
+      <TechStackSection />
+      <GitContributionSection />
+      <ServicesSection />
+      <WorkSection />
+      <AchievementsSection />
+      <SocialFooter />
+      <FooterSection />
     </main>
   );
 }

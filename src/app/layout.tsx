@@ -8,6 +8,7 @@ import { LoaderProvider } from "@/context/LoaderContext";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "sonner/dist/styles.css";
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
@@ -32,12 +33,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
       >
         <SmoothCursor />
-        <LoaderProvider>
-          <Preloader />
-          <Navbar />
-          <ClientSmoothScroller>{children}</ClientSmoothScroller>
-          <Toaster theme="dark" position="bottom-right" richColors />
-        </LoaderProvider>
+        <TooltipProvider delayDuration={100}>
+          <LoaderProvider>
+            <Preloader />
+            <Navbar />
+            <ClientSmoothScroller>{children}</ClientSmoothScroller>
+            <Toaster theme="dark" position="bottom-right" richColors />
+          </LoaderProvider>
+        </TooltipProvider>
       </body>
     </html>
   );

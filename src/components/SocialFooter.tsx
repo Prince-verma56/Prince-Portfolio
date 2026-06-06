@@ -199,8 +199,9 @@ export default function SocialFooter() {
           <div className="flex flex-col gap-4 footer-fade">
             <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-2">(Socials)</span>
             {[
-              { name: "LinkedIn", url: "https://www.linkedin.com/in/ritikarawat01?utm_source=share_via&utm_content=profile&utm_medium=member_android" },
-              { name: "Instagram", url: "https://www.instagram.com/ritika_.rawat._?igsh=NGJ3bGNxdThxZHlw" }
+              { name: "LinkedIn", url: "https://www.linkedin.com/in/prince-verma26/" },
+              { name: "Instagram", url: "https://www.instagram.com/its.prince_charley/" },
+              { name: "GitHub", url: "https://github.com/Prince-verma56" }
             ].map((social) => (
               <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#f04e00] font-medium transition-colors flex items-center gap-1 group w-fit">
                 {social.name} <span className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-xs">↗</span>

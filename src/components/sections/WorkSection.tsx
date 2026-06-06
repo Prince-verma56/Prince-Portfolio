@@ -4,13 +4,12 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Image from "next/image";
-import Link from "next/link"; // Imported Next.js Link
+import Link from "next/link";
 import { FollowerPointerCard } from "../FollowerPointerCard";
-import { useLoader } from "@/context/LoaderContext"; // Adjust path as needed
+import { useLoader } from "@/context/LoaderContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Updated with proper internal routing links
 const projects = [
   {
     id: "01",
@@ -54,7 +53,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
   const { isLoaderFinished } = useLoader();
 
   useGSAP(() => {
-    // 1. ALWAYS RUN INITIAL STATES IMMEDIATELY (UNCONDITIONAL)
+    // 1. Initial State Initialization
     gsap.set(".mask-title", { y: "110%", opacity: 0 });
     itemRefs.current.forEach((item) => {
       if (!item) return;
@@ -66,7 +65,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
       gsap.set(menuItems, { opacity: 0, x: -20 });
     });
 
-    // 2. Section Clip-Path (Slant -> Flat) - Only on scroll page
+    // 2. Section Clip-Path (Slant -> Flat)
     if (!isStandalonePage) {
       gsap.fromTo(
         sectionRef.current,
@@ -83,29 +82,29 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
         }
       );
 
-      // Parallax: Content sliding up smoothly
+      // Velvet Parallax Smooth Slide
       gsap.fromTo(
         contentRef.current,
-        { y: 150 },
+        { y: 120 },
         {
           y: 0,
           ease: "none",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top bottom",
-            end: "top 15%",
-            scrub: 1.5,
+            end: "top 10%",
+            scrub: 1,
           },
         }
       );
     }
 
-    // 3. Main Title Mask Reveal
+    // 3. Optimized Main Title Reveal
     const titleTl = gsap.timeline({ paused: true });
     titleTl.to(".mask-title", {
       y: "0%",
       opacity: 1,
-      duration: 1.5,
+      duration: 0.9,
       ease: "power4.out",
     });
     titleTlRef.current = titleTl;
@@ -113,12 +112,12 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
     if (!isStandalonePage) {
       ScrollTrigger.create({
         trigger: ".mask-title-wrapper",
-        start: "top 85%",
+        start: "top 92%", // Triggers sooner for a responsive feel
         onEnter: () => titleTl.play()
       });
     }
 
-    // 4. Per-Project Timeline Animations
+    // 4. Ultra-Premium Project Reveal Sequences
     itemRefs.current.forEach((item, index) => {
       if (!item) return;
 
@@ -128,21 +127,39 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
       const imgInner = item.querySelector(".img-inner");
 
       const tl = gsap.timeline({ paused: true });
-      tl.to(imgWrap, { clipPath: "inset(0% 0 0 0)", duration: 1.5, ease: "power3.inOut" })
-        .to(maskedTexts, { y: "0%", opacity: 1, duration: 1.2, stagger: 0.1, ease: "power4.out" }, "-=1")
-        .to(menuItems, { opacity: 1, x: 0, stagger: 0.1, duration: 0.8, ease: "power2.out" }, "-=0.8");
+      
+      // Accelerated duration and switched to 'power3.out' for snappier initial reaction
+      tl.to(imgWrap, { 
+        clipPath: "inset(0% 0 0 0)", 
+        duration: 0.9, 
+        ease: "power3.out" 
+      })
+      .to(maskedTexts, { 
+        y: "0%", 
+        opacity: 1, 
+        duration: 0.7, 
+        stagger: 0.04, 
+        ease: "power4.out" 
+      }, "-=0.75") // Tight overlap execution
+      .to(menuItems, { 
+        opacity: 1, 
+        x: 0, 
+        stagger: 0.03, 
+        duration: 0.5, 
+        ease: "power2.out" 
+      }, "-=0.5");
 
       if (isStandalonePage && index === 0) {
         firstProjectTlRef.current = tl;
       } else {
         ScrollTrigger.create({
           trigger: item,
-          start: "top 75%",
+          start: "top 88%", // Raised trigger line so animations kick off immediately
           onEnter: () => tl.play()
         });
       }
 
-      // ── GSAP PINNING FOR LEFT COLUMN ──
+      // Left Column Pinning Mechanics
       const leftCol = item.querySelector(".left-col");
       const rightCol = item.querySelector(".right-col");
       
@@ -151,15 +168,16 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
         if (leftCol && rightCol) {
           ScrollTrigger.create({
             trigger: leftCol,
-            start: "top 140px", // Defines how far from the top it should pin (below navbar)
+            start: "top 140px",
             endTrigger: rightCol,
-            end: "bottom bottom", // Unpins exactly when the right column finishes scrolling
+            end: "bottom bottom",
             pin: true,
-            pinSpacing: false, // Ensures it doesn't push the right column down
+            pinSpacing: false,
           });
         }
       });
 
+      // Liquid Drag Parallax on Images
       if (imgInner) {
         gsap.fromTo(
           imgInner,
@@ -171,7 +189,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
               trigger: imgWrap,
               start: "top bottom",
               end: "bottom top",
-              scrub: true,
+              scrub: 1, // Smooth numeric scrub catch-up for clean dragging look
             },
           }
         );
@@ -180,7 +198,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
 
   }, { scope: sectionRef, dependencies: [isStandalonePage] });
 
-  // 5. Play timelines and refresh ScrollTriggers when loader finishes
+  // 5. Playback & Validation Cycle
   useEffect(() => {
     if (isLoaderFinished) {
       if (isStandalonePage) {
@@ -270,7 +288,6 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                   </div>
                 </div>
 
-                {/* ── UPDATED: Wrapped with Next.js <Link> & Custom Follower ── */}
                 <Link href={project.link} className="block w-full">
                   <FollowerPointerCard title="View Project" className="w-full">
                     <div className="img-wrap relative w-full aspect-[4/3] md:aspect-[16/10] overflow-hidden rounded-md group bg-neutral-900" style={{ clipPath: "inset(100% 0 0 0)" }}>
