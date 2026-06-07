@@ -73,7 +73,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
 
   // ── 1. MASTER ENTRANCE & PINNING LOGIC ──
   useGSAP(() => {
-    if (!sectionRef.current) return;
+    if (!isLoaderFinished || !sectionRef.current) return;
 
     // ── Restored: Section Clip-Path (Slant -> Flat) ──
     if (!isStandalonePage) {
@@ -124,14 +124,32 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
         }
       );
 
-      // Slide and fade-in content elements (columns) and background number
+      // ── NEW: Connected Side Entrance (Go Aside) ──
+      // Slide and fade-in left column from the left
       gsap.fromTo(
-        [".work-left-col", ".showcase-container"],
-        { opacity: 0 },
+        ".work-left-col",
+        { x: -120, opacity: 0 },
         {
+          x: 0,
           opacity: 1,
-          ease: "none",
-          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+            end: "top 15%",
+            scrub: 1,
+          }
+        }
+      );
+
+      // Slide and fade-in right showcase from the right
+      gsap.fromTo(
+        ".showcase-container",
+        { x: 120, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          ease: "power2.out",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 80%",
@@ -235,7 +253,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
       ease: "sine.inOut",
     });
 
-  }, { scope: sectionRef, dependencies: [isStandalonePage] });
+  }, { scope: sectionRef, dependencies: [isStandalonePage, isLoaderFinished] });
 
   // ── 2. CINEMATIC CROSSFADES (Triggered by activeIndex change) ──
   useGSAP(() => {

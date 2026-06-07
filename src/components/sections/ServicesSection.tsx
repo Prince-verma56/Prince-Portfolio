@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useLoader } from "@/context/LoaderContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,11 +50,13 @@ export default function ServicesSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const { isLoaderFinished } = useLoader();
   
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   // ── 1. Initial Scroll, Entrance & Parallax Animations ──
   useGSAP(() => {
+    if (!isLoaderFinished || !sectionRef.current) return;
     // Section un-slanting
     gsap.fromTo(
       sectionRef.current,
@@ -134,7 +137,7 @@ export default function ServicesSection() {
       }
     });
 
-  }, { scope: sectionRef, dependencies: [] });
+  }, { scope: sectionRef, dependencies: [isLoaderFinished] });
 
   // ── 2. Accordion Interaction Animations ──
   useGSAP(() => {

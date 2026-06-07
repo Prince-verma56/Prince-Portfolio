@@ -8,7 +8,7 @@ import { Highlighter } from "../ui/highlighter";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ── THE PRODUCT FRAMEWORK DATA ──
+// ── 1. THE DATA ──
 const phases = [
   {
     id: "01",
@@ -47,11 +47,8 @@ const phases = [
     details: ["Wireframes", "Layouts", "Component Maps"],
     visual: (
       <div className="relative w-full h-[300px] flex items-center justify-center">
-        {/* Figma-like interface drawing itself */}
         <div className="w-[600px] h-[340px] border border-white/10 rounded-lg flex flex-col eco-item opacity-0 overflow-hidden relative">
-          {/* Construction Grid Overlay */}
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:2rem_2rem]" />
-
           <div className="w-full h-10 border-b border-white/10 flex items-center px-4 gap-3 bg-[#0a0a0a]/50">
             <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
             <div className="w-32 h-2 rounded-full bg-white/10 mx-auto" />
@@ -158,7 +155,6 @@ const phases = [
     details: ["Infrastructure", "Deployments", "Monitoring"],
     visual: (
       <div className="relative w-full h-[300px] flex items-center justify-center">
-        {/* Radar / Scaling Infrastructure */}
         <div className="relative w-full h-full flex items-center justify-center">
           {[...Array(4)].map((_, i) => (
             <div
@@ -184,62 +180,13 @@ const phases = [
   }
 ];
 
-export default function TechStackSection() {
-  const containerRef = useRef<HTMLElement>(null);
-  const { isLoaderFinished } = useLoader();
-  const [activeIndex, setActiveIndex] = useState(0);
+// ── 2. THE VISUAL ENGINE (Extracted Component) ──
+// This component ONLY handles running GSAP timelines when activeIndex changes.
+// It does NOT care about scrolling.
+function PhaseVisuals({ activeIndex }: { activeIndex: number }) {
   const prevIndexRef = useRef(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // ── MASTER ENTRANCE & PINNING LOGIC ──
-  useGSAP(() => {
-    if (!isLoaderFinished || !containerRef.current) return;
-
-    // Preserve the Slant entrance glow & unslanting
-    gsap.fromTo(
-      containerRef.current,
-      { clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" },
-      {
-        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top bottom",
-          end: "top top",
-          scrub: 1,
-        }
-      }
-    );
-
-    ScrollTrigger.create({
-      trigger: containerRef.current,
-      start: "top top",
-      end: `+=${phases.length * 150}vh`,
-      pin: true,
-      pinSpacing: true,
-      anticipatePin: 1,
-      // When PhilosophyJourneySection starts to enter, drop our z-index
-      // so it cleanly slides over us
-      onLeave: () => {
-        gsap.set(containerRef.current, { zIndex: 5 });
-      },
-      onEnterBack: () => {
-        gsap.set(containerRef.current, { zIndex: 10 });
-      },
-      onUpdate: (self) => {
-        const index = Math.min(
-          phases.length - 1,
-          Math.floor(self.progress * phases.length)
-        );
-        setActiveIndex(prev => (prev !== index ? index : prev));
-      }
-    });
-
-    // ⚠️  activeIndex intentionally NOT here — adding it re-creates the
-    // ScrollTrigger pin on every scroll tick, causing duplicate fixed-position
-    // elements and z-index chaos.
-  }, { scope: containerRef, dependencies: [isLoaderFinished] });
-
-  // ── CINEMATIC SCROLL-TRIGGERED CROSSFADES ──
   useGSAP(() => {
     const prev = prevIndexRef.current;
     if (prev === activeIndex) return;
@@ -253,21 +200,18 @@ export default function TechStackSection() {
     tl.set(`.phase-content-${activeIndex}`, { opacity: 1, zIndex: 10 }, 0.4);
     tl.set(`.phase-content-${prev}`, { zIndex: 1 }, 0.4);
 
-    // Title 1 Slide Up
     tl.fromTo(`.phase-content-${activeIndex} .title-top`,
       { y: 30, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.6, ease: "expo.out" },
       0.4
     );
 
-    // Title 2 Clip Reveal
     tl.fromTo(`.phase-content-${activeIndex} .title-bottom`,
       { clipPath: "inset(100% 0 0 0)", y: 10 },
       { clipPath: "inset(0% 0 0 0)", y: 0, duration: 0.8, ease: "expo.out" },
       0.5
     );
 
-    // Reveal Ecosystem Items (Scale/Fade)
     const ecoItems = gsap.utils.toArray(`.phase-content-${activeIndex} .eco-item`);
     if (ecoItems.length) {
       tl.fromTo(ecoItems,
@@ -277,59 +221,130 @@ export default function TechStackSection() {
       );
     }
 
-    // Reveal Ecosystem Drawings (SVG Paths & Skeletons)
     const drawPaths = gsap.utils.toArray(`.phase-content-${activeIndex} .draw-path`);
     if (drawPaths.length) {
-      tl.to(drawPaths,
-        { strokeDashoffset: 0, duration: 1, stagger: 0.1, ease: "power2.inOut" },
-        0.7
-      );
+      tl.to(drawPaths, { strokeDashoffset: 0, duration: 1, stagger: 0.1, ease: "power2.inOut" }, 0.7);
     }
     const drawBoxes = gsap.utils.toArray(`.phase-content-${activeIndex} .draw-box`);
     if (drawBoxes.length) {
-      tl.to(drawBoxes,
-        { scaleX: 1, scaleY: 1, duration: 0.8, stagger: 0.05, ease: "expo.out" },
-        0.7
-      );
+      tl.to(drawBoxes, { scaleX: 1, scaleY: 1, duration: 0.8, stagger: 0.05, ease: "expo.out" }, 0.7);
     }
 
-    // Scale Animation specific to Scene 5
     if (activeIndex === 4) {
       const scaleCircles = gsap.utils.toArray(`.phase-content-${activeIndex} .scale-circle`);
       if (scaleCircles.length) {
-        tl.to(scaleCircles,
-          { opacity: 0.2, scale: 1.2, duration: 1.5, stagger: 0.15, ease: "power2.out" },
-          0.6
-        );
+        tl.to(scaleCircles, { opacity: 0.2, scale: 1.2, duration: 1.5, stagger: 0.15, ease: "power2.out" }, 0.6);
       }
     }
 
     prevIndexRef.current = activeIndex;
-  }, [activeIndex]);
+  }, { scope: containerRef, dependencies: [activeIndex] }); // ONLY dependent on activeIndex
 
   return (
-    <div className="w-full relative z-10 drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]" style={{ isolation: 'isolate' }}>
-      <section
-        ref={containerRef}
-        id="techstack"
-        className="relative w-full h-screen bg-[#050505] overflow-hidden will-change-transform flex flex-col items-center"
-        style={{
-          clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
-        }}
-      >
-        {/* ── Ultra Premium Edge Lighting ── */}
-        <div className="absolute top-[-150px] left-[50%] -translate-x-1/2 w-[60%] h-[300px] bg-[#f04e00] opacity-[0.12] blur-[120px] pointer-events-none rounded-[100%]" />
+    <div ref={containerRef} className="relative w-full max-w-[1000px] h-full mx-auto flex flex-col items-center justify-center z-10">
+      {phases.map((phase, i) => (
+        <div
+          key={`phase-${phase.id}`}
+          className={`phase-content-${i} absolute inset-0 w-full flex flex-col items-center justify-center will-change-transform`}
+          style={{ opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 10 : 1, pointerEvents: i === activeIndex ? "auto" : "none" }}
+        >
+          <div className="text-center mb-12 flex flex-col items-center">
+            <h3 className="title-top text-[clamp(2.5rem,5vw,4rem)] font-black uppercase text-white/80 leading-[1] tracking-tighter mb-[-10px]">
+              {phase.titleTop}
+            </h3>
+            <div className="title-bottom overflow-hidden">
+              <h2 className="text-[clamp(3.5rem,7vw,6rem)] font-black uppercase leading-[0.9] tracking-tighter text-white">
+                <Highlighter action="underline" color="#f04e00" strokeWidth={3} padding={4} iterations={1} isView={true}>
+                  {phase.titleBottom}
+                </Highlighter>
+              </h2>
+            </div>
+          </div>
+          <div className="w-full mb-12">{phase.visual}</div>
+          <div className="flex gap-8 items-center justify-center eco-item opacity-0 translate-y-4">
+            {phase.details.map((detail, idx) => (
+              <div key={idx} className="flex items-center gap-3">
+                <span className="w-1 h-1 rounded-full bg-white/30" />
+                <span className="font-mono text-xs text-white/60 tracking-widest uppercase">{detail}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
-        {/* ── CINEMATIC DEEP BACKGROUND ── */}
+
+// ── 3. THE MAIN LAYOUT SHELL (Scroll Math) ──
+export default function TechStackSection() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const { isLoaderFinished } = useLoader();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Unbreakable Pinning Logic
+  useGSAP(() => {
+    if (!isLoaderFinished || !wrapperRef.current || !sectionRef.current) return;
+
+    // Slant entrance logic
+    gsap.fromTo(
+      sectionRef.current,
+      { clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" },
+      {
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+        ease: "none",
+        scrollTrigger: {
+          trigger: wrapperRef.current,
+          start: "top bottom",
+          end: "top top",
+          scrub: 1,
+        }
+      }
+    );
+
+    // SCREEN MATH:
+    // 5 Phases + 8 Extra "Dead Zone" Screens = 13 Total Screens
+    const TOTAL_PHASES = phases.length;
+    const DEAD_ZONE_SCREENS = 8;
+    const TOTAL_SCREENS = TOTAL_PHASES + DEAD_ZONE_SCREENS;
+
+    ScrollTrigger.create({
+      trigger: wrapperRef.current,
+      start: "top top",
+      end: `+=${TOTAL_SCREENS * 200}vh`, 
+      pin: true,
+      pinSpacing: true, 
+      anticipatePin: 1,
+      
+      onUpdate: (self) => {
+        const currentScreen = Math.floor(self.progress * TOTAL_SCREENS);
+        const targetIndex = Math.max(0, Math.min(TOTAL_PHASES - 1, currentScreen));
+        
+        setActiveIndex(prev => (prev !== targetIndex ? targetIndex : prev));
+      }
+    });
+
+  }, { scope: wrapperRef, dependencies: [isLoaderFinished] });
+
+  return (
+    <div ref={wrapperRef} className="relative w-full z-10 bg-[#050505]">
+      <section
+        ref={sectionRef}
+        id="techstack"
+        className="relative w-full h-screen overflow-hidden will-change-transform flex flex-col items-center"
+      >
+        {/* Decor */}
+        <div className="absolute top-[-150px] left-[50%] -translate-x-1/2 w-[60%] h-[300px] bg-[#f04e00] opacity-[0.12] blur-[120px] pointer-events-none rounded-[100%]" />
         <div className="absolute inset-0 z-0 opacity-15 pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
-        {/* ── MICRO DETAILS (Corners) ── */}
+        {/* Micro Labels */}
         <div className="absolute top-10 left-10 text-white/30 font-mono text-[10px] tracking-[0.3em] uppercase z-20">PHASE {phases[activeIndex].id}</div>
         <div className="absolute top-10 right-10 text-white/30 font-mono text-[10px] tracking-[0.3em] uppercase z-20">ACTIVE PROCESS</div>
         <div className="absolute bottom-10 left-10 text-[#f04e00]/60 font-mono text-[10px] tracking-[0.3em] uppercase z-20">SCROLL TO EXPLORE</div>
         <div className="absolute bottom-10 right-10 text-white/30 font-mono text-[10px] tracking-[0.3em] uppercase z-20">2026 SYSTEM</div>
 
-        {/* ── PROGRESS INDICATOR (Left Sidebar) ── */}
+        {/* Left Sidebar Progress */}
         <div className="absolute left-10 top-1/2 -translate-y-1/2 flex flex-col gap-6 z-20 hidden lg:flex">
           {phases.map((phase, i) => {
             const isActive = i === activeIndex;
@@ -351,54 +366,14 @@ export default function TechStackSection() {
           })}
         </div>
 
-        {/* ── MASSIVE BACKGROUND TYPOGRAPHY ── */}
+        {/* Massive Background Text */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-black text-white/[0.015] whitespace-nowrap pointer-events-none z-0 tracking-tighter transition-all duration-1000 ease-out select-none mix-blend-screen">
           {phases[activeIndex].bgText}
         </div>
 
-        {/* ── CENTERED EVOLVING COMPOSITION ── */}
-        <div className="relative w-full max-w-[1000px] h-full mx-auto flex flex-col items-center justify-center z-10">
+        {/* Render the Isolated Visuals Component */}
+        <PhaseVisuals activeIndex={activeIndex} />
 
-          {phases.map((phase, i) => (
-            <div
-              key={`phase-${phase.id}`}
-              className={`phase-content-${i} absolute inset-0 w-full flex flex-col items-center justify-center will-change-transform`}
-              style={{ opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 10 : 1, pointerEvents: i === activeIndex ? "auto" : "none" }}
-            >
-
-              {/* 1. The Centered Headline */}
-              <div className="text-center mb-12 flex flex-col items-center">
-                <h3 className="title-top text-[clamp(2.5rem,5vw,4rem)] font-black uppercase text-white/80 leading-[1] tracking-tighter mb-[-10px]">
-                  {phase.titleTop}
-                </h3>
-                <div className="title-bottom overflow-hidden">
-                  <h2 className="text-[clamp(3.5rem,7vw,6rem)] font-black uppercase leading-[0.9] tracking-tighter text-white">
-                    <Highlighter action="underline" color="#f04e00" strokeWidth={3} padding={4} iterations={1} isView={true}>
-                      {phase.titleBottom}
-                    </Highlighter>
-                  </h2>
-                </div>
-              </div>
-
-              {/* 2. The Ecosystem Animation */}
-              <div className="w-full mb-12">
-                {phase.visual}
-              </div>
-
-              {/* 3. Details / Micro Labels */}
-              <div className="flex gap-8 items-center justify-center eco-item opacity-0 translate-y-4">
-                {phase.details.map((detail, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <span className="w-1 h-1 rounded-full bg-white/30" />
-                    <span className="font-mono text-xs text-white/60 tracking-widest uppercase">{detail}</span>
-                  </div>
-                ))}
-              </div>
-
-            </div>
-          ))}
-
-        </div>
       </section>
     </div>
   );

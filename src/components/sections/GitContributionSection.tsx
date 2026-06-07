@@ -8,6 +8,7 @@ import { ContributionGraph, type ContributionData } from "../ui/smoothui/contrib
 import { Button } from "@/components/ui/button";
 import SlideTextButton from "@/components/kokonutui/slide-text-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLoader } from "@/context/LoaderContext";
 
 import {
     Dialog,
@@ -47,10 +48,11 @@ const generateMockData = (): ContributionData[] => {
 
 export default function GitContributionSection() {
     const sectionRef = useRef<HTMLElement>(null);
+    const { isLoaderFinished } = useLoader();
     const mockData = useMemo(() => generateMockData(), []);
 
     useGSAP(() => {
-        if (!sectionRef.current) return;
+        if (!isLoaderFinished || !sectionRef.current) return;
 
         // ── NEW: Section Un-slanting (Sheet Effect) ──
         gsap.fromTo(
@@ -133,7 +135,7 @@ export default function GitContributionSection() {
             }
         );
 
-    }, { scope: sectionRef });
+    }, { scope: sectionRef, dependencies: [isLoaderFinished] });
 
     return (
         <div className="w-full relative z-20 drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]">
