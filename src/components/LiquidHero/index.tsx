@@ -53,6 +53,8 @@ export default function LiquidHero({
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
+  // Initialize isTouch immediately before any effects run
+  const isTouchRef = useRef(false);
 
   const mouseCoordsRef = useRef({ x: 0, y: 0 });
   const currentCoordsRef = useRef({ x: 0, y: 0 });
@@ -67,32 +69,60 @@ export default function LiquidHero({
   const isHoveredRef = useRef(false);
   const isPlayingRef = useRef(isPlaying);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [videoReady, setVideoReady] = useState(false);
+
+  // Initialize isTouch IMMEDIATELY before any other effects
+  useEffect(() => {
+    const touch = window.matchMedia("(pointer: coarse)").matches;
+    setIsTouch(touch);
+    isTouchRef.current = touch;
+  }, []);
+
+  // Initialize video element when component mounts
+  useEffect(() => {
+    if (!videoUrl) return;
+
+    const video = document.createElement('video');
+    video.src = videoUrl;
+    video.loop = true;
+    video.muted = true;
+    video.crossOrigin = "anonymous";
+    video.playsInline = true;
+    video.preload = "auto";
+    videoRef.current = video;
+
+    // Play video as soon as it's ready
+    const onCanPlay = () => {
+      setVideoReady(true);
+      if (isPlaying) {
+        video.play().catch(err => console.log("Video autoplay blocked:", err));
+      }
+    };
+
+    video.addEventListener('canplay', onCanPlay);
+    video.load();
+
+    return () => {
+      video.removeEventListener('canplay', onCanPlay);
+      video.pause();
+      video.src = "";
+      videoRef.current = null;
+    };
+  }, [videoUrl]);
 
   useEffect(() => {
     isPlayingRef.current = isPlaying;
-    
-    // Manage video playback state
     const video = videoRef.current;
-    if (video) {
+    if (video && videoReady) {
       if (isPlaying) {
-        // Add a slight delay to allow the fade-in animation to progress before starting the video
-        const timer = setTimeout(() => {
-          const playPromise = video.play();
-          if (playPromise !== undefined) {
-            playPromise.catch((e) => {
-              // Ignore AbortError which happens when React unmounts quickly
-              if (e.name !== 'AbortError') {
-                console.error("Video play failed:", e);
-              }
-            });
-          }
-        }, 800); // 800ms delay matches the visual fade effect well
-        return () => clearTimeout(timer);
+        video.play().catch(err => console.log("Video play failed:", err));
       } else {
         video.pause();
       }
     }
-  }, [isPlaying]);
+  }, [isPlaying, videoReady]);
+
+
 
   useEffect(() => {
     const mountElement = mountRef.current;
@@ -125,31 +155,27 @@ export default function LiquidHero({
     let texture: THREE.Texture;
     let videoElement: HTMLVideoElement | null = null;
 
-    if (videoUrl) {
-      videoElement = document.createElement('video');
-      videoRef.current = videoElement;
-      videoElement.src = videoUrl;
-      videoElement.loop = true;
-      videoElement.muted = true;
-      videoElement.crossOrigin = "anonymous";
-      videoElement.playsInline = true;
-      videoElement.load(); // Preload the video, but don't play it yet!
-      
+    if (videoUrl && videoRef.current) {
+      videoElement = videoRef.current;
       texture = new THREE.VideoTexture(videoElement);
       texture.magFilter = THREE.LinearFilter;
       texture.minFilter = THREE.LinearFilter;
       texture.wrapS = THREE.ClampToEdgeWrapping;
       texture.wrapT = THREE.ClampToEdgeWrapping;
       texture.generateMipmaps = false;
+      texture.needsUpdate = true;
 
-      videoElement.addEventListener('loadedmetadata', () => {
-        if (materialRef.current?.uniforms?.uImageResolution) {
+      const updateImageRes = () => {
+        if (materialRef.current?.uniforms?.uImageResolution && videoElement) {
           materialRef.current.uniforms.uImageResolution.value.set(
-            videoElement!.videoWidth,
-            videoElement!.videoHeight
+            videoElement.videoWidth || 1920,
+            videoElement.videoHeight || 1080
           );
         }
-      });
+      };
+
+      videoElement.addEventListener('loadedmetadata', updateImageRes);
+      videoElement.addEventListener('loadeddata', updateImageRes);
     } else if (imageUrl) {
       const textureLoader = new THREE.TextureLoader();
       texture = textureLoader.load(imageUrl, (loadedTexture) => {
@@ -160,12 +186,11 @@ export default function LiquidHero({
         loadedTexture.generateMipmaps = true;
         loadedTexture.needsUpdate = true;
 
-        // Defer updating image dimensions in shader uniforms to prevent ReferenceError if load runs synchronously
         setTimeout(() => {
           if (materialRef.current?.uniforms?.uImageResolution) {
             materialRef.current.uniforms.uImageResolution.value.set(
-              loadedTexture.image.width,
-              loadedTexture.image.height
+              loadedTexture.image.width || 1920,
+              loadedTexture.image.height || 1080
             );
           }
         }, 0);
@@ -323,7 +348,7 @@ export default function LiquidHero({
     window.addEventListener("resize", handleResize);
 
     // Event handlers ONLY if NOT a touch device!
-    if (!isTouch) {
+    if (!isTouchRef.current) {
       const handleMouseMove = (event: MouseEvent) => {
         const rect = renderer.domElement.getBoundingClientRect();
         const x = (event.clientX - rect.left) / rect.width;
@@ -364,6 +389,7 @@ export default function LiquidHero({
           materialRef.current.uniforms.hoverIntensity.value;
         materialRef.current.uniforms.hoverIntensity.value +=
           (targetIntensity - currentIntensity) * transitionSpeed;
+        materialRef.current.uniforms.texture1.value.needsUpdate = true;
       }
 
       if (rendererRef.current && sceneRef.current) {
@@ -408,22 +434,16 @@ export default function LiquidHero({
     waveFrequency,
     rippleFrequency,
     distortionAmount,
-    isTouch,
   ]);
 
-  // Removed Custom Cursor LERP animation as per user request to rely on liquid ripple effect directly.
-  useEffect(() => {
-    setIsTouch(window.matchMedia("(pointer: coarse)").matches);
-  }, []);
-
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isTouch) {
+    if (!isTouchRef.current) {
       mouseCoordsRef.current = { x: e.clientX, y: e.clientY };
     }
   };
 
   const handleMouseEnter = (e: React.MouseEvent) => {
-    if (!isTouch) {
+    if (!isTouchRef.current) {
       setIsHovered(true);
       isHoveredRef.current = true;
       mouseCoordsRef.current = { x: e.clientX, y: e.clientY };

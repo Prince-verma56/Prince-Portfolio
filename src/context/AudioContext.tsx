@@ -115,26 +115,21 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
   const startAmbientAudio = useCallback(async () => {
     const el = ambientRef.current;
-    if (!el || !audioEnabledRef.current || isPlayingRef.current) return;
+    if (!el || !audioEnabledRef.current) return;
 
     el.volume = 0;
+    el.muted = false;
 
     try {
       await el.play();
       hasStartedRef.current = true;
       setIsPlaying(true);
       if (!mutedRef.current) fadeIn(volumeRef.current);
-    } catch {
-      // Sound blocked — try muted (Chrome allows this)
-      try {
-        el.muted = true;
-        await el.play();
-        hasStartedRef.current = true;
-        setIsPlaying(true);
-        // stays muted until first user gesture (handled below)
-      } catch {
-        console.log("[Audio] Autoplay fully blocked. Waiting for user gesture.");
-      }
+    } catch (e) {
+      // If autoplay fails, reset state so next attempt can try again
+      hasStartedRef.current = false;
+      setIsPlaying(false);
+      console.log("[Audio] Autoplay blocked, waiting for user gesture.");
     }
   }, [fadeIn]);
 
@@ -147,6 +142,12 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const setVolume  = useCallback((v: number) => setVolumeState(clamp(v)), []);
 
   const playSfx = useCallback((type: SFXType) => {
+    // If ambient audio not started yet, start it first (uses user gesture from this interaction)
+    const el = ambientRef.current;
+    if (el && audioEnabledRef.current && (el.paused || !hasStartedRef.current)) {
+      startAmbientAudio();
+    }
+
     if (mutedRef.current || !audioEnabledRef.current) return;
     const pool  = sfxPoolRef.current.get(type);
     if (!pool?.length) return;
@@ -155,7 +156,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     audio.currentTime = 0;
     audio.volume      = clamp(volumeRef.current * 0.6);
     audio.play().catch(() => {});
-  }, []);
+  }, [startAmbientAudio]);
 
   // Init once
   useEffect(() => {
@@ -211,27 +212,22 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       const el = ambientRef.current;
       if (!el || !audioEnabledRef.current) return;
 
-      if (el.paused) {
-        // Never started — start now
-        if (!isPlayingRef.current) startAmbientAudio();
-      } else if (el.muted) {
-        // Was playing muted (Chrome) — restart from beginning with sound
-        el.currentTime = 0;
-        el.muted       = false;
-        if (!mutedRef.current) fadeIn(volumeRef.current);
+      if (el.paused || !hasStartedRef.current) {
+        // Never started — start now with one single gesture!
+        startAmbientAudio();
       }
     };
 
-    window.addEventListener("click",      onGesture, { passive: true });
-    window.addEventListener("keydown",    onGesture, { passive: true });
-    window.addEventListener("touchstart", onGesture, { passive: true });
+    window.addEventListener("click",      onGesture, { passive: true, once: true });
+    window.addEventListener("keydown",    onGesture, { passive: true, once: true });
+    window.addEventListener("touchstart", onGesture, { passive: true, once: true });
 
     return () => {
       window.removeEventListener("click",      onGesture);
       window.removeEventListener("keydown",    onGesture);
       window.removeEventListener("touchstart", onGesture);
     };
-  }, [fadeIn, startAmbientAudio]);
+  }, [startAmbientAudio]);
 
   return (
     <AudioContext.Provider value={{ volume, muted, audioEnabled, isPlaying, setVolume, toggleMute, playSfx, togglePlayPause, startAmbientAudio }}>
