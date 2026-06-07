@@ -49,13 +49,16 @@ export function FollowerPointerCard({ children, title = "View Project", classNam
     }
   }, [isHovered]);
 
+  const hasPosition = className.includes("absolute") || className.includes("relative") || className.includes("fixed");
+  const positionClass = hasPosition ? "" : "relative";
+
   return (
     <div
       ref={containerRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       // Hides the default cursor completely while hovering this container
-      className={`relative cursor-none ${className}`}
+      className={`${positionClass} cursor-none ${className}`}
     >
       {children}
       

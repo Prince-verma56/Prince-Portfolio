@@ -226,7 +226,7 @@ export default function ContactSection({ isStandalonePage = false }: ContactSect
       ref={sectionRef}
       id="contact"
       className={`relative z-30 bg-[#050505] text-white pb-16 px-6 md:px-12 lg:px-20 overflow-hidden w-full will-change-transform ${
-        isStandalonePage ? "pt-8" : "-mt-16 md:-mt-24 pt-32 md:pt-48"
+        isStandalonePage ? "pt-28 md:pt-36 lg:pt-44" : "-mt-16 md:-mt-24 pt-32 md:pt-48"
       }`}
       style={isStandalonePage ? {} : {
         clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
@@ -369,7 +369,7 @@ export default function ContactSection({ isStandalonePage = false }: ContactSect
           </div>
 
           {/* SHARED Accordion Component */}
-          <div className="flex flex-col border border-white/10 rounded-2xl bg-[#0a0a0a] shadow-2xl divide-y divide-white/10">
+          <div className="flex flex-col border border-white/10 rounded-2xl bg-[#0a0a0a] shadow-2xl overflow-hidden">
             {faqs.map((faq, index) => (
               <Accordion 
                 key={index} 

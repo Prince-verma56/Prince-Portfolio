@@ -101,7 +101,7 @@ export default function ProjectDetailLayout({ project }: { project: ProjectData 
   }, [isLoaderFinished]);
 
   return (
-    <div ref={containerRef} className="bg-[#050505] min-h-screen text-white pt-8">
+    <div ref={containerRef} className="bg-[#050505] min-h-screen text-white pt-28 md:pt-36 lg:pt-44">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 flex flex-col gap-32 pb-32">
         
         {/* ── 1. HERO SECTION (Title & Meta) ── */}

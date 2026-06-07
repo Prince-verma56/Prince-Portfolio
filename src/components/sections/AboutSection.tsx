@@ -158,15 +158,16 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
   }, [isLoaderFinished, isStandalonePage]);
 
   return (
-    <div className="w-full relative z-20 drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]">
+    <div className="w-full relative drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]">
       <section
         ref={sectionRef}
         id="about"
         className={`relative w-full bg-[#050505] text-white pb-16 md:pb-32 will-change-transform overflow-hidden ${
-          isStandalonePage ? "pt-8" : "pt-24"
+          isStandalonePage ? "pt-28 md:pt-36 lg:pt-44" : "pt-24"
         } border-b border-white/5`}
-        style={isStandalonePage ? {} : {
+        style={isStandalonePage ? { zIndex: 5 } : {
           clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
+          zIndex: 5,
         }}
       >
         {/* ── Ultra Premium Edge Lighting (Left Focused) ── */}

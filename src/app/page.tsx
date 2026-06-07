@@ -46,11 +46,13 @@ export default function Home() {
 
       {/* ════════ Sections ════════ */}
       <AboutSection />
-      <PhilosophyJourneySection/>
-      <TechStackSection />
+      {/* <TechStackSection /> */}
+   
+      <PhilosophyJourneySection bgImage="https://res.cloudinary.com/dtslaveid/image/upload/v1780791430/b682bca8-66a3-47d9-aee7-2212d6dfd9a4_vlkoqv.png" />
+      {/* <TechStackSection /> */}
       <GitContributionSection />
       <ServicesSection />
-      <WorkSection />
+      <WorkSection /> 
       <AchievementsSection />
       <SocialFooter />
       <FooterSection />
