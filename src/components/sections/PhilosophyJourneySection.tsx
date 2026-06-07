@@ -7,6 +7,12 @@ import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { useGSAP } from "@gsap/react";
 import Image from "next/image";
 import { Highlighter } from "@/components/ui/highlighter";
+import { useSFX } from "@/hooks/useSFX";
+import {
+  MonitorSmartphone,
+  Cpu,
+  Database,
+} from "lucide-react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
@@ -22,6 +28,13 @@ const researchData = [
 ];
 
 export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string }) {
+  // ── SFX HOOK ──
+  const { playSfx } = useSFX();
+
+  // Tracks which progress thresholds have already fired so they only play once per scroll direction.
+  const soundTriggeredRef = useRef<Set<string>>(new Set());
+
+  // ── DOM REFS ──
   const containerRef = useRef<HTMLElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const rocketRef = useRef<HTMLDivElement>(null);
@@ -35,6 +48,9 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
 
   useGSAP(() => {
     if (!containerRef.current || !wrapperRef.current || !rocketRef.current || !pathRef.current) return;
+
+    // Reset triggered-set when leaving section entirely
+    soundTriggeredRef.current.clear();
 
     // Section un-slanting (curtain parallax entrance)
     gsap.fromTo(
@@ -88,14 +104,40 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     });
 
     // ── MASTER CINEMATIC TIMELINE ──
+    // Sound thresholds: [progressValue, id]
+    // These fire at the CENTER of each scene.
+    const SOUND_CUES: Array<[number, string]> = [
+      [0.08, "s1"],  // Scene 1 center
+      [0.24, "s2"],  // Scene 2 center
+      [0.36, "s3"],  // Scene 3 center
+      [0.57, "s4"],  // Scene 4 center
+      [0.74, "s5"],  // Scene 5 center
+      [0.91, "s6"],  // Scene 6 center
+    ];
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
         start: "top top",
-        end: "+=10000", 
-        scrub: 0.4, 
+        end: "+=10000",
+        scrub: 0.4,
         pin: true,
         anticipatePin: 1,
+        // onLeaveBack resets all cues so scrolling back up and re-scrolling retriggers sounds
+        onLeaveBack: () => soundTriggeredRef.current.clear(),
+        onUpdate: (self) => {
+          const p = self.progress;
+          for (const [threshold, id] of SOUND_CUES) {
+            if (p >= threshold && !soundTriggeredRef.current.has(id)) {
+              soundTriggeredRef.current.add(id);
+              playSfx("whoosh");
+            }
+            // Un-mark when scrolling back past the threshold
+            if (p < threshold - 0.02) {
+              soundTriggeredRef.current.delete(id);
+            }
+          }
+        },
       }
     });
 
@@ -120,23 +162,102 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     tl.to(".num-1", { yPercent: 0, opacity: 0.18, duration: 0.05, ease: "power2.out" }, 0);
 
     // ── SCENE 2: PROBLEM (0.16 to 0.33) ──
-    tl.to(".scene-2-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.08, ease: "power3.out" }, 0.14);
-    tl.to(".img-2", { opacity: 0.4, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.08, ease: "power2.out" }, 0.14);
-    tl.to(".num-2", { yPercent: 0, opacity: 0.18, duration: 0.08, ease: "power2.out" }, 0.14);
-    tl.fromTo(".research-card", 
+    tl.to(".scene-2-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.04, ease: "power3.out" }, 0.10);
+    tl.to(".img-2", { opacity: 0.4, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.04, ease: "power2.out" }, 0.10);
+    tl.to(".num-2", { yPercent: 0, opacity: 0.18, duration: 0.04, ease: "power2.out" }, 0.10);
+    tl.fromTo(".research-card",
       { y: 30, opacity: 0, scale: 0.95 },
-      { y: 0, opacity: 1, scale: 1, duration: 0.1, stagger: 0.12, ease: "power3.out" }, 
-      0.14
+      { y: 0, opacity: 1, scale: 1, duration: 0.04, stagger: 0.03, ease: "power3.out" },
+      0.10
     );
 
-    // ── SCENE 3: EXPERIENCE (0.33 to 0.50) ──
-    tl.to(".scene-3-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.08, ease: "power3.out" }, 0.31);
-    tl.to(".img-3", { opacity: 1, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.08, ease: "power2.out" }, 0.31);
-    tl.to(".num-3", { yPercent: 0, opacity: 0.18, duration: 0.08, ease: "power2.out" }, 0.31);
-    tl.fromTo(".design-frame", 
-      { y: 40, x: -20, opacity: 0 },
-      { y: 0, x: 0, opacity: 1, duration: 0.08, stagger: 0.03, ease: "power3.out" }, 
-      0.33
+
+    // ── SCENE 3: EXPERIENCE (0.26 to 0.46) ──
+
+    tl.to(
+      ".scene-3-title",
+      {
+        y: 0,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 0.10,
+        ease: "power3.out",
+      },
+      0.26
+    );
+
+    tl.to(
+      ".num-3",
+      {
+        yPercent: 0,
+        opacity: 0.18,
+        duration: 0.10,
+        ease: "power2.out",
+      },
+      0.26
+    );
+
+    tl.fromTo(
+      ".design-grid",
+      {
+        opacity: 0,
+        y: 80,
+        rotate: -12,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        rotate: -6,
+        duration: 0.10,
+        ease: "power3.out",
+      },
+      0.28
+    );
+
+    tl.fromTo(
+      ".design-wireframe",
+      {
+        opacity: 0,
+        y: 50,
+        rotate: -6,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        rotate: -2,
+        duration: 0.10,
+        ease: "power3.out",
+      },
+      0.30
+    );
+
+    tl.fromTo(
+      ".design-final",
+      {
+        opacity: 0,
+        scale: 0.94,
+        y: 30,
+      },
+      {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        duration: 0.10,
+        ease: "power3.out",
+      },
+      0.35
+    );
+
+    tl.to(
+      ".img-3",
+      {
+        opacity: 1,
+        scale: 1,
+        clipPath: "inset(0% 0% 0% 0%)",
+        duration: 0.08,
+        ease: "power2.out",
+      },
+      0.40
     );
 
     // ── SCENE 4: SOLUTION (0.50 to 0.66) ──
@@ -174,8 +295,8 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
   }, { scope: containerRef });
 
   return (
-    <section 
-      ref={containerRef} 
+    <section
+      ref={containerRef}
       className="relative h-screen w-full overflow-hidden text-white font-space will-change-transform z-30 bg-[#050505] drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]"
       style={{
         clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
@@ -193,17 +314,17 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
           />
         </div>
       )}
-        {/* ── Ultra Premium Top-Middle Glow & Separator ── */}
-        <div className="top-glow-bg absolute top-[-100px] left-1/2 -translate-x-1/2 w-[50%] h-[200px] bg-[#f04e00] opacity-[0.15] blur-[100px] pointer-events-none rounded-[100%] z-20" />
-        <div className="top-glow-line absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[2px] bg-gradient-to-r from-transparent via-[#f04e00]/90 to-transparent blur-[3px] pointer-events-none z-50" />
-        <div className="top-glow-line absolute top-0 left-1/2 -translate-x-1/2 w-[20%] h-[2px] bg-gradient-to-r from-transparent via-white/40 to-transparent blur-[1px] pointer-events-none z-50" />
-      
+      {/* ── Ultra Premium Top-Middle Glow & Separator ── */}
+      <div className="top-glow-bg absolute top-[-100px] left-1/2 -translate-x-1/2 w-[50%] h-[200px] bg-[#f04e00] opacity-[0.15] blur-[100px] pointer-events-none rounded-[100%] z-20" />
+      <div className="top-glow-line absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[2px] bg-gradient-to-r from-transparent via-[#f04e00]/90 to-transparent blur-[3px] pointer-events-none z-50" />
+      <div className="top-glow-line absolute top-0 left-1/2 -translate-x-1/2 w-[20%] h-[2px] bg-gradient-to-r from-transparent via-white/40 to-transparent blur-[1px] pointer-events-none z-50" />
+
       {/* ── CINEMATIC DEEP BACKGROUND ── */}
       <div className="absolute inset-0 z-0 opacity-15 pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-      
+
       {/* ── MASTER WRAPPER ── */}
       <div ref={wrapperRef} className="flex h-full w-[600vw] relative will-change-transform z-10">
-        
+
         {/* ── DEPTH LAYER 0: THE INTELLIGENT ROUTE ── */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 opacity-50">
           <svg viewBox="0 0 6000 1000" preserveAspectRatio="none" className="w-full h-full">
@@ -221,13 +342,13 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
 
         {/* ── SCENE 1: IDEA ── */}
         <div className="w-[100vw] h-full flex items-center justify-center relative">
-          
+
           <div className="absolute bottom-[10%] left-[8%] z-20 pointer-events-none select-none overflow-hidden">
             <span className="scene-number-text num-1 block font-mono text-5xl md:text-6xl font-black leading-none text-[#f04e00]">
               01
             </span>
           </div>
-          
+
           <div className="editorial-img img-1 absolute top-[15%] left-[20%] w-[240px] h-[320px] rounded-2xl overflow-hidden z-10 mix-blend-luminosity hidden md:block">
             <Image src="https://res.cloudinary.com/dtslaveid/image/upload/v1780617640/6fc4c5a6-3511-4f77-afa0-590a46fc9e63_lbsaxq.png" alt="Idea" fill className="object-cover" sizes="(max-width: 768px) 100vw, 240px" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] to-transparent"></div>
@@ -261,14 +382,14 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
 
         {/* ── SCENE 2: PROBLEM ── */}
         <div className="w-[100vw] h-full flex items-center justify-center relative">
-          
+
           <div className="absolute bottom-[10%] left-[8%] z-20 pointer-events-none select-none overflow-hidden">
             <span className="scene-number-text num-2 block font-mono text-5xl md:text-6xl font-black leading-none text-[#f04e00]">
               02
             </span>
           </div>
-          
-          <div 
+
+          <div
             className="editorial-img img-2 absolute inset-0 z-10 opacity-30 mix-blend-screen pointer-events-none"
             style={{
               WebkitMaskImage: "radial-gradient(circle at center, black 30%, transparent 70%)",
@@ -280,8 +401,8 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
 
           <div className="absolute inset-0 pointer-events-none z-20">
             {researchData.map((card, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className="research-card absolute border border-white/10 bg-gradient-to-br from-[#121212]/95 to-[#080808]/95 backdrop-blur-xl rounded-2xl p-6 w-[280px] md:w-[340px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-t-2 border-t-[#f04e00]/80 hover:border-[#f04e00]/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(240,78,0,0.08)] hidden md:block"
                 style={{ top: card.top, left: card.left }}
               >
@@ -306,10 +427,10 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
               ))}
             </div>
           </div>
-          
+
           <div className="z-30 w-full text-center px-10 scene-title scene-2-title">
             <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-[clamp(4.5rem,10vw,9rem)] font-black uppercase text-white leading-[0.9] tracking-tighter drop-shadow-2xl">
-              Understand <br /> 
+              Understand <br />
               <Highlighter action="circle" color="#facc15" padding={8} strokeWidth={3} isView={true}>
                 <span className="text-[#facc15]">The Problem</span>
               </Highlighter>
@@ -317,61 +438,170 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
           </div>
         </div>
 
+
         {/* ── SCENE 3: EXPERIENCE ── */}
         <div className="w-[100vw] h-full flex items-center justify-center relative">
-          
+
           <div className="absolute bottom-[10%] left-[8%] z-20 pointer-events-none select-none overflow-hidden">
             <span className="scene-number-text num-3 block font-mono text-5xl md:text-6xl font-black leading-none text-[#f04e00]">
               03
             </span>
           </div>
-          
+
           <div className="z-30 text-left w-full max-w-7xl px-8 md:px-20 scene-title scene-3-title">
-            <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-[clamp(4.5rem,10vw,9rem)] font-black uppercase leading-[0.9] tracking-tighter text-white drop-shadow-2xl">
-              Design <br /> The <br />
+            <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-[clamp(4.5rem,10vw,9rem)] font-black uppercase leading-[0.9] tracking-tighter text-white">
+              Design <br />
+              The <br />
               <Highlighter action="underline" color="#facc15" strokeWidth={3} isView={true}>
                 <span className="text-[#ff8800]">Experience</span>
               </Highlighter>
             </h2>
           </div>
 
-          <div className="absolute right-[10%] top-[20%] w-[550px] h-[450px] z-20 hidden md:block">
-            {/* Premium Figma-like Canvas Frame */}
-            <div className="design-frame absolute inset-0 border border-white/10 bg-gradient-to-br from-[#0e0e0e] to-[#050505] rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] border-t-2 border-t-[#f04e00]/80 overflow-hidden flex flex-col hover:border-[#f04e00]/40 hover:shadow-[0_30px_60px_rgba(240,78,0,0.06)] transition-all duration-500">
-              {/* Header Bar */}
-              <div className="w-full h-12 border-b border-white/10 bg-[#111] flex items-center px-4 gap-3">
-                <div className="flex gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-white/20"/><div className="w-2.5 h-2.5 rounded-full bg-white/20"/><div className="w-2.5 h-2.5 rounded-full bg-white/20"/></div>
-                <div className="w-48 h-1.5 rounded-full bg-white/10 mx-auto" />
-              </div>
-              <div className="flex flex-1">
-                {/* Sidebar */}
-                <div className="w-48 border-r border-white/10 p-4 flex flex-col gap-4">
-                  {[...Array(6)].map((_, i) => <div key={i} className="w-full h-2 rounded-full bg-white/5" />)}
+          <div className="absolute right-[8%] top-[16%] w-[620px] h-[500px] z-20 hidden md:block">
+
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-[320px] h-[320px] bg-[#f04e00]/8 blur-[120px] rounded-full" />
+            </div>
+
+            {/* BACK GRID */}
+            <div
+              className="
+      design-grid
+      absolute
+      inset-0
+      translate-x-[-60px]
+      translate-y-[30px]
+      rotate-[-6deg]
+      rounded-2xl
+      border
+      border-white/5
+      bg-[#080808]
+      overflow-hidden
+    "
+            >
+              <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px]" />
+            </div>
+
+            {/* WIREFRAME */}
+            <div
+              className="
+      design-wireframe
+      absolute
+      inset-0
+      translate-x-[-25px]
+      translate-y-[10px]
+      rotate-[-2deg]
+      rounded-2xl
+      border
+      border-white/10
+      bg-[#0c0c0c]
+      overflow-hidden
+    "
+            >
+              <div className="p-6 flex flex-col gap-4">
+
+                <div className="w-1/3 h-3 rounded-full bg-white/10" />
+
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="h-24 rounded-xl border border-white/5" />
+                  <div className="h-24 rounded-xl border border-white/5" />
                 </div>
-                {/* Content Canvas */}
-                <div className="flex-1 p-6 relative bg-[#050505] bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:10px_10px]">
-                  <div className="editorial-img img-3 w-full h-40 rounded-lg overflow-hidden border border-white/10 mb-4 relative">
-                     <Image src="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800" alt="UI Design" fill className="object-cover opacity-80" sizes="(max-width: 768px) 100vw, 400px" />
-                  </div>
-                  <div className="w-3/4 h-3 rounded-full bg-white/20 mb-3" />
-                  <div className="w-1/2 h-2 rounded-full bg-white/10" />
-                </div>
+
+                <div className="h-32 rounded-xl border border-white/5 mt-2" />
+
               </div>
             </div>
+
+            {/* FINAL UI */}
+            <div
+              className="
+      design-final
+      absolute
+      inset-0
+      rounded-2xl
+      overflow-hidden
+      border
+      border-white/10
+      border-t-2
+      border-t-[#f04e00]/80
+      bg-linear-to-br
+      from-[#0e0e0e]
+      to-[#050505]
+      shadow-[0_30px_60px_rgba(0,0,0,0.8)]
+    "
+            >
+
+              <div className="w-full h-12 border-b border-white/10 bg-[#111] flex items-center px-4 gap-3">
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                </div>
+
+                <div className="w-40 h-1.5 rounded-full bg-white/10 mx-auto" />
+              </div>
+
+              <div className="flex h-full">
+
+                <div className="w-44 border-r border-white/10 p-5">
+                  <div className="flex flex-col gap-5">
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-[#f04e00] font-mono">
+                      Research
+                    </div>
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-white/50 font-mono">
+                      Wireframes
+                    </div>
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-white/50 font-mono">
+                      Design System
+                    </div>
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-white/50 font-mono">
+                      Prototype
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex-1 p-5 bg-[#050505]">
+
+                  <div className="editorial-img img-3 relative w-full h-44 rounded-xl overflow-hidden border border-white/10">
+
+                    <Image
+                      src="https://res.cloudinary.com/dtslaveid/image/upload/v1780836436/ChatGPT_Image_Jun_7_2026_06_16_59_PM_au3b51.png"
+                      alt="Project UI"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      className="object-cover"
+                    />
+
+                  </div>
+
+                  <div className="mt-5 space-y-3">
+                    <div className="w-[80%] h-3 rounded-full bg-white/20" />
+                    <div className="w-[55%] h-2 rounded-full bg-white/10" />
+                    <div className="w-[70%] h-2 rounded-full bg-white/10" />
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
+
         </div>
 
         {/* ── SCENE 4: SOLUTION ── */}
-        <div className="w-[100vw] h-full flex items-center justify-center relative">
-          
+        <div className="w-screen h-full flex items-center justify-center relative">
+
           <div className="absolute bottom-[10%] left-[8%] z-20 pointer-events-none select-none overflow-hidden">
             <span className="scene-number-text num-4 block font-mono text-5xl md:text-6xl font-black leading-none text-[#f04e00]">
               04
             </span>
           </div>
-          
+
           {/* Engineering Image Masked background */}
-          <div className="editorial-img img-4 absolute left-[15%] top-[20%] w-[400px] h-[400px] z-10 opacity-20 pointer-events-none mix-blend-screen hidden md:block" style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}>
+          <div className="editorial-img img-4 rounded-6xl absolute left-[18%] top-[10%] w-[400px] h-[400px] z-10 opacity-20 pointer-events-none mix-blend-screen hidden md:block" style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}>
             <Image src="https://res.cloudinary.com/dtslaveid/image/upload/v1780792268/e07f0045-4c5b-4b5a-9bf9-f7dbfa403eba_e0rbq7.png" alt="Code" fill className="object-cover opacity-60" sizes="400px" />
           </div>
 
@@ -382,26 +612,65 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
               <path className="arch-line" d="M 350 400 L 500 500 L 700 400" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="1000" strokeDashoffset="1000" />
               <path className="arch-line" d="M 500 500 L 500 650 L 750 700" fill="none" stroke="rgba(240,78,0,0.5)" strokeWidth="1.5" strokeDasharray="1000" strokeDashoffset="1000" />
             </svg>
-            
+
             {/* Real Nodes with Solid Backgrounds */}
-            <div className="arch-node absolute top-[37%] left-[18%] bg-[#0c0c0c]/90 border border-white/10 px-6 py-4 rounded-xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.8)] border-l-2 border-l-[#f04e00]/60 backdrop-blur-md hover:-translate-y-0.5 hover:border-l-[#f04e00] transition-all duration-300">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#61dafb]" /> 
-              <span className="arch-label font-mono text-xs text-white/90 tracking-wide font-bold">Frontend Client</span>
+            {/* ───────────────── USER EXPERIENCE ───────────────── */}
+            <div className="arch-node absolute top-[39%] left-[14%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)] hover:border-l-[#f04e00] hover:-translate-y-0.5 transition-all duration-300">
+
+              <MonitorSmartphone className="w-4 h-4 text-[#61dafb] shrink-0" />
+
+              <div className="flex flex-col">
+                <span className="text-[9px] uppercase tracking-[0.25em] text-white/30 font-mono">
+                  Interface
+                </span>
+
+                <span className="arch-label font-mono text-xs text-white/90 tracking-wide font-bold uppercase">
+                  User Experience
+                </span>
+              </div>
+
             </div>
-            
-            <div className="arch-node absolute top-[47%] left-[30%] bg-[#0f0f0f]/90 border border-[#f04e00]/60 px-8 py-5 rounded-xl flex items-center gap-3 shadow-[0_0_40px_rgba(240,78,0,0.2)] border-t border-t-[#f04e00]/80 backdrop-blur-md hover:-translate-y-0.5 hover:shadow-[0_0_50px_rgba(240,78,0,0.3)] transition-all duration-300">
-              <span className="arch-label font-mono text-sm text-[#f04e00] tracking-wide font-black">API Gateway</span>
+
+
+            {/* ───────────────── SOLUTION ENGINE (ACTIVE) ───────────────── */}
+            <div className="arch-node absolute top-[37%] left-[34%] min-w-[230px] bg-[#0c0c0c]/95 border border-[#f04e00]/10 border-l-2 border-l-[#f04e00] px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)] hover:border-[#f04e00]/50 hover:-translate-y-0.5 transition-all duration-300">
+
+              <Cpu className="w-4 h-4 text-[#f04e00] shrink-0" />
+
+              <div className="flex flex-col">
+                <span className="text-[9px] uppercase tracking-[0.25em] text-[#f04e00]/70 font-mono">
+                  Core
+                </span>
+
+                <span className="arch-label font-mono text-xs text-white tracking-wide font-bold uppercase">
+                  Solution Engine
+                </span>
+              </div>
+
             </div>
-            
-            <div className="arch-node absolute top-[37%] left-[45%] bg-[#0c0c0c]/90 border border-white/10 px-6 py-4 rounded-xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.8)] border-l-2 border-l-[#f04e00]/60 backdrop-blur-md hover:-translate-y-0.5 hover:border-l-[#f04e00] transition-all duration-300">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#3ecf8e]" /> 
-              <span className="arch-label font-mono text-xs text-white/90 tracking-wide font-bold">Database Cloud</span>
+
+
+            {/* ───────────────── DATA INTELLIGENCE ───────────────── */}
+            <div className="arch-node absolute bottom-[20%] left-[37%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)] hover:border-l-[#f04e00] hover:-translate-y-0.5 transition-all duration-300">
+
+              <Database className="w-4 h-4 text-[#3ecf8e] shrink-0" />
+
+              <div className="flex flex-col">
+                <span className="text-[9px] uppercase tracking-[0.25em] text-white/30 font-mono">
+                  Data
+                </span>
+
+                <span className="arch-label font-mono text-xs text-white/90 tracking-wide font-bold uppercase">
+                  Data Intelligence
+                </span>
+              </div>
+
             </div>
           </div>
-          
+
           <div className="z-30 text-right w-full max-w-7xl px-8 md:px-20 scene-title scene-4-title">
             <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-[clamp(4.5rem,10vw,9rem)] font-black uppercase text-white leading-[0.9] tracking-tighter drop-shadow-2xl">
-              Build The <br /> 
+              Build The <br />
               <Highlighter action="underline" color="#facc15" strokeWidth={3} isView={true}>
                 <span className="text-[#ff8800]">Solution</span>
               </Highlighter>
@@ -411,17 +680,17 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
 
         {/* ── SCENE 5: DETAIL (Redesigned Cohesive Layout) ── */}
         <div className="w-[100vw] h-full flex flex-col items-center justify-center relative z-30 px-10">
-          
+
           <div className="absolute bottom-[10%] left-[8%] z-20 pointer-events-none select-none overflow-hidden">
             <span className="scene-number-text num-5 block font-mono text-5xl md:text-6xl font-black leading-none text-[#f04e00]">
               05
             </span>
           </div>
-          
+
           {/* Charts image positioned as a background element on the right */}
-          <div className="editorial-img img-5 absolute right-[6%] top-1/2 -translate-y-1/2 w-[300px] h-[220px] lg:w-[450px] lg:h-[330px] z-10 pointer-events-none rounded-2xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] hidden md:block">
-            <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200" alt="Charts" fill className="object-cover" sizes="(max-width: 1024px) 300px, 450px" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/20 to-transparent"></div>
+          <div className="editorial-img img-5 absolute right-[6%] top-1/2 -translate-y-1/2 w-[300px] h-[220px] lg:w-[450px] lg:h-[330px] z-10 pointer-events-none rounded-2xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] hidden md:block ">
+            <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200" alt="Charts" fill className="object-cover rounded-3xl" sizes="(max-width: 1024px) 300px, 450px" />
+            <div className="absolute inset-0 bg-linear-to-t from-[#050505] via-[#050505]/20 to-transparent"></div>
           </div>
 
           <div className="scene-title scene-5-title text-center mb-8 md:mb-16 z-30">
@@ -456,14 +725,14 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
 
         {/* ── SCENE 6: IMPACT ── */}
         <div className="w-[100vw] h-full flex items-center justify-center relative">
-          
+
           <div className="absolute bottom-[10%] left-[8%] z-20 pointer-events-none select-none overflow-hidden">
             <span className="scene-number-text num-6 block font-mono text-5xl md:text-6xl font-black leading-none text-[#f04e00]">
               06
             </span>
           </div>
-          
-          <div 
+
+          <div
             className="editorial-img img-6 absolute inset-0 z-10 pointer-events-none mix-blend-screen opacity-40"
             style={{
               WebkitMaskImage: "radial-gradient(circle at center, black 20%, transparent 80%)",

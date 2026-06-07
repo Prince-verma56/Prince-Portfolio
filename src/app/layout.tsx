@@ -5,6 +5,9 @@ import ClientSmoothScroller from "@/components/ClientSmoothScroller";
 import Navbar from "@/components/Navbar";
 import Preloader from "@/components/Preloader";
 import { LoaderProvider } from "@/context/LoaderContext";
+import { AudioProvider } from "@/context/AudioContext";
+import AudioDock from "@/components/global/AudioDock";
+import AudioInitializer from "@/components/global/AudioInitializer";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
@@ -35,10 +38,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothCursor />
         <TooltipProvider delayDuration={100}>
           <LoaderProvider>
-            <Preloader />
-            <Navbar />
-            <ClientSmoothScroller>{children}</ClientSmoothScroller>
-            <Toaster theme="dark" position="bottom-right" richColors />
+            <AudioProvider>
+              <AudioInitializer />
+              <Preloader />
+              <Navbar />
+              <ClientSmoothScroller>{children}</ClientSmoothScroller>
+              <AudioDock />
+              <Toaster theme="dark" position="bottom-right" richColors />
+            </AudioProvider>
           </LoaderProvider>
         </TooltipProvider>
       </body>

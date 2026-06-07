@@ -24,6 +24,26 @@ function isTrackablePointer(pointerType: string) {
   return pointerType !== "touch"
 }
 
+function isInteractiveElement(target: HTMLElement | null): boolean {
+  if (!target) return false
+  
+  const interactiveSelectors = [
+    'button',
+    'a',
+    'input',
+    'textarea',
+    'select',
+    '[role="button"]',
+    '[role="link"]',
+    '[data-pointer="true"]',
+    '.cursor-pointer',
+  ]
+  
+  return interactiveSelectors.some(
+    (selector) => target.closest(selector) !== null
+  )
+}
+
 const DefaultCursorSVG: FC = () => {
   return (
     <svg
@@ -106,6 +126,7 @@ export function SmoothCursor({
   const [isEnabled, setIsEnabled] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isHoveringHidden, setIsHoveringHidden] = useState(false)
+  const [isHoveringInteractive, setIsHoveringInteractive] = useState(false)
 
   const cursorX = useSpring(0, springConfig)
   const cursorY = useSpring(0, springConfig)
@@ -227,8 +248,13 @@ export function SmoothCursor({
       if (!target) return
       
       const isHiddenElement = target.closest('[data-hide-cursor="true"]') !== null
+      const isInteractive = isInteractiveElement(target)
       
       setIsHoveringHidden(isHiddenElement)
+      setIsHoveringInteractive(isInteractive)
+      
+      // Set native cursor to pointer if hovering interactive element
+      document.body.style.cursor = isInteractive ? "pointer" : "none"
     }
     
     window.addEventListener("mouseover", handleMouseOver)
@@ -257,14 +283,17 @@ export function SmoothCursor({
         translateX: "-50%",
         translateY: "-50%",
         rotate: rotation,
-        scale: scale,
-        zIndex: 99999,
+        scale: isHoveringInteractive ? 1.3 : scale,
+        zIndex: 999999,
         pointerEvents: "none",
         willChange: "transform",
         opacity: (isVisible && !isHoveringHidden) ? 1 : 0,
       }}
       initial={false}
-      animate={{ opacity: (isVisible && !isHoveringHidden) ? 1 : 0 }}
+      animate={{
+        opacity: (isVisible && !isHoveringHidden) ? 1 : 0,
+        scale: isHoveringInteractive ? 1.3 : 1,
+      }}
       transition={{
         duration: 0.15,
       }}

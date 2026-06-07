@@ -47,7 +47,7 @@ const phases = [
     details: ["Wireframes", "Layouts", "Component Maps"],
     visual: (
       <div className="relative w-full h-[300px] flex items-center justify-center">
-        <div className="w-[600px] h-[340px] border border-white/10 rounded-lg flex flex-col eco-item opacity-0 overflow-hidden relative">
+        <div className="w-[600px] h-[300px] border border-white/10 rounded-lg flex flex-col eco-item opacity-0 overflow-hidden relative">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:2rem_2rem]" />
           <div className="w-full h-10 border-b border-white/10 flex items-center px-4 gap-3 bg-[#0a0a0a]/50">
             <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
@@ -183,33 +183,29 @@ const phases = [
 // ── 2. THE VISUAL ENGINE (Extracted Component) ──
 // This component ONLY handles running GSAP timelines when activeIndex changes.
 // It does NOT care about scrolling.
-function PhaseVisuals({ activeIndex }: { activeIndex: number }) {
-  const prevIndexRef = useRef(0);
+function PhaseVisuals({ activeIndex, isLoaderFinished }: { activeIndex: number; isLoaderFinished: boolean }) {
+  const prevIndexRef = useRef(-1);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
+    if (!isLoaderFinished) return;
+
     const prev = prevIndexRef.current;
     if (prev === activeIndex) return;
 
     const tl = gsap.timeline();
 
-    // 1. Animate OUT previous scene
-    tl.to(`.phase-content-${prev}`, { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 0);
-
-    // 2. Animate IN new scene
-    tl.set(`.phase-content-${activeIndex}`, { opacity: 1, zIndex: 10 }, 0.4);
-    tl.set(`.phase-content-${prev}`, { zIndex: 1 }, 0.4);
-
+    // Start entrance animations for active phase immediately (opacity/zIndex transitions are handled via CSS transition-opacity duration-500)
     tl.fromTo(`.phase-content-${activeIndex} .title-top`,
       { y: 30, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.6, ease: "expo.out" },
-      0.4
+      0.1
     );
 
     tl.fromTo(`.phase-content-${activeIndex} .title-bottom`,
       { clipPath: "inset(100% 0 0 0)", y: 10 },
       { clipPath: "inset(0% 0 0 0)", y: 0, duration: 0.8, ease: "expo.out" },
-      0.5
+      0.2
     );
 
     const ecoItems = gsap.utils.toArray(`.phase-content-${activeIndex} .eco-item`);
@@ -217,51 +213,59 @@ function PhaseVisuals({ activeIndex }: { activeIndex: number }) {
       tl.fromTo(ecoItems,
         { opacity: 0, scale: 0.9 },
         { opacity: 1, scale: 1, duration: 0.8, stagger: 0.05, ease: "back.out(1.2)" },
-        0.6
+        0.3
       );
     }
 
     const drawPaths = gsap.utils.toArray(`.phase-content-${activeIndex} .draw-path`);
     if (drawPaths.length) {
-      tl.to(drawPaths, { strokeDashoffset: 0, duration: 1, stagger: 0.1, ease: "power2.inOut" }, 0.7);
+      tl.to(drawPaths, { strokeDashoffset: 0, duration: 1, stagger: 0.1, ease: "power2.inOut" }, 0.4);
     }
     const drawBoxes = gsap.utils.toArray(`.phase-content-${activeIndex} .draw-box`);
     if (drawBoxes.length) {
-      tl.to(drawBoxes, { scaleX: 1, scaleY: 1, duration: 0.8, stagger: 0.05, ease: "expo.out" }, 0.7);
+      tl.to(drawBoxes, { scaleX: 1, scaleY: 1, duration: 0.8, stagger: 0.05, ease: "expo.out" }, 0.4);
     }
 
     if (activeIndex === 4) {
       const scaleCircles = gsap.utils.toArray(`.phase-content-${activeIndex} .scale-circle`);
       if (scaleCircles.length) {
-        tl.to(scaleCircles, { opacity: 0.2, scale: 1.2, duration: 1.5, stagger: 0.15, ease: "power2.out" }, 0.6);
+        tl.to(scaleCircles, { opacity: 0.2, scale: 1.2, duration: 1.5, stagger: 0.15, ease: "power2.out" }, 0.3);
       }
     }
 
     prevIndexRef.current = activeIndex;
-  }, { scope: containerRef, dependencies: [activeIndex] }); // ONLY dependent on activeIndex
+  }, { scope: containerRef, dependencies: [activeIndex, isLoaderFinished] }); // Dependent on activeIndex and isLoaderFinished
 
   return (
     <div ref={containerRef} className="relative w-full max-w-[1000px] h-full mx-auto flex flex-col items-center justify-center z-10">
       {phases.map((phase, i) => (
         <div
           key={`phase-${phase.id}`}
-          className={`phase-content-${i} absolute inset-0 w-full flex flex-col items-center justify-center will-change-transform`}
-          style={{ opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 10 : 1, pointerEvents: i === activeIndex ? "auto" : "none" }}
+          className={`phase-content-${i} absolute inset-0 w-full flex flex-col items-center justify-center will-change-transform transition-opacity duration-500 ease-in-out`}
+          style={{
+            opacity: i === activeIndex ? 1 : 0,
+            zIndex: i === activeIndex ? 10 : 1,
+            pointerEvents: i === activeIndex ? "auto" : "none"
+          }}
         >
-          <div className="text-center mb-12 flex flex-col items-center">
-            <h3 className="title-top text-[clamp(2.5rem,5vw,4rem)] font-black uppercase text-white/80 leading-[1] tracking-tighter mb-[-10px]">
+          <div className="text-center mb-8 md:mb-12 flex flex-col items-center">
+            <h3 className="title-top text-[clamp(2rem,4vw,3.5rem)] font-black uppercase text-white/80 leading-[1] tracking-tighter mb-[-10px]">
               {phase.titleTop}
             </h3>
             <div className="title-bottom overflow-hidden">
-              <h2 className="text-[clamp(3.5rem,7vw,6rem)] font-black uppercase leading-[0.9] tracking-tighter text-white">
+              <h2 className="text-[clamp(2.8rem,6vw,5rem)] font-black uppercase leading-[0.9] tracking-tighter text-white">
                 <Highlighter action="underline" color="#f04e00" strokeWidth={3} padding={4} iterations={1} isView={true}>
                   {phase.titleBottom}
                 </Highlighter>
               </h2>
             </div>
           </div>
-          <div className="w-full mb-12">{phase.visual}</div>
-          <div className="flex gap-8 items-center justify-center eco-item opacity-0 translate-y-4">
+          <div className="w-full mb-8 md:mb-12 flex items-center justify-center overflow-visible">
+            <div className="scale-[0.58] min-[400px]:scale-[0.72] min-[500px]:scale-[0.85] sm:scale-100 origin-center flex items-center justify-center shrink-0 w-[600px] h-[300px] relative">
+              {phase.visual}
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-4 sm:gap-8 items-center justify-center eco-item opacity-0 translate-y-4 max-w-[90%] mx-auto">
             {phase.details.map((detail, idx) => (
               <div key={idx} className="flex items-center gap-3">
                 <span className="w-1 h-1 rounded-full bg-white/30" />
@@ -304,15 +308,15 @@ export default function TechStackSection() {
     );
 
     // SCREEN MATH:
-    // 5 Phases + 8 Extra "Dead Zone" Screens = 13 Total Screens
+    // 5 Phases + 1 Extra "Dead Zone" Screen = 6 Total Screens
     const TOTAL_PHASES = phases.length;
-    const DEAD_ZONE_SCREENS = 8;
+    const DEAD_ZONE_SCREENS = 1;
     const TOTAL_SCREENS = TOTAL_PHASES + DEAD_ZONE_SCREENS;
 
     ScrollTrigger.create({
       trigger: wrapperRef.current,
       start: "top top",
-      end: `+=${TOTAL_SCREENS * 200}vh`, 
+      end: `+=${TOTAL_SCREENS * 120}vh`, 
       pin: true,
       pinSpacing: true, 
       anticipatePin: 1,
@@ -372,7 +376,7 @@ export default function TechStackSection() {
         </div>
 
         {/* Render the Isolated Visuals Component */}
-        <PhaseVisuals activeIndex={activeIndex} />
+        <PhaseVisuals activeIndex={activeIndex} isLoaderFinished={isLoaderFinished} />
 
       </section>
     </div>

@@ -204,15 +204,17 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
       );
     }
 
-    // ── FIXED: Drastically increased scroll distance for slower, premium pacing ──
-    // Uses 200vh per project (e.g. 600vh total). The section will firmly lock until 
-    // the user has scrolled this massive distance, preventing the next section from appearing too early.
+    // ── OPTIMIZED: Adjusted scroll distance for both desktop and mobile ──
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const pinDistance = isTouchDevice ? projects.length * 100 : projects.length * 300;
+
     ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top",
-      end: `+=${projects.length * 300}vh`,
+      end: `+=${pinDistance}vh`,
       pin: true,
       anticipatePin: 1,
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         const index = Math.min(
           projects.length - 1,
@@ -237,7 +239,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: `+=${projects.length * 300}vh`,
+          end: `+=${pinDistance}vh`,
           scrub: true,
         }
       }
@@ -295,7 +297,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
     <section
       ref={sectionRef}
       id="work"
-      className={`relative z-30 bg-[#050505] w-full h-screen overflow-hidden flex items-center will-change-transform drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)] ${isStandalonePage ? "pt-24 md:pt-28 lg:pt-36" : ""
+      className={`relative z-30 bg-[#050505] w-full min-h-screen overflow-hidden flex items-center will-change-transform drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)] ${isStandalonePage ? "pt-24 md:pt-28 lg:pt-36" : ""
         }`}
       style={isStandalonePage ? {} : { clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" }}
     >

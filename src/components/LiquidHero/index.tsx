@@ -119,6 +119,7 @@ export default function LiquidHero({
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     renderer.domElement.style.display = "block";
+    renderer.domElement.style.pointerEvents = "none"; // This is the KEY fix for mobile scrolling!
     mountElement.appendChild(renderer.domElement);
 
     let texture: THREE.Texture;
@@ -321,26 +322,28 @@ export default function LiquidHero({
 
     window.addEventListener("resize", handleResize);
 
-    // Event handlers
-    const handleMouseMove = (event: MouseEvent) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = 1 - (event.clientY - rect.top) / rect.height;
-      mouseRef.current = { x, y };
-    };
+    // Event handlers ONLY if NOT a touch device!
+    if (!isTouch) {
+      const handleMouseMove = (event: MouseEvent) => {
+        const rect = renderer.domElement.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = 1 - (event.clientY - rect.top) / rect.height;
+        mouseRef.current = { x, y };
+      };
 
-    const handleMouseEnter = () => {
-      isHoveredRef.current = true;
-    };
+      const handleMouseEnter = () => {
+        isHoveredRef.current = true;
+      };
 
-    const handleMouseLeave = () => {
-      isHoveredRef.current = false;
-    };
+      const handleMouseLeave = () => {
+        isHoveredRef.current = false;
+      };
 
-    const targetTarget = renderer.domElement.parentElement || renderer.domElement;
-    targetTarget.addEventListener("mousemove", handleMouseMove);
-    targetTarget.addEventListener("mouseenter", handleMouseEnter);
-    targetTarget.addEventListener("mouseleave", handleMouseLeave);
+      const targetTarget = renderer.domElement.parentElement || renderer.domElement;
+      targetTarget.addEventListener("mousemove", handleMouseMove);
+      targetTarget.addEventListener("mouseenter", handleMouseEnter);
+      targetTarget.addEventListener("mouseleave", handleMouseLeave);
+    }
 
     let animFrameId: number;
     const animate = () => {
@@ -354,7 +357,7 @@ export default function LiquidHero({
           mouseRef.current.x,
           mouseRef.current.y
         );
-        const targetIntensity = isHoveredRef.current
+        const targetIntensity = isHoveredRef.current && !isTouch
           ? hoverRippleMultiplier
           : 0.3;
         const currentIntensity =
@@ -373,9 +376,6 @@ export default function LiquidHero({
     // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
-      targetTarget.removeEventListener("mousemove", handleMouseMove);
-      targetTarget.removeEventListener("mouseenter", handleMouseEnter);
-      targetTarget.removeEventListener("mouseleave", handleMouseLeave);
       cancelAnimationFrame(animFrameId);
 
       if (videoElement) {
@@ -408,6 +408,7 @@ export default function LiquidHero({
     waveFrequency,
     rippleFrequency,
     distortionAmount,
+    isTouch,
   ]);
 
   // Removed Custom Cursor LERP animation as per user request to rely on liquid ripple effect directly.
@@ -416,37 +417,41 @@ export default function LiquidHero({
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    mouseCoordsRef.current = { x: e.clientX, y: e.clientY };
+    if (!isTouch) {
+      mouseCoordsRef.current = { x: e.clientX, y: e.clientY };
+    }
   };
 
   const handleMouseEnter = (e: React.MouseEvent) => {
-    setIsHovered(true);
-    isHoveredRef.current = true;
-    mouseCoordsRef.current = { x: e.clientX, y: e.clientY };
-    currentCoordsRef.current = { x: e.clientX, y: e.clientY };
+    if (!isTouch) {
+      setIsHovered(true);
+      isHoveredRef.current = true;
+      mouseCoordsRef.current = { x: e.clientX, y: e.clientY };
+      currentCoordsRef.current = { x: e.clientX, y: e.clientY };
+    }
   };
 
   return (
     <section
       ref={containerRef}
-      data-hide-cursor="true"
       className="relative w-full h-screen overflow-hidden bg-black select-none"
-      onMouseMove={handleMouseMove}
-      onMouseDown={() => {
+      onMouseMove={isTouch ? undefined : handleMouseMove}
+      onMouseDown={isTouch ? undefined : () => {
         isPressedRef.current = true;
         setIsPressed(true);
       }}
-      onMouseUp={() => {
+      onMouseUp={isTouch ? undefined : () => {
         isPressedRef.current = false;
         setIsPressed(false);
       }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={() => {
+      onMouseEnter={isTouch ? undefined : handleMouseEnter}
+      onMouseLeave={isTouch ? undefined : () => {
         setIsHovered(false);
         isHoveredRef.current = false;
         isPressedRef.current = false;
         setIsPressed(false);
       }}
+      style={{ touchAction: 'auto' }} // Full touch action allowed on mobile
     >
       <div
         ref={mountRef}

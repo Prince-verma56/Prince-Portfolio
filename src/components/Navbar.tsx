@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useLoader } from "@/context/LoaderContext";
 import SlideTextButton from "@/components/kokonutui/slide-text-button";
+import { Button } from "./ui/button";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -149,15 +150,15 @@ export default function Navbar() {
           <div className="hidden lg:flex flex-col gap-1 text-right">
             <div className="flex items-center justify-end gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-white text-[10px] uppercase font-bold tracking-widest">Available for project</span>
+              <span className="text-white text-[12px] uppercase font-bold tracking-widest">Available for project</span>
             </div>
-            <span className="text-white/50 text-[9px] uppercase tracking-widest font-mono">Early Feb 2026</span>
+            <span className="text-white/50 text-[11px] uppercase tracking-widest font-mono">Early Feb 2026</span>
           </div>
 
           {/* Local Time (Hidden on Mobile) */}
           <div className="hidden md:flex flex-col gap-1 text-right">
-            <span className="text-white text-[10px] uppercase font-bold tracking-widest">{time || "Loading..."}</span>
-            <span className="text-white/50 text-[9px] uppercase tracking-widest font-mono">Local Time</span>
+            <span className="text-white text-[12px] uppercase font-bold tracking-widest">{time || "Loading..."}</span>
+            <span className="text-white/50 text-[11px] uppercase tracking-widest font-mono">Local Time</span>
           </div>
 
           {/* Action Buttons */}
@@ -165,10 +166,9 @@ export default function Navbar() {
             <SlideTextButton
               variant="custom"
               text="Let's Talk"
-              hoverText={<span className="text-[#f04e00]">Let's Talk ↗</span>}
               href="/contact"
               animateEntrance={false}
-              className="hidden sm:flex items-center justify-center border border-white/20 hover:border-white/50 bg-white/5 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-6 py-2.5 rounded-full transition-all duration-300"
+              className="hidden sm:flex items-center justify-center border hover:bg-[#f04e00] hover:text-white border-white/20 hover:border-white/50 bg-white/5 backdrop-blur-sm text-white text-[12px] font-bold uppercase tracking-widest px-7 py-3 rounded-full transition-all duration-300 ease-in-out"
             />
 
             {/* Hamburger Toggle - Explicit cursor-pointer */}
@@ -203,13 +203,13 @@ export default function Navbar() {
           </div>
 
           {/* Explicit cursor-pointer added */}
-          <button
+          <Button
             onClick={() => setIsMenuOpen(false)}
             className="w-12 h-12 flex items-center justify-center border border-white/10 hover:border-white/40 rounded-full transition-colors group cursor-pointer bg-white/5"
             aria-label="Close Menu"
           >
             <span className="text-white/50 group-hover:text-white transition-colors text-sm font-light">✕</span>
-          </button>
+          </Button>
         </div>
 
         {/* Links */}
@@ -219,7 +219,7 @@ export default function Navbar() {
               <Link
                 href={link.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="menu-link-item group flex items-center gap-4 text-white text-[clamp(3.5rem,9vw,5rem)] font-black uppercase tracking-tighter leading-none hover:pl-4 transition-all duration-300 cursor-none"
+                className="menu-link-item group flex items-center gap-4 text-white text-[clamp(3.5rem,9vw,5rem)] font-black uppercase tracking-tighter leading-none hover:pl-4 transition-[padding] duration-300 ease-out cursor-none"
               >
                 {link.label}
                 <span className="w-2 h-2 md:w-3 md:h-3 bg-[#f04e00] opacity-0 group-hover:opacity-100 transition-opacity rounded-sm" />

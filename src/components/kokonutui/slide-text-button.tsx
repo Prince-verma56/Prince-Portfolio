@@ -96,11 +96,17 @@ const SlideTextButton = React.forwardRef<HTMLElement, SlideTextButtonProps>(
     </button>
   );
 
+  const hasWidthClass = className ? className.split(/\s+/).some(c => c.startsWith("w-")) : false;
+  const wrapperClasses = cn(
+    "relative",
+    hasWidthClass ? className?.split(/\s+/).filter(c => c.startsWith("w-")).join(" ") : "w-fit"
+  );
+
   if (animateEntrance) {
     return (
       <motion.div
         animate={{ x: 0, opacity: 1, transition: { duration: 0.2 } }}
-        className="relative w-fit"
+        className={wrapperClasses}
         initial={{ x: 200, opacity: 0 }}
       >
         {buttonElement}
@@ -108,7 +114,7 @@ const SlideTextButton = React.forwardRef<HTMLElement, SlideTextButtonProps>(
     );
   }
 
-  return <div className="relative w-fit">{buttonElement}</div>;
+  return <div className={wrapperClasses}>{buttonElement}</div>;
 });
 
 SlideTextButton.displayName = "SlideTextButton";

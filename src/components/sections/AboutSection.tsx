@@ -116,7 +116,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
           rotationY: -8,
           rotationZ: -2,
           skewX: -1,
-          ease: "none",
+          ease: "power1.inOut",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top bottom",
@@ -131,9 +131,11 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
     if (marqueeRef.current) {
       gsap.to(marqueeRef.current, {
         xPercent: -35,
-        ease: "none",
+        ease: "power1.inOut",
+        duration: 1,
         scrollTrigger: {
           trigger: sectionRef.current,
+
           start: "top bottom",
           end: "bottom top",
           scrub: 1,

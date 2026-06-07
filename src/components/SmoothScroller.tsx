@@ -6,13 +6,17 @@ export default function SmoothScroller({ children }: { children: React.ReactNode
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    // Check if we're on a touch device for better mobile handling
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
     const lenis = new Lenis({
-      // ── THE MAGIC NUMBERS ──
-      lerp: 0.05, // Controls the momentum. Lower = longer, smoother glide (Default is usually 0.1)
-      wheelMultiplier: 1.1, // Slightly increases the distance per scroll tick to offset the heavy lerp
-      duration: 2.0, // Makes anchor links (e.g., clicking "Contact" to scroll down) take 2 full seconds
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // A highly aggressive Expo Out curve
+      // ── OPTIMIZED FOR BOTH DESKTOP & MOBILE ──
+      lerp: isTouchDevice ? 0.2 : 0.1, // Higher lerp on mobile = more responsive
+      wheelMultiplier: 1.1,
+      duration: isTouchDevice ? 1.0 : 2.0, // Faster anchor links on mobile
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      smoothTouch: false, // Disable smooth touch for better mobile scrolling
     });
     lenisRef.current = lenis;
 
