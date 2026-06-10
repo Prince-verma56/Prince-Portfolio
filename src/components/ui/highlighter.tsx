@@ -14,6 +14,12 @@ interface HighlighterProps {
   animationDuration?: number;
 }
 
+interface RoughAnnotation {
+  show: () => void;
+  hide: () => void;
+  remove: () => void;
+}
+
 export function Highlighter({
   children,
   action = "underline",
@@ -26,7 +32,7 @@ export function Highlighter({
   animationDuration = 800,
 }: HighlighterProps) {
   const elementRef = useRef<HTMLSpanElement>(null);
-  const annotationRef = useRef<any>(null);
+  const annotationRef = useRef<RoughAnnotation | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -41,7 +47,7 @@ export function Highlighter({
         const type = action === "highlight" ? "highlight" : action;
 
         const annotation = annotate(elementRef.current, {
-          type: type as any,
+          type: type as "underline" | "box" | "circle" | "highlight" | "strike-through" | "crossed-off" | "bracket",
           color,
           strokeWidth,
           padding,
@@ -57,9 +63,9 @@ export function Highlighter({
             (entries) => {
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                  annotation.show();
+                   annotation.show();
                 } else {
-                  annotation.hide();
+                   annotation.hide();
                 }
               });
             },
@@ -83,7 +89,7 @@ export function Highlighter({
       if (annotationRef.current) {
         try {
           annotationRef.current.remove();
-        } catch (e) {
+        } catch {
           // Ignore errors during unmount if DOM elements are already cleaned up
         }
       }

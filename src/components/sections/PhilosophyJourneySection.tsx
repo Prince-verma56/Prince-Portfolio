@@ -30,16 +30,16 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
   const { playSfx } = useSFX();
   const soundTriggeredRef = useRef<Set<string>>(new Set());
 
-  const containerRef  = useRef<HTMLElement>(null);
-  const wrapperRef    = useRef<HTMLDivElement>(null);
-  const rocketRef     = useRef<HTMLDivElement>(null);
-  const pathRef       = useRef<SVGPathElement>(null);
-  const glowPathRef   = useRef<SVGPathElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const rocketRef = useRef<HTMLDivElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const glowPathRef = useRef<SVGPathElement>(null);
 
-  const perfRef   = useRef<HTMLSpanElement>(null);
+  const perfRef = useRef<HTMLSpanElement>(null);
   const accessRef = useRef<HTMLSpanElement>(null);
-  const bestRef   = useRef<HTMLSpanElement>(null);
-  const loadRef   = useRef<HTMLSpanElement>(null);
+  const bestRef = useRef<HTMLSpanElement>(null);
+  const loadRef = useRef<HTMLSpanElement>(null);
 
   useGSAP(() => {
     if (!containerRef.current || !wrapperRef.current || !rocketRef.current || !pathRef.current) return;
@@ -79,10 +79,10 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     const pathLength = pathRef.current.getTotalLength();
     gsap.set(glowPathRef.current, { strokeDasharray: pathLength, strokeDashoffset: pathLength });
 
-    gsap.set(".scene-title",         { opacity: 0, filter: "blur(8px)", scale: 0.95, y: 40 });
-    gsap.set(".scene-1-heading",     { opacity: 0, y: -25, filter: "blur(4px)" });
-    gsap.set(".editorial-img",       { opacity: 0, scale: 0.95, clipPath: "inset(10% 10% 10% 10%)" });
-    gsap.set(".scene-number-text",   { opacity: 0, yPercent: 100 });
+    gsap.set(".scene-title", { opacity: 0, filter: "blur(8px)", scale: 0.95, y: 40 });
+    gsap.set(".scene-1-heading", { opacity: 0, y: -25, filter: "blur(4px)" });
+    gsap.set(".editorial-img", { opacity: 0, scale: 0.95, clipPath: "inset(10% 10% 10% 10%)" });
+    gsap.set(".scene-number-text", { opacity: 0, yPercent: 100 });
 
     gsap.to(".rocket-chassis", {
       y: 4, rotationZ: 0.5, duration: 3, repeat: -1, yoyo: true, ease: "sine.inOut"
@@ -133,22 +133,22 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     tl.to(glowPathRef.current, { strokeDashoffset: 0, ease: "none", duration: 1 }, 0);
 
     // SCENE 1 - Start at beginning
-    tl.to(".scene-1-heading",  { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power2.out" }, 0);
-    tl.to(".scene-1-title",    { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0);
-    tl.to(".img-1",            { opacity: 0.6, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0);
-    tl.to(".num-1",            { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0);
+    tl.to(".scene-1-heading", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power2.out" }, 0);
+    tl.to(".scene-1-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0);
+    tl.to(".img-1", { opacity: 0.6, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0);
+    tl.to(".num-1", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0);
 
     // SCENE 2 - Start at beginning
-    tl.to(".scene-2-title",    { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.166);
-    tl.to(".img-2",            { opacity: 0.4, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.166);
-    tl.to(".num-2",            { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.166);
+    tl.to(".scene-2-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.166);
+    tl.to(".img-2", { opacity: 0.4, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.166);
+    tl.to(".num-2", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.166);
     tl.fromTo(".research-card",
       { y: 30, opacity: 0, scale: 0.95 },
       { y: 0, opacity: 1, scale: 1, duration: 0.02, stagger: 0.001, ease: "power3.out" }, 0.160);
 
     // SCENE 3 - Start at beginning
-    tl.to(".scene-3-title",    { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.333);
-    tl.to(".num-3",            { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.333);
+    tl.to(".scene-3-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.333);
+    tl.to(".num-3", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.333);
     tl.fromTo(".design-grid",
       { opacity: 0, y: 80, rotate: -12 },
       { opacity: 1, y: 0, rotate: -6, duration: 0.08, ease: "power3.out" }, 0.336);
@@ -161,18 +161,18 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     tl.to(".img-3", { opacity: 1, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.19, ease: "power2.out" }, 0.336);
 
     // SCENE 4 - Start at beginning
-    tl.to(".scene-4-title",    { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.5);
-    tl.to(".img-4",            { opacity: 0.3, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.5);
-    tl.to(".num-4",            { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.5);
-    tl.to(".arch-line",        { strokeDashoffset: 0, duration: 0.06, stagger: 0.01, ease: "power2.inOut" }, 0.5);
+    tl.to(".scene-4-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.5);
+    tl.to(".img-4", { opacity: 0.3, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.5);
+    tl.to(".num-4", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.5);
+    tl.to(".arch-line", { strokeDashoffset: 0, duration: 0.06, stagger: 0.01, ease: "power2.inOut" }, 0.5);
     tl.fromTo(".arch-node",
       { scale: 0.8, opacity: 0 },
       { scale: 1, opacity: 1, duration: 0.06, stagger: 0.01, ease: "back.out(1.5)" }, 0.5);
 
     // SCENE 5 - Start at beginning
-    tl.to(".scene-5-title",    { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.666);
-    tl.to(".img-5",            { opacity: 0.9, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.666);
-    tl.to(".num-5",            { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.666);
+    tl.to(".scene-5-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.666);
+    tl.to(".img-5", { opacity: 0.9, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.666);
+    tl.to(".num-5", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.666);
     tl.fromTo(".metric-item",
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.06, stagger: 0.01, ease: "power2.out" }, 0.666);
@@ -181,17 +181,17 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     tl.to(counters, {
       perf: 100, load: 0.8, duration: 0.10, ease: "none",
       onUpdate: () => {
-        if (perfRef.current)   perfRef.current.innerText   = Math.round(counters.perf).toString();
+        if (perfRef.current) perfRef.current.innerText = Math.round(counters.perf).toString();
         if (accessRef.current) accessRef.current.innerText = Math.round(counters.perf).toString();
-        if (bestRef.current)   bestRef.current.innerText   = Math.round(counters.perf).toString();
-        if (loadRef.current)   loadRef.current.innerText   = counters.load.toFixed(1) + "s";
+        if (bestRef.current) bestRef.current.innerText = Math.round(counters.perf).toString();
+        if (loadRef.current) loadRef.current.innerText = counters.load.toFixed(1) + "s";
       }
     }, 0.666);
 
     // SCENE 6 - Start at beginning
-    tl.to(".scene-6-title",    { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.833);
-    tl.to(".img-6",            { opacity: 0.8, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.833);
-    tl.to(".num-6",            { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.833);
+    tl.to(".scene-6-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.833);
+    tl.to(".img-6", { opacity: 0.8, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.833);
+    tl.to(".num-6", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.833);
 
   }, { scope: containerRef });
 
@@ -462,21 +462,21 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
               <path className="arch-line" d="M 350 400 L 500 500 L 700 400" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="1000" strokeDashoffset="1000" />
               <path className="arch-line" d="M 500 500 L 500 650 L 750 700" fill="none" stroke="rgba(240,78,0,0.5)" strokeWidth="1.5" strokeDasharray="1000" strokeDashoffset="1000" />
             </svg>
-            <div className="arch-node absolute top-[39%] left-[14%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
+            <div className="arch-node absolute top-[30%] left-[10%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
               <MonitorSmartphone className="w-4 h-4 text-[#61dafb] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-[9px] uppercase tracking-[0.25em] text-white/30 font-mono">Interface</span>
                 <span className="font-mono text-xs text-white/90 tracking-wide font-bold uppercase">User Experience</span>
               </div>
             </div>
-            <div className="arch-node absolute top-[37%] left-[34%] min-w-[230px] bg-[#0c0c0c]/95 border border-[#f04e00]/10 border-l-2 border-l-[#f04e00] px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
+            <div className="arch-node absolute top-[30%] left-[26%] min-w-[230px] bg-[#0c0c0c]/95 border border-[#f04e00]/10 border-l-2 border-l-[#f04e00] px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
               <Cpu className="w-4 h-4 text-[#f04e00] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-[9px] uppercase tracking-[0.25em] text-[#f04e00]/70 font-mono">Core</span>
                 <span className="font-mono text-xs text-white tracking-wide font-bold uppercase">Solution Engine</span>
               </div>
             </div>
-            <div className="arch-node absolute bottom-[20%] left-[37%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
+            <div className="arch-node absolute bottom-[35%] left-[28%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
               <Database className="w-4 h-4 text-[#3ecf8e] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-[9px] uppercase tracking-[0.25em] text-white/30 font-mono">Data</span>

@@ -71,7 +71,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
     }
 
     // 3. True Line-by-Line Scroll Unfolding Mechanics
-    const textElements = gsap.utils.toArray(".mask-reveal-inner");
+    const textElements = gsap.utils.toArray(".mask-reveal-inner") as HTMLElement[];
 
     if (isStandalonePage) {
       // Intro sequence behavior for direct landing page views
@@ -87,7 +87,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
       tlRef.current = tl;
     } else {
       // Dynamic scroll behavior: Each line reveals independently upon viewport entry
-      textElements.forEach((el: any) => {
+      textElements.forEach((el) => {
         gsap.to(el, {
           y: "0%",
           opacity: 1,
@@ -130,15 +130,14 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
     // 5. Linear Marquee Progression
     if (marqueeRef.current) {
       gsap.to(marqueeRef.current, {
-        xPercent: -35,
-        ease: "power1.inOut",
+        xPercent: -15,
+        ease: "none",
         duration: 1,
         scrollTrigger: {
           trigger: sectionRef.current,
-
           start: "top bottom",
           end: "bottom top",
-          scrub: 1,
+          scrub: 1.5,
         }
       });
     }

@@ -26,7 +26,7 @@ function isTrackablePointer(pointerType: string) {
 
 function isInteractiveElement(target: HTMLElement | null): boolean {
   if (!target) return false
-  
+
   const interactiveSelectors = [
     'button',
     'a',
@@ -38,7 +38,7 @@ function isInteractiveElement(target: HTMLElement | null): boolean {
     '[data-pointer="true"]',
     '.cursor-pointer',
   ]
-  
+
   return interactiveSelectors.some(
     (selector) => target.closest(selector) !== null
   )
@@ -113,14 +113,14 @@ export function SmoothCursor({
   cursor = <DefaultCursorSVG />,
   springConfig = {
     damping: 45,
-    stiffness: 400,
-    mass: 1,
+    stiffness: 700,
+    mass: 0.5,
     restDelta: 0.001,
   },
 }: SmoothCursorProps) {
   const lastMousePos = useRef<Position>({ x: 0, y: 0 })
   const velocity = useRef<Position>({ x: 0, y: 0 })
-  const lastUpdateTime = useRef(Date.now())
+  const lastUpdateTime = useRef(0)
   const previousAngle = useRef(0)
   const accumulatedRotation = useRef(0)
   const [isEnabled, setIsEnabled] = useState(false)
@@ -170,7 +170,7 @@ export function SmoothCursor({
 
     const updateVelocity = (currentPos: Position) => {
       const currentTime = Date.now()
-      const deltaTime = currentTime - lastUpdateTime.current
+      const deltaTime = lastUpdateTime.current > 0 ? currentTime - lastUpdateTime.current : 0
 
       if (deltaTime > 0) {
         velocity.current = {
@@ -246,17 +246,17 @@ export function SmoothCursor({
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement
       if (!target) return
-      
+
       const isHiddenElement = target.closest('[data-hide-cursor="true"]') !== null
       const isInteractive = isInteractiveElement(target)
-      
+
       setIsHoveringHidden(isHiddenElement)
       setIsHoveringInteractive(isInteractive)
-      
+
       // Set native cursor to pointer if hovering interactive element
       document.body.style.cursor = isInteractive ? "pointer" : "none"
     }
-    
+
     window.addEventListener("mouseover", handleMouseOver)
 
     return () => {

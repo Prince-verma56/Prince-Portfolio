@@ -16,7 +16,7 @@ export default function ShimmerText({
   as: Component = "span",
   hoverOnly = false,
 }: ShimmerTextProps) {
-  // @ts-ignore
+  // @ts-expect-error - motion dynamic index signature mismatch
   const MotionComponent = motion[typeof Component === "string" ? Component : "span"];
 
   return (

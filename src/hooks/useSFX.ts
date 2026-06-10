@@ -1,6 +1,6 @@
 "use client";
 
-import { useAudio, type SFXType } from "@/context/AudioContext";
+import { useAudio } from "@/context/AudioContext";
 
 export const useSFX = () => {
   const { playSfx } = useAudio();

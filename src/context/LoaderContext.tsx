@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { usePathname } from "next/navigation";
 
 // Define the context shape
@@ -17,10 +17,12 @@ export const LoaderProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoaderFinished, setIsLoaderFinished] = useState(false);
   const pathname = usePathname();
 
-  // Every time the route changes, reset the loader state to false
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setIsLoaderFinished(false);
-  }, [pathname]);
+  }
 
   return (
     <LoaderContext.Provider value={{ isLoaderFinished, setIsLoaderFinished }}>

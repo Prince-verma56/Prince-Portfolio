@@ -254,7 +254,7 @@ export default function ContactSection({ isStandalonePage = false }: ContactSect
             </div>
             
             <p className="text-white/80 text-lg md:text-xl font-medium leading-relaxed max-w-xl fade-in opacity-0 translate-y-[30px] pt-6">
-              Have a project in mind? We'd love to hear about it. Let’s create something great together!
+              Have a project in mind? We&apos;d love to hear about it. Let&apos;s create something great together!
             </p>
           </div>
 

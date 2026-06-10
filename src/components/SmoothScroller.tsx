@@ -18,10 +18,10 @@ export default function SmoothScroller({ children }: { children: React.ReactNode
       lerp: isTouchDevice ? 0.2 : 0.1, // Higher lerp on mobile = more responsive
       wheelMultiplier: 1.1,
       duration: isTouchDevice ? 1.0 : 2.0, // Faster anchor links on mobile
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       smoothTouch: false, // Disable smooth touch for better mobile scrolling
-    });
+    } as any);
     lenisRef.current = lenis;
 
     // Connect ScrollTrigger to Lenis

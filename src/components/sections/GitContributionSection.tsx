@@ -1,9 +1,10 @@
 "use client";
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Link from "next/link";
+import Image from "next/image";
 import { ContributionGraph, type ContributionData } from "../ui/smoothui/contribution-graph/index";
 import { Button } from "@/components/ui/button";
 import SlideTextButton from "@/components/kokonutui/slide-text-button";
@@ -50,6 +51,7 @@ export default function GitContributionSection() {
     const sectionRef = useRef<HTMLElement>(null);
     const { isLoaderFinished } = useLoader();
     const mockData = useMemo(() => generateMockData(), []);
+    const [avatarSrc, setAvatarSrc] = useState("https://github.com/Prince-verma56.png");
 
     useGSAP(() => {
         if (!isLoaderFinished || !sectionRef.current) return;
@@ -141,7 +143,7 @@ export default function GitContributionSection() {
         <div className="w-full relative z-20 drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]">
             <section
                 ref={sectionRef}
-                className="relative w-full bg-[#050505] text-white py-32 md:py-48 overflow-hidden will-change-transform"
+                className="relative w-full min-h-screen bg-[#050505] text-white py-24 md:py-32 flex items-center overflow-hidden will-change-transform"
                 style={{
                     clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
                 }}
@@ -151,7 +153,7 @@ export default function GitContributionSection() {
                 <div className="absolute top-[-50px] left-[-5%] w-[30%] h-[150px] bg-[#f04e00] opacity-[0.25] blur-[80px] pointer-events-none rounded-[100%]" />
                 <div className="absolute top-[-20px] left-0 w-[20%] h-[50px] bg-white opacity-[0.1] blur-[30px] pointer-events-none rounded-[100%]" />
 
-                <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 relative z-10">
+                <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 relative z-10 w-full">
 
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_0.9fr] gap-16 lg:gap-28 xl:gap-40 items-center">
 
@@ -175,13 +177,15 @@ export default function GitContributionSection() {
                                                     rel="noopener noreferrer"
                                                     className="relative group block w-7 h-7 rounded-full overflow-hidden border border-white/10 hover:border-[#f04e00] transition-all duration-300 shadow-md active:scale-95 will-change-transform"
                                                 >
-                                                    <img
-                                                        src="https://github.com/Prince-verma56.png"
+                                                    <Image
+                                                        src={avatarSrc}
                                                         alt="Prince Verma profile avatar"
-                                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                                        onError={(e) => {
+                                                        fill
+                                                        className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                                        sizes="28px"
+                                                        onError={() => {
                                                             // Fallback sleek asset if live avatar fails to request
-                                                            e.currentTarget.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=120&auto=format&fit=crop";
+                                                            setAvatarSrc("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=120&auto=format&fit=crop");
                                                         }}
                                                     />
                                                 </Link>
@@ -244,17 +248,22 @@ export default function GitContributionSection() {
 
                                             {/* ── Premium Header Background ── */}
                                             <div className="relative w-full h-32 bg-gradient-to-br from-[#f04e00]/20 via-[#0a0a0a] to-[#050505] flex items-center justify-center border-b border-white/5">
-                                                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay"></div>
+                                                <div className="absolute inset-0 opacity-10 mix-blend-overlay" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")", backgroundSize: "200px 200px" }}></div>
                                                 <div className="absolute -bottom-10 flex justify-center w-full">
                                                     <div className="relative group">
                                                         {/* Animated Glow */}
                                                         <div className="absolute inset-0 bg-[#f04e00] blur-xl rounded-full opacity-40 group-hover:opacity-70 transition-opacity duration-500 animate-pulse"></div>
                                                         {/* Avatar Box */}
                                                         <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-[#050505] flex items-center justify-center shadow-2xl bg-[#0a0a0a] transition-transform duration-500 group-hover:scale-105">
-                                                            <img
-                                                                src="https://github.com/Prince-verma56.png"
+                                                            <Image
+                                                                src={avatarSrc}
                                                                 alt="Avatar"
-                                                                className="w-full h-full object-cover"
+                                                                fill
+                                                                className="object-cover"
+                                                                sizes="96px"
+                                                                onError={() => {
+                                                                    setAvatarSrc("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=120&auto=format&fit=crop");
+                                                                }}
                                                             />
                                                         </div>
                                                     </div>

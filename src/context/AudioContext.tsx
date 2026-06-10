@@ -125,7 +125,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       hasStartedRef.current = true;
       setIsPlaying(true);
       if (!mutedRef.current) fadeIn(volumeRef.current);
-    } catch (e) {
+    } catch {
       // If autoplay fails, reset state so next attempt can try again
       hasStartedRef.current = false;
       setIsPlaying(false);
@@ -163,9 +163,13 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     const savedVol     = localStorage.getItem(STORAGE_KEYS.volume);
     const savedMuted   = localStorage.getItem(STORAGE_KEYS.muted);
     const savedEnabled = localStorage.getItem(STORAGE_KEYS.audioEnabled);
-    if (savedVol)     { const v = parseFloat(savedVol); setVolumeState(v); volumeRef.current = v; }
-    if (savedMuted)   { const m = savedMuted   === "true"; setMutedState(m);        mutedRef.current        = m; }
-    if (savedEnabled) { const e = savedEnabled === "true"; setAudioEnabledState(e); audioEnabledRef.current = e; }
+    
+    requestAnimationFrame(() => {
+      if (savedVol)     { const v = parseFloat(savedVol); setVolumeState(v); volumeRef.current = v; }
+      if (savedMuted)   { const m = savedMuted   === "true"; setMutedState(m);        mutedRef.current        = m; }
+      if (savedEnabled) { const e = savedEnabled === "true"; setAudioEnabledState(e); audioEnabledRef.current = e; }
+      startAmbientAudio();
+    });
 
     const el = new Audio(AMBIENT_AUDIO_PATH);
     el.loop    = true;
@@ -184,8 +188,6 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       }
       sfxPoolRef.current.set(type, pool);
     });
-
-    startAmbientAudio();
 
     return () => { cancelFade(); el.pause(); el.src = ""; };
     // eslint-disable-next-line react-hooks/exhaustive-deps

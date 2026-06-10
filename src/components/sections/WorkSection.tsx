@@ -1,11 +1,10 @@
 "use client";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import { useLoader } from "@/context/LoaderContext";
 import { FollowerPointerCard } from "@/components/FollowerPointerCard";
 
@@ -451,7 +450,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                           alt={p.title}
                           fill
                           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                          sizes="(max-width: 1024px) 100vw, 70vw"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 900px"
                           priority={i === 0}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/90 via-transparent to-[#050505]/40" />

@@ -20,7 +20,7 @@ const achievements = [
     title: "CODEPUNK Hackathon",
     prize: "Official Recognition",
     description: "Recognized as Top 10 Runner-ups in Internal University rounds for IoT innovation management.",
-    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&q=90",
+    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1781115863/fcc43891-6e7e-4eb6-ba06-afcd36186007_td4eui.jpg",
   },
 ];
 
@@ -48,7 +48,7 @@ export default function AchievementsSection() {
     // 2. Main Title Reveal
     gsap.fromTo(
       ".main-title-mask",
-      { y: "110%", opacity: 0 },
+      { y: "100%", opacity: 0 },
       {
         y: "0%",
         opacity: 1,
@@ -117,13 +117,13 @@ export default function AchievementsSection() {
     >
       {/* Dynamic Slanted Orange Background Shape */}
       {/* This perfectly replicates the bold orange top section from your screenshot, but gives it a sleek angle */}
-      <div 
+      <div
         className="absolute top-0 left-0 w-full h-[70vh] bg-[#f04e00] z-0 pointer-events-none origin-top-left"
         style={{ clipPath: "polygon(0 0, 100% 0, 100% 65%, 0 100%)" }}
       />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 pt-24 md:pt-32 flex flex-col will-change-transform">
-        
+
         {/* Header */}
         <div className="main-title-wrapper overflow-hidden pb-4 mb-16 md:mb-24">
           <h2 className="main-title-mask text-[clamp(3.5rem,8vw,8rem)] font-black uppercase text-white leading-[0.85] tracking-tighter shadow-sm">
@@ -132,7 +132,7 @@ export default function AchievementsSection() {
         </div>
 
         {/* ── ACHIEVEMENT 01: The Hero Layout ── */}
-        <div 
+        <div
           ref={(el) => { rowRefs.current[0] = el; }}
           className="flex flex-col items-center gap-12 md:gap-16 mb-40 w-full"
         >
@@ -144,7 +144,7 @@ export default function AchievementsSection() {
                 alt={achievements[0].title}
                 fill
                 className="object-cover opacity-90"
-                sizes="100vw"
+                sizes="(max-width: 768px) calc(100vw - 48px), (max-width: 1024px) calc(100vw - 96px), (max-width: 1400px) calc(100vw - 160px), 1240px"
                 priority
               />
             </div>
@@ -162,7 +162,7 @@ export default function AchievementsSection() {
 
 
         {/* ── ACHIEVEMENT 02: The Grid Layout ── */}
-        <div 
+        <div
           ref={(el) => { rowRefs.current[1] = el; }}
           className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-12 lg:gap-24 items-center w-full max-w-6xl mx-auto"
         >
@@ -186,19 +186,19 @@ export default function AchievementsSection() {
                 {achievements[1].title}:
               </h3>
             </div>
-            
+
             <div className="overflow-hidden pb-2">
               <p className="text-mask text-white/90 text-xl md:text-3xl font-light leading-relaxed">
                 {achievements[1].description}
               </p>
             </div>
-            
+
             {/* Meta Tags */}
             <div className="overflow-hidden mt-4 pt-2">
               <div className="text-mask flex gap-3">
-                 <span className="border border-white/20 bg-white/5 text-white/80 text-xs font-mono uppercase tracking-widest px-4 py-2 rounded-full">
-                   {achievements[1].prize}
-                 </span>
+                <span className="border border-white/20 bg-white/5 text-white/80 text-xs font-mono uppercase tracking-widest px-4 py-2 rounded-full">
+                  {achievements[1].prize}
+                </span>
               </div>
             </div>
           </div>

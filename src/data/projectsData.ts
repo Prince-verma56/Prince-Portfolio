@@ -18,11 +18,11 @@ export const projectsData: ProjectData[] = [
     id: "adhayaya",
     title: "Adhayaya",
     description: "A cultural exploration platform bringing Indian heritage, monuments, and dynamic travel itineraries to life using interactive 3D elements and immersive storytelling.",
-    year: "2024",
+    year: "2026",
     timeline: "3 Months",
     services: "Next.js / WebGL / Strategic Branding",
     liveLink: "https://adhayaya.dev",
-    heroImage: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1800&q=90",
+    heroImage: "https://res.cloudinary.com/dtslaveid/image/upload/v1781108027/Screenshot_2026-06-09_202735_ixq9ul.png",
     galleryImages: [
       "https://images.unsplash.com/photo-1473163928189-364b2c4e1135?w=1200&q=80",
       "https://images.unsplash.com/photo-1548013146-72479768bada?w=1200&q=80",

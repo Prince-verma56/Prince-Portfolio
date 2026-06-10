@@ -6,7 +6,9 @@ import { useAudio } from "@/context/AudioContext";
 import { useLoader } from "@/context/LoaderContext";
 
 export default function AudioNudge() {
-  const { showNudge, enableAudio } = useAudio();
+  const { isPlaying, startAmbientAudio } = useAudio();
+  const showNudge = !isPlaying;
+  const enableAudio = startAmbientAudio;
   const { isLoaderFinished } = useLoader();
 
   if (!showNudge || !isLoaderFinished) return null;

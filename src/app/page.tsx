@@ -1,19 +1,48 @@
 "use client";
 import { useRef } from "react";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useLoader } from "@/context/LoaderContext";
+
+// ── Above-the-fold: load normally ──
 import ClientLiquidHero from "@/components/ClientLiquidHero";
 import HeroContent from "@/components/HeroContent";
-import TechStackSection from "@/components/sections/TechStackSection";
-import ServicesSection from "@/components/sections/ServicesSection";
-import WorkSection from "@/components/sections/WorkSection";
-import AchievementsSection from "@/components/sections/AchievementsSection";
-import SocialFooter from "@/components/SocialFooter";
 import AboutSection from "@/components/sections/AboutSection";
-import FooterSection from "@/components/sections/FooterSection";
-import GitContributionSection from "@/components/sections/GitContributionSection";
-import PhilosophyJourneySection from "@/components/sections/PhilosophyJourneySection";
+
+// ── Below-the-fold: lazy-loaded to reduce initial JS bundle ──
+const PhilosophyJourneySection = dynamic(
+  () => import("@/components/sections/PhilosophyJourneySection"),
+  { ssr: false, loading: () => <div className="h-screen bg-[#050505]" /> }
+);
+const TechStackSection = dynamic(
+  () => import("@/components/sections/TechStackSection"),
+  { ssr: false, loading: () => <div className="h-screen bg-black" /> }
+);
+const GitContributionSection = dynamic(
+  () => import("@/components/sections/GitContributionSection"),
+  { ssr: false, loading: () => <div className="h-screen bg-black" /> }
+);
+const ServicesSection = dynamic(
+  () => import("@/components/sections/ServicesSection"),
+  { ssr: false, loading: () => <div className="h-screen bg-black" /> }
+);
+const WorkSection = dynamic(
+  () => import("@/components/sections/WorkSection"),
+  { ssr: false, loading: () => <div className="h-screen bg-black" /> }
+);
+const AchievementsSection = dynamic(
+  () => import("@/components/sections/AchievementsSection"),
+  { ssr: false, loading: () => <div className="h-screen bg-black" /> }
+);
+const SocialFooter = dynamic(
+  () => import("@/components/SocialFooter"),
+  { ssr: false, loading: () => <div className="h-64 bg-black" /> }
+);
+const FooterSection = dynamic(
+  () => import("@/components/sections/FooterSection"),
+  { ssr: false, loading: () => <div className="h-32 bg-black" /> }
+);
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -49,7 +78,7 @@ export default function Home() {
       {/* <TechStackSection /> */}
    
       <PhilosophyJourneySection bgImage="https://res.cloudinary.com/dtslaveid/image/upload/v1780791430/b682bca8-66a3-47d9-aee7-2212d6dfd9a4_vlkoqv.png" />
-      <TechStackSection />
+      {/* <TechStackSection /> */}
       <GitContributionSection />
       <ServicesSection />
       <WorkSection /> 

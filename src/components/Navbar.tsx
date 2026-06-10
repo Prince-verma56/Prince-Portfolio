@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { useLoader } from "@/context/LoaderContext";
 import SlideTextButton from "@/components/kokonutui/slide-text-button";
 import { Button } from "./ui/button";
+import AudioDock from "@/components/global/AudioDock";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -202,14 +203,17 @@ export default function Navbar() {
             <span className="text-white/50 text-[10px] font-mono tracking-widest uppercase">Menu</span>
           </div>
 
-          {/* Explicit cursor-pointer added */}
-          <Button
-            onClick={() => setIsMenuOpen(false)}
-            className="w-12 h-12 flex items-center justify-center border border-white/10 hover:border-white/40 rounded-full transition-colors group cursor-pointer bg-white/5"
-            aria-label="Close Menu"
-          >
-            <span className="text-white/50 group-hover:text-white transition-colors text-sm font-light">✕</span>
-          </Button>
+          <div className="flex items-center gap-3">
+            <AudioDock variant="navbar" className="flex md:hidden" />
+            {/* Explicit cursor-pointer added */}
+            <Button
+              onClick={() => setIsMenuOpen(false)}
+              className="w-12 h-12 flex items-center justify-center border border-white/10 hover:border-white/40 rounded-full transition-colors group cursor-pointer bg-white/5"
+              aria-label="Close Menu"
+            >
+              <span className="text-white/50 group-hover:text-white transition-colors text-sm font-light">✕</span>
+            </Button>
+          </div>
         </div>
 
         {/* Links */}

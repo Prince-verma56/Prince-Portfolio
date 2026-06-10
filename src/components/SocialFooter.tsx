@@ -9,6 +9,8 @@ import ButtonWithIcon from "./ButtonWithIcon";
 import SlideTextButton from "./kokonutui/slide-text-button";
 import { toast } from "sonner";
 
+import { useLoader } from "@/context/LoaderContext";
+
 gsap.registerPlugin(ScrollTrigger);
 
 export default function SocialFooter() {
@@ -16,6 +18,7 @@ export default function SocialFooter() {
   const [email, setEmail] = useState("");
   const [botField, setBotField] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isLoaderFinished } = useLoader();
 
   const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +49,7 @@ export default function SocialFooter() {
       } else {
         toast.error(data.message || "Failed to subscribe.", { id: loadingToastId });
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to subscribe. Please try again.", { id: loadingToastId });
     } finally {
       setIsSubmitting(false);
@@ -54,7 +57,7 @@ export default function SocialFooter() {
   };
 
   useGSAP(() => {
-    if (!footerRef.current) return;
+    if (!isLoaderFinished || !footerRef.current) return;
 
     // 1. BACKGROUND SLANT ENTRANCE
     gsap.fromTo(
@@ -120,7 +123,7 @@ export default function SocialFooter() {
       }
     });
 
-  }, { scope: footerRef });
+  }, { scope: footerRef, dependencies: [isLoaderFinished] });
 
   return (
     <footer
@@ -159,7 +162,7 @@ export default function SocialFooter() {
             </h2>
 
             <p className="footer-fade text-white/80 text-lg md:text-xl font-medium max-w-md">
-              Have a project in mind? We'd love to hear about it. Let’s create something great together!
+              Have a project in mind? We&apos;d love to hear about it. Let&apos;s create something great together!
             </p>
           </div>
 
