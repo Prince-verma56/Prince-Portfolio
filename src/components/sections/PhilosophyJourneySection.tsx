@@ -79,8 +79,8 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     const pathLength = pathRef.current.getTotalLength();
     gsap.set(glowPathRef.current, { strokeDasharray: pathLength, strokeDashoffset: pathLength });
 
-    gsap.set(".scene-title", { opacity: 0, filter: "blur(8px)", scale: 0.95, y: 40 });
-    gsap.set(".scene-1-heading", { opacity: 0, y: -25, filter: "blur(4px)" });
+    gsap.set(".scene-title", { opacity: 0, scale: 0.95, y: 40 });
+    gsap.set(".scene-1-heading", { opacity: 0, y: -25 });
     gsap.set(".editorial-img", { opacity: 0, scale: 0.95, clipPath: "inset(10% 10% 10% 10%)" });
     gsap.set(".scene-number-text", { opacity: 0, yPercent: 100 });
 
@@ -133,13 +133,13 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     tl.to(glowPathRef.current, { strokeDashoffset: 0, ease: "none", duration: 1 }, 0);
 
     // SCENE 1 - Start at beginning
-    tl.to(".scene-1-heading", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power2.out" }, 0);
-    tl.to(".scene-1-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0);
+    tl.to(".scene-1-heading", { y: 0, opacity: 1, duration: 0.06, ease: "power2.out" }, 0);
+    tl.to(".scene-1-title", { y: 0, opacity: 1, duration: 0.06, ease: "power3.out" }, 0);
     tl.to(".img-1", { opacity: 0.6, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0);
     tl.to(".num-1", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0);
 
     // SCENE 2 - Start at beginning
-    tl.to(".scene-2-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.166);
+    tl.to(".scene-2-title", { y: 0, opacity: 1, duration: 0.06, ease: "power3.out" }, 0.166);
     tl.to(".img-2", { opacity: 0.4, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.166);
     tl.to(".num-2", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.166);
     tl.fromTo(".research-card",
@@ -147,7 +147,7 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
       { y: 0, opacity: 1, scale: 1, duration: 0.02, stagger: 0.001, ease: "power3.out" }, 0.160);
 
     // SCENE 3 - Start at beginning
-    tl.to(".scene-3-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.333);
+    tl.to(".scene-3-title", { y: 0, opacity: 1, duration: 0.06, ease: "power3.out" }, 0.333);
     tl.to(".num-3", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.333);
     tl.fromTo(".design-grid",
       { opacity: 0, y: 80, rotate: -12 },
@@ -161,7 +161,7 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     tl.to(".img-3", { opacity: 1, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.19, ease: "power2.out" }, 0.336);
 
     // SCENE 4 - Start at beginning
-    tl.to(".scene-4-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.5);
+    tl.to(".scene-4-title", { y: 0, opacity: 1, duration: 0.06, ease: "power3.out" }, 0.5);
     tl.to(".img-4", { opacity: 0.3, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.5);
     tl.to(".num-4", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.5);
     tl.to(".arch-line", { strokeDashoffset: 0, duration: 0.06, stagger: 0.01, ease: "power2.inOut" }, 0.5);
@@ -170,7 +170,7 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
       { scale: 1, opacity: 1, duration: 0.06, stagger: 0.01, ease: "back.out(1.5)" }, 0.5);
 
     // SCENE 5 - Start at beginning
-    tl.to(".scene-5-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.666);
+    tl.to(".scene-5-title", { y: 0, opacity: 1, duration: 0.06, ease: "power3.out" }, 0.666);
     tl.to(".img-5", { opacity: 0.9, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.666);
     tl.to(".num-5", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.666);
     tl.fromTo(".metric-item",
@@ -189,7 +189,7 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
     }, 0.666);
 
     // SCENE 6 - Start at beginning
-    tl.to(".scene-6-title", { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.06, ease: "power3.out" }, 0.833);
+    tl.to(".scene-6-title", { y: 0, opacity: 1, duration: 0.06, ease: "power3.out" }, 0.833);
     tl.to(".img-6", { opacity: 0.8, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.06, ease: "power2.out" }, 0.833);
     tl.to(".num-6", { yPercent: 0, opacity: 0.18, duration: 0.06, ease: "power2.out" }, 0.833);
 
@@ -217,15 +217,9 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
         {/* PATH SVG */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 opacity-50">
           <svg viewBox="0 0 6000 1000" preserveAspectRatio="none" className="w-full h-full">
-            <defs>
-              <filter id="editorialGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="6" result="blur" />
-                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-              </filter>
-            </defs>
             <path ref={pathRef} d="M -100 500 C 200 500, 300 750, 500 750 C 700 750, 800 500, 1000 500 C 1200 500, 1300 250, 1500 250 C 1700 250, 1800 500, 2000 500 C 2200 500, 2300 750, 2500 750 C 2700 750, 2800 500, 3000 500 C 3200 500, 3300 250, 3500 250 C 3700 250, 3800 500, 4000 500 C 4200 500, 4300 750, 4500 750 C 4700 750, 4800 500, 5000 500 C 5200 500, 5300 250, 5500 250 C 5700 250, 5800 500, 6100 500" fill="none" stroke="transparent" strokeWidth="2" />
             <path d="M -100 500 C 200 500, 300 750, 500 750 C 700 750, 800 500, 1000 500 C 1200 500, 1300 250, 1500 250 C 1700 250, 1800 500, 2000 500 C 2200 500, 2300 750, 2500 750 C 2700 750, 2800 500, 3000 500 C 3200 500, 3300 250, 3500 250 C 3700 250, 3800 500, 4000 500 C 4200 500, 4300 750, 4500 750 C 4700 750, 4800 500, 5000 500 C 5200 500, 5300 250, 5500 250 C 5700 250, 5800 500, 6100 500" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-            <path ref={glowPathRef} d="M -100 500 C 200 500, 300 750, 500 750 C 700 750, 800 500, 1000 500 C 1200 500, 1300 250, 1500 250 C 1700 250, 1800 500, 2000 500 C 2200 500, 2300 750, 2500 750 C 2700 750, 2800 500, 3000 500 C 3200 500, 3300 250, 3500 250 C 3700 250, 3800 500, 4000 500 C 4200 500, 4300 750, 4500 750 C 4700 750, 4800 500, 5000 500 C 5200 500, 5300 250, 5500 250 C 5700 250, 5800 500, 6100 500" fill="none" stroke="#f04e00" strokeWidth="2" filter="url(#editorialGlow)" />
+            <path ref={glowPathRef} d="M -100 500 C 200 500, 300 750, 500 750 C 700 750, 800 500, 1000 500 C 1200 500, 1300 250, 1500 250 C 1700 250, 1800 500, 2000 500 C 2200 500, 2300 750, 2500 750 C 2700 750, 2800 500, 3000 500 C 3200 500, 3300 250, 3500 250 C 3700 250, 3800 500, 4000 500 C 4200 500, 4300 750, 4500 750 C 4700 750, 4800 500, 5000 500 C 5200 500, 5300 250, 5500 250 C 5700 250, 5800 500, 6100 500" fill="none" stroke="#f04e00" strokeWidth="3" />
           </svg>
         </div>
 

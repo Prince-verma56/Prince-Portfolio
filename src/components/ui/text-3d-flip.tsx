@@ -73,7 +73,7 @@ interface Text3DFlipProps {
 
 const Text3DFlip = ({
   children,
-  as: ElementTag = "p",
+  as: ElementTag = "p" as any,
   className,
   textClassName,
   flipTextClassName,
@@ -177,8 +177,9 @@ const Text3DFlip = ({
     }
   }, [characters, transition, getStaggerDelay, rotationTransform, animate])
 
+  const Tag = ElementTag as any;
   return (
-    <ElementTag
+    <Tag
       className={cn("relative flex flex-wrap", className)}
       onMouseEnter={handleHoverStart}
       ref={scope}
@@ -200,7 +201,7 @@ const Text3DFlip = ({
           {wordObj.needsSpace && <span className="whitespace-pre"> </span>}
         </span>
       ))}
-    </ElementTag>
+    </Tag>
   )
 }
 

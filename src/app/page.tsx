@@ -9,6 +9,7 @@ import { useLoader } from "@/context/LoaderContext";
 import ClientLiquidHero from "@/components/ClientLiquidHero";
 import HeroContent from "@/components/HeroContent";
 import AboutSection from "@/components/sections/AboutSection";
+import SetupSection from "@/components/sections/SetupSection";
 
 // ── Below-the-fold: lazy-loaded to reduce initial JS bundle ──
 const PhilosophyJourneySection = dynamic(
@@ -74,14 +75,15 @@ export default function Home() {
       </div>
 
       {/* ════════ Sections ════════ */}
+
       <AboutSection />
-      {/* <TechStackSection /> */}
-   
+      <SetupSection />
+
       <PhilosophyJourneySection bgImage="https://res.cloudinary.com/dtslaveid/image/upload/v1780791430/b682bca8-66a3-47d9-aee7-2212d6dfd9a4_vlkoqv.png" />
-      {/* <TechStackSection /> */}
+
       <GitContributionSection />
       <ServicesSection />
-      <WorkSection /> 
+      <WorkSection />
       <AchievementsSection />
       <SocialFooter />
       <FooterSection />

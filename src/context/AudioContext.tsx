@@ -22,12 +22,13 @@ const STORAGE_KEYS = {
   audioEnabled: "audio-enabled",
 };
 
-const AMBIENT_AUDIO_PATH = "/sounds/RockMusic.mp3";
+// const AMBIENT_AUDIO_PATH = "/sounds/RockMusic.mp3";
+const AMBIENT_AUDIO_PATH = "";
 
 const SFX_FILES: Record<SFXType, string> = {
   whoosh: "/sounds/SciFi Enter.mp3",
-  click:  "/sounds/SciFi Enter.mp3",
-  tick:   "/sounds/SciFi Enter.mp3",
+  click: "/sounds/SciFi Enter.mp3",
+  tick: "/sounds/SciFi Enter.mp3",
   impact: "/sounds/SciFi Enter.mp3",
   swoosh: "/sounds/SciFi Enter.mp3",
 };
@@ -37,33 +38,33 @@ const AudioContext = createContext<AudioContextType>({
   muted: false,
   audioEnabled: true,
   isPlaying: false,
-  setVolume: () => {},
-  toggleMute: () => {},
-  playSfx: () => {},
-  togglePlayPause: () => {},
-  startAmbientAudio: () => {},
+  setVolume: () => { },
+  toggleMute: () => { },
+  playSfx: () => { },
+  togglePlayPause: () => { },
+  startAmbientAudio: () => { },
 });
 
 export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
-  const ambientRef    = useRef<HTMLAudioElement | null>(null);
-  const sfxPoolRef    = useRef<Map<SFXType, HTMLAudioElement[]>>(new Map());
-  const fadeRafRef    = useRef<number | null>(null);
+  const ambientRef = useRef<HTMLAudioElement | null>(null);
+  const sfxPoolRef = useRef<Map<SFXType, HTMLAudioElement[]>>(new Map());
+  const fadeRafRef = useRef<number | null>(null);
   const hasStartedRef = useRef(false);
 
-  const [volume,       setVolumeState]       = useState(0.12);
-  const [muted,        setMutedState]        = useState(false);
+  const [volume, setVolumeState] = useState(0.12);
+  const [muted, setMutedState] = useState(false);
   const [audioEnabled, setAudioEnabledState] = useState(true);
-  const [isPlaying,    setIsPlaying]         = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const volumeRef       = useRef(volume);
-  const mutedRef        = useRef(muted);
+  const volumeRef = useRef(volume);
+  const mutedRef = useRef(muted);
   const audioEnabledRef = useRef(audioEnabled);
-  const isPlayingRef    = useRef(isPlaying);
+  const isPlayingRef = useRef(isPlaying);
 
-  useEffect(() => { volumeRef.current       = volume;       }, [volume]);
-  useEffect(() => { mutedRef.current        = muted;        }, [muted]);
+  useEffect(() => { volumeRef.current = volume; }, [volume]);
+  useEffect(() => { mutedRef.current = muted; }, [muted]);
   useEffect(() => { audioEnabledRef.current = audioEnabled; }, [audioEnabled]);
-  useEffect(() => { isPlayingRef.current    = isPlaying;    }, [isPlaying]);
+  useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
 
   const clamp = (n: number) => Math.max(0, Math.min(1, n));
 
@@ -78,15 +79,15 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     cancelFade();
     const el = ambientRef.current;
     if (!el) return;
-    const start    = el.volume;
+    const start = el.volume;
     const duration = 300;
-    const t0       = performance.now();
+    const t0 = performance.now();
     const tick = (now: number) => {
-      const p    = Math.min((now - t0) / duration, 1);
+      const p = Math.min((now - t0) / duration, 1);
       const ease = 1 - Math.pow(1 - p, 3);
       if (ambientRef.current) ambientRef.current.volume = clamp(start + (targetVol - start) * ease);
       if (p < 1) fadeRafRef.current = requestAnimationFrame(tick);
-      else        fadeRafRef.current = null;
+      else fadeRafRef.current = null;
     };
     fadeRafRef.current = requestAnimationFrame(tick);
   }, []);
@@ -95,11 +96,11 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     cancelFade();
     const el = ambientRef.current;
     if (!el) return;
-    const start    = el.volume;
+    const start = el.volume;
     const duration = 500;
-    const t0       = performance.now();
+    const t0 = performance.now();
     const tick = (now: number) => {
-      const p    = Math.min((now - t0) / duration, 1);
+      const p = Math.min((now - t0) / duration, 1);
       const ease = 1 - Math.pow(1 - p, 3);
       if (ambientRef.current) ambientRef.current.volume = clamp(start * (1 - ease));
       if (p < 1) {
@@ -139,7 +140,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   }, [fadeOut, startAmbientAudio]);
 
   const toggleMute = useCallback(() => setMutedState((p) => !p), []);
-  const setVolume  = useCallback((v: number) => setVolumeState(clamp(v)), []);
+  const setVolume = useCallback((v: number) => setVolumeState(clamp(v)), []);
 
   const playSfx = useCallback((type: SFXType) => {
     // If ambient audio not started yet, start it first (uses user gesture from this interaction)
@@ -149,31 +150,31 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (mutedRef.current || !audioEnabledRef.current) return;
-    const pool  = sfxPoolRef.current.get(type);
+    const pool = sfxPoolRef.current.get(type);
     if (!pool?.length) return;
     const audio = pool.find((a) => a.paused || a.currentTime === 0)
-                  ?? (pool[0].cloneNode() as HTMLAudioElement);
+      ?? (pool[0].cloneNode() as HTMLAudioElement);
     audio.currentTime = 0;
-    audio.volume      = clamp(volumeRef.current * 0.6);
-    audio.play().catch(() => {});
+    audio.volume = clamp(volumeRef.current * 0.6);
+    audio.play().catch(() => { });
   }, [startAmbientAudio]);
 
   // Init once
   useEffect(() => {
-    const savedVol     = localStorage.getItem(STORAGE_KEYS.volume);
-    const savedMuted   = localStorage.getItem(STORAGE_KEYS.muted);
+    const savedVol = localStorage.getItem(STORAGE_KEYS.volume);
+    const savedMuted = localStorage.getItem(STORAGE_KEYS.muted);
     const savedEnabled = localStorage.getItem(STORAGE_KEYS.audioEnabled);
-    
+
     requestAnimationFrame(() => {
-      if (savedVol)     { const v = parseFloat(savedVol); setVolumeState(v); volumeRef.current = v; }
-      if (savedMuted)   { const m = savedMuted   === "true"; setMutedState(m);        mutedRef.current        = m; }
+      if (savedVol) { const v = parseFloat(savedVol); setVolumeState(v); volumeRef.current = v; }
+      if (savedMuted) { const m = savedMuted === "true"; setMutedState(m); mutedRef.current = m; }
       if (savedEnabled) { const e = savedEnabled === "true"; setAudioEnabledState(e); audioEnabledRef.current = e; }
       startAmbientAudio();
     });
 
     const el = new Audio(AMBIENT_AUDIO_PATH);
-    el.loop    = true;
-    el.volume  = 0;
+    el.loop = true;
+    el.volume = 0;
     el.preload = "auto";
     ambientRef.current = el;
 
@@ -183,7 +184,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       for (let i = 0; i < 3; i++) {
         const a = new Audio(SFX_FILES[type]);
         a.preload = "auto";
-        a.volume  = 0.3;
+        a.volume = 0.3;
         pool.push(a);
       }
       sfxPoolRef.current.set(type, pool);
@@ -201,7 +202,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       el.volume = clamp(muted ? 0 : volume);
     }
     localStorage.setItem(STORAGE_KEYS.volume, volume.toString());
-    localStorage.setItem(STORAGE_KEYS.muted,  muted.toString());
+    localStorage.setItem(STORAGE_KEYS.muted, muted.toString());
   }, [volume, muted]);
 
   useEffect(() => {
@@ -220,13 +221,13 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    window.addEventListener("click",      onGesture, { passive: true, once: true });
-    window.addEventListener("keydown",    onGesture, { passive: true, once: true });
+    window.addEventListener("click", onGesture, { passive: true, once: true });
+    window.addEventListener("keydown", onGesture, { passive: true, once: true });
     window.addEventListener("touchstart", onGesture, { passive: true, once: true });
 
     return () => {
-      window.removeEventListener("click",      onGesture);
-      window.removeEventListener("keydown",    onGesture);
+      window.removeEventListener("click", onGesture);
+      window.removeEventListener("keydown", onGesture);
       window.removeEventListener("touchstart", onGesture);
     };
   }, [startAmbientAudio]);
