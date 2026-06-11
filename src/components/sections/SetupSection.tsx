@@ -68,7 +68,7 @@ export default function SetupSection() {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top 65%",
-        toggleActions: "play none none reverse",
+        toggleActions: "play none none none",
       }
     });
 
@@ -91,6 +91,23 @@ export default function SetupSection() {
       .to(".setup-badge", {
         opacity: 1, scale: 1, duration: 0.6, stagger: 0.05, ease: "back.out(1.5)"
       }, "-=1.2");
+
+    // ── PARALLAX SHEET ANIMATION ──
+    gsap.fromTo(
+      sectionRef.current,
+      { clipPath: "polygon(0% 15%, 100% 0%, 100% 100%, 0% 100%)", y: 100 },
+      {
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+        y: 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "top top",
+          scrub: 1,
+        }
+      }
+    );
 
     // ── PARALLAX BACKGROUND TEXT ──
     gsap.fromTo(".parallax-setup-bg",
@@ -128,7 +145,7 @@ export default function SetupSection() {
     <section
       ref={sectionRef}
       id="setup"
-      className="relative w-full min-h-screen bg-[#050505] text-white py-24 md:py-32 border-t border-white/10 rounded-t-[40px] md:rounded-t-[64px] shadow-[0_-30px_60px_rgba(0,0,0,0.85)] overflow-hidden flex items-center z-10 -mt-20"
+      className="relative w-full min-h-screen bg-[#050505] text-white py-24 md:py-32 border-t border-white/10 rounded-t-[40px] md:rounded-t-[64px] shadow-[0_-50px_100px_rgba(0,0,0,0.9)] overflow-hidden flex items-center z-10 -mt-32"
     >
       {/* ── BACKGROUND ELEMENTS ── */}
       <div className="absolute inset-0 z-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
