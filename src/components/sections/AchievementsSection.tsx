@@ -69,10 +69,7 @@ export default function AchievementsSection() {
       const imgInner = row.querySelector(".img-inner");
       const textMasks = row.querySelectorAll(".text-mask");
 
-      // Initial States
-      gsap.set(imgWrap, { clipPath: "inset(100% 0 0 0)" });
-      gsap.set(textMasks, { y: "110%", opacity: 0 });
-
+      // Reveal Image, then stagger text using fromTo for reliable ScrollTrigger behavior
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: row,
@@ -80,9 +77,15 @@ export default function AchievementsSection() {
         },
       });
 
-      // Reveal Image, then stagger text
-      tl.to(imgWrap, { clipPath: "inset(0% 0 0 0)", duration: 1.5, ease: "power3.inOut" })
-        .to(textMasks, { y: "0%", opacity: 1, duration: 1, stagger: 0.1, ease: "power4.out" }, "-=0.8");
+      tl.fromTo(imgWrap,
+        { clipPath: "inset(100% 0 0 0)" },
+        { clipPath: "inset(0% 0 0 0)", duration: 1.5, ease: "power3.inOut" }
+      )
+        .fromTo(textMasks,
+          { y: "100%", opacity: 0 },
+          { y: "0%", opacity: 1, duration: 1, stagger: 0.1, ease: "power4.out" },
+          "-=0.8"
+        );
 
       // Independent Parallax for Image
       if (imgInner) {

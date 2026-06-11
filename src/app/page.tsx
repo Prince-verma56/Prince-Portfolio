@@ -12,10 +12,16 @@ import AboutSection from "@/components/sections/AboutSection";
 import SetupSection from "@/components/sections/SetupSection";
 
 // ── Below-the-fold: lazy-loaded to reduce initial JS bundle ──
+
 const PhilosophyJourneySection = dynamic(
   () => import("@/components/sections/PhilosophyJourneySection"),
   { ssr: false, loading: () => <div className="h-screen bg-[#050505]" /> }
 );
+const TestimonialsSection = dynamic(
+  () => import("@/components/sections/TestimonialsSection"),
+  { ssr: false, loading: () => <div className="h-screen bg-[#050505]" /> }
+);
+
 const TechStackSection = dynamic(
   () => import("@/components/sections/TechStackSection"),
   { ssr: false, loading: () => <div className="h-screen bg-black" /> }
@@ -75,15 +81,13 @@ export default function Home() {
       </div>
 
       {/* ════════ Sections ════════ */}
-
       <AboutSection />
-      <SetupSection />
-
       <PhilosophyJourneySection bgImage="https://res.cloudinary.com/dtslaveid/image/upload/v1780791430/b682bca8-66a3-47d9-aee7-2212d6dfd9a4_vlkoqv.png" />
-
+      <SetupSection />
       <GitContributionSection />
       <ServicesSection />
       <WorkSection />
+      <TestimonialsSection />
       <AchievementsSection />
       <SocialFooter />
       <FooterSection />

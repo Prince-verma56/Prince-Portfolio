@@ -16,7 +16,7 @@ const projects = [
     title: "Adhayaya",
     subtitle: "Indian Heritage & Travel Platform",
     tags: ["Next.js", "WebGL", "Travel"],
-    image: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1800&q=90",
+    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1781108027/Screenshot_2026-06-09_202735_ixq9ul.png",
     link: "/works/adhayaya",
     year: "2024",
     visual: (
@@ -26,20 +26,20 @@ const projects = [
       </svg>
     )
   },
-  {
-    id: "02",
-    title: "Dhritam",
-    subtitle: "AI-Powered Health Monitoring",
-    tags: ["Python", "TensorFlow", "IoT"],
-    image: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=1800&q=90",
-    link: "/works/dhritam",
-    year: "2024",
-    visual: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" className="w-24 h-24 text-white">
-        <path d="M2 12h4l3-9 5 18 3-9h5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    )
-  },
+{
+  id: "02",
+  title: "NeonScript",
+  subtitle: "AI-Powered Desktop IDE",
+  tags: ["Tauri", "React", "TypeScript"],
+  image: "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022516_z8c2db.png",
+  link: "/works/neonscript",
+  year: "2025",
+  visual: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" className="w-24 h-24 text-white">
+      <path d="M8 3H4a1 1 0 0 0-1 1v4M8 3h8M8 3v18m8-18h4a1 1 0 0 1 1 1v4M16 3v18M3 8h18M3 16h18" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+},
   {
     id: "03",
     title: "Hazu",

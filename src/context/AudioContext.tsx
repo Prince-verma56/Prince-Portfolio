@@ -22,8 +22,8 @@ const STORAGE_KEYS = {
   audioEnabled: "audio-enabled",
 };
 
-// const AMBIENT_AUDIO_PATH = "/sounds/RockMusic.mp3";
-const AMBIENT_AUDIO_PATH = "";
+const AMBIENT_AUDIO_PATH = "/sounds/RockMusic.mp3";
+// const AMBIENT_AUDIO_PATH = "";
 
 const SFX_FILES: Record<SFXType, string> = {
   whoosh: "/sounds/SciFi Enter.mp3",

@@ -370,8 +370,18 @@ export default function LiquidHero({
       targetTarget.addEventListener("mouseleave", handleMouseLeave);
     }
 
+    let isVisible = true;
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+    }, { rootMargin: '200px' });
+    observer.observe(mountElement);
+
     let animFrameId: number;
     const animate = () => {
+      animFrameId = requestAnimationFrame(animate);
+
+      if (!isVisible) return; // Pause calculations and rendering off-screen!
+
       if (isPlayingRef.current) {
         timeRef.current += 0.016;
       }
@@ -395,13 +405,13 @@ export default function LiquidHero({
       if (rendererRef.current && sceneRef.current) {
         rendererRef.current.render(sceneRef.current, camera);
       }
-      animFrameId = requestAnimationFrame(animate);
     };
     animate();
 
     // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
+      observer.disconnect();
       cancelAnimationFrame(animFrameId);
 
       if (videoElement) {

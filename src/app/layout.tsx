@@ -14,8 +14,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Prince Verma — Portfolio",
-  description: "B.Tech AI & Data Analytics — Developer, Designer, Builder. Crafting cutting-edge digital experiences.",
+  metadataBase: new URL("https://princeverma.vercel.app"),
+  title: "Prince Verma — Creative Developer & AI Engineer",
+  description: "B.Tech AI & Data Analytics. Expert in Next.js, React, and cutting-edge 3D web experiences. Explore my award-winning portfolio.",
   keywords: ["Software Engineer", "Web Developer", "React", "Next.js", "AI", "Data Analytics", "Portfolio", "UI/UX", "Frontend", "Full Stack"],
   authors: [{ name: "Prince Verma" }],
   creator: "Prince Verma",
@@ -56,8 +57,28 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Prince Verma",
+    "url": "https://princeverma.vercel.app",
+    "jobTitle": "Creative Developer & AI Engineer",
+    "alumniOf": "B.Tech AI & Data Analytics",
+    "sameAs": [
+      "https://github.com/prince-verma56",
+      "https://linkedin.com/in/prince-verma56"
+    ],
+    "knowsAbout": ["React", "Next.js", "AI", "Data Analytics", "WebGL", "Three.js", "UI/UX Design"]
+  };
+
   return (
     <html lang="en" className={cn("font-sans", geist.variable, spaceGrotesk.variable)} suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className="bg-black text-white antialiased"
         style={{ fontFamily: "var(--font-space), sans-serif" }}

@@ -198,8 +198,7 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
   return (
     <section
       ref={containerRef}
-      className="relative h-screen w-full overflow-hidden text-white font-space will-change-transform z-30 bg-[#050505] drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]"
-      style={{ clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" }}
+      className="relative h-screen w-full overflow-hidden text-white font-space will-change-transform z-30 bg-[#050505] -mt-32 rounded-t-[40px] md:rounded-t-[64px] shadow-[0_-50px_100px_rgba(0,0,0,0.9)]"
     >
       {bgImage && (
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">

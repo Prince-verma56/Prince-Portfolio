@@ -11,6 +11,26 @@ export interface ProjectData {
   challenge: string;
   solution: string;
   results: { value: string; label: string }[];
+  tagline?: string;
+  category?: string;
+  status?: string;
+  role?: string;
+  client?: string;
+  industry?: string;
+  techStack?: {
+    frontend?: string[];
+    backend?: string[];
+    shell?: string[];
+    infra?: string[];
+    [key: string]: string[] | undefined;
+  };
+  caseStudy?: string;
+  githubLink?: string;
+  thumbnailImage?: string;
+  featured?: boolean;
+  order?: number;
+  accentColor?: string;
+  darkHero?: boolean;
 }
 
 export const projectsData: ProjectData[] = [
@@ -38,27 +58,54 @@ export const projectsData: ProjectData[] = [
     ]
   },
   {
-    id: "dhritam",
-    title: "Dhritam",
-    description: "An AI-powered real-time health monitoring and prediction platform combining IoT wearable streams with complex event processing engines to alert medical professionals.",
-    year: "2024",
-    timeline: "4 Months",
-    services: "Python / TensorFlow / IoT Dashboard",
-    liveLink: "https://dhritam.health",
-    heroImage: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=1800&q=90",
+    id: "neonscript",
+    title: "NeonScript",
+    tagline: "Code. Run. Ship. Natively.",
+    category: "Developer Tooling",
+    status: "live",
+
+    year: "2025",
+    timeline: "Active",
+    role: "Full-Stack + Desktop Engineer",
+    client: "Personal / Open Source",
+    industry: "IDE / Dev Tools",
+
+    services: "Next.js / Tauri / TypeScript",
+    techStack: {
+      frontend: ["Next.js 15", "React 18", "TypeScript", "Monaco Editor", "TailwindCSS"],
+      backend: ["Tauri 2.x", "Rust", "Axum"],
+      shell: ["xterm.js", "tauri-plugin-shell", "Real OS PTY"],
+      infra: ["tauri-plugin-fs", "tauri-plugin-dialog", "Sentry"],
+    },
+
+    liveLink: "https://github.com/Prince-verma56/neonscript",
+    caseStudy: "/work/neonscript",
+    githubLink: "https://github.com/Prince-verma56/neonscript",
+
+    heroImage: "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022516_z8c2db.png",
     galleryImages: [
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&q=80",
-      "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1200&q=80",
-      "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?w=1800&q=90"
+      "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022204_ldmof4.png",
+      "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022543_tlcw6f.png",
+      "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022516_z8c2db.png",
     ],
-    challenge: "Medical alert devices are often prone to high false-alarm rates, causing alarm fatigue among hospital staff. We needed to develop a system that could aggregate noisy multi-parameter sensor streams (heart rate, blood oxygen, posture) and accurately flag anomalies in under 200 milliseconds.",
-    solution: "We trained lightweight 1D convolutional neural networks (1D-CNN) that run locally on Edge gateways and sync with a central cloud system. The dashboard uses highly optimized custom canvas graphing to render thousands of data streams dynamically at 60fps without choking browser processes.",
+
+    description: "A Tauri-powered desktop IDE with real native OS access — Monaco editor, true PTY terminal, multi-language runner, and local HTTP HTML preview. VS Code parity without the Electron weight.",
+
+    challenge: "Existing browser-based IDEs simulate file systems and terminals using WebContainer and WASM — giving developers a fake environment that breaks on real projects, real dependencies, and real OS tooling.",
+
+    solution: "Rebuilt from scratch on Tauri 2.x. Real shell (PowerShell/zsh/bash) spawned via plugin-shell. File operations via plugin-fs with absolute OS paths. HTML preview served through a Rust axum HTTP server so linked CSS/JS loads correctly. Multi-language runner checks PATH at runtime — no hardcoded binary locations.",
+
     results: [
-      { value: "98.7%", label: "Anomaly Prediction Accuracy" },
-      { value: "92%", label: "Reduction in Alarm Fatigue" },
-      { value: "15ms", label: "Stream Latency to Cloud" },
-      { value: "5k+", label: "Active Connected Patients" }
-    ]
+      { value: "11", label: "Languages Supported" },
+      { value: "100%", label: "Real OS File Access" },
+      { value: "0", label: "WebContainer Dependencies" },
+      { value: "~40MB", label: "App Bundle Size" },
+    ],
+
+    featured: true,
+    order: 1,
+    accentColor: "#2563EB",
+    darkHero: true,
   },
   {
     id: "hazu",
