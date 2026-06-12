@@ -13,36 +13,42 @@ const services = [
     title: "Full Stack Products",
     subtitle: "Building scalable web applications from idea to deployment with modern technologies.",
     tags: ["React", "Node.js"],
+    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1781245408/b6d38109-6908-453e-8836-a4284fa4daf5_ukalze.png",
   },
   {
     id: "02",
     title: "3D Web Experiences",
     subtitle: "Creating immersive, interactive websites using Three.js, WebGL, and modern animations.",
     tags: ["Three.js", "GSAP"],
+    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1781245402/fec6f177-fae4-44b5-aad9-16ffaf15fa4a_cmgtup.png",
   },
   {
     id: "03",
     title: "UI/UX Design",
     subtitle: "Designing intuitive interfaces that balance aesthetics, usability, and business goals.",
     tags: ["Figma", "Design Systems"],
+    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "04",
     title: "AI-Powered Solutions",
     subtitle: "Integrating AI models, APIs, and intelligent workflows into real-world applications.",
     tags: ["LLMs", "AI Integration"],
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "05",
     title: "Automation Systems",
     subtitle: "Eliminating repetitive work through smart automations, workflows, and custom tools.",
     tags: ["Workflows", "APIs"],
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "06",
     title: "Agentic AI Systems",
     subtitle: "Developing autonomous AI agents capable of reasoning, planning, and executing tasks.",
     tags: ["AI Agents", "Multi-Agent"],
+    image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80",
   },
 ];
 
@@ -51,12 +57,13 @@ export default function ServicesSection() {
   const contentRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { isLoaderFinished } = useLoader();
-  
+
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   // ── 1. Initial Scroll, Entrance & Parallax Animations ──
   useGSAP(() => {
     if (!isLoaderFinished || !sectionRef.current) return;
+
     // Section un-slanting
     gsap.fromTo(
       sectionRef.current,
@@ -105,7 +112,7 @@ export default function ServicesSection() {
       }
     );
 
-    // ── NEW: Accordion Rows Staggered Entrance ──
+    // Accordion Rows Staggered Entrance
     gsap.fromTo(
       ".accordion-row",
       { opacity: 0, y: 50 },
@@ -113,22 +120,21 @@ export default function ServicesSection() {
         opacity: 1,
         y: 0,
         duration: 1.2,
-        stagger: 0.1, // This creates the "one by one" effect
+        stagger: 0.1,
         ease: "expo.out",
         scrollTrigger: {
           trigger: ".accordion-list",
           start: "top 85%",
-          once: true, // Only play once when scrolled into view
+          once: true,
         }
       }
     );
 
-    // ── NEW: Accordion Rows Continuous Parallax ──
-    // Uses yPercent so it doesn't conflict with the 'y' entrance animation
+    // Accordion Rows Continuous Parallax
     gsap.to(".accordion-row", {
-      yPercent: -10, // Slight upward drift as you scroll down
+      yPercent: -10,
       ease: "none",
-      stagger: 0.02, // Adds a slight wave effect to the parallax
+      stagger: 0.02,
       scrollTrigger: {
         trigger: ".accordion-list",
         start: "top bottom",
@@ -149,13 +155,13 @@ export default function ServicesSection() {
       const innerContent = item.querySelector(".inner-content");
 
       if (activeIndex === index) {
-        // OPENING ANIMATION (Upgraded to expo.inOut for premium smoothness)
+        // OPENING ANIMATION
         gsap.to(collapsedTitle, { height: 0, opacity: 0, duration: 0.5, ease: "expo.inOut" });
         gsap.to(expandedBody, { height: "auto", duration: 0.7, ease: "expo.inOut" });
         gsap.fromTo(
-          innerContent, 
-          { opacity: 0, y: 20 }, 
-          { opacity: 1, y: 0, duration: 0.5, delay: 0.3, ease: "power2.out", overwrite: true }
+          innerContent,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.6, delay: 0.3, ease: "power2.out", overwrite: true }
         );
       } else {
         // CLOSING ANIMATION
@@ -186,116 +192,127 @@ export default function ServicesSection() {
 
         <div ref={contentRef} className="relative z-10 max-w-[1400px] mx-auto flex flex-col will-change-transform px-6 md:px-12 lg:px-20">
 
-        {/* Top Titles Section */}
-        <div className="mask-title-wrapper flex flex-col items-end pb-8 mb-16 border-b border-white/10 w-full">
-          <span className="text-white/60 font-mono tracking-widest text-sm mb-2 uppercase">
-            (Services)
-          </span>
-          <h2 className="text-[clamp(3.5rem,8vw,7rem)] font-black uppercase text-white leading-none tracking-tighter text-right">
-            HOW I CAN HELP <span className="font-serif italic font-medium text-[#f04e00]">?</span>
-          </h2>
-        </div>
+          {/* Top Titles Section */}
+          <div className="mask-title-wrapper flex flex-col items-end pb-8 mb-16 border-b border-white/10 w-full">
+            <span className="text-white/60 font-mono tracking-widest text-sm mb-2 uppercase">
+              (Services)
+            </span>
+            <h2 className="text-[clamp(3.5rem,8vw,7rem)] font-black uppercase text-white leading-none tracking-tighter text-right">
+              HOW I CAN HELP <span className="font-serif italic font-medium text-[#f04e00]">?</span>
+            </h2>
+          </div>
 
-        {/* Accordion List */}
-        <div className="accordion-list flex flex-col w-full">
-          {services.map((service, index) => {
-            const isOpen = activeIndex === index;
+          {/* Accordion List */}
+          <div className="accordion-list flex flex-col w-full">
+            {services.map((service, index) => {
+              const isOpen = activeIndex === index;
 
-            return (
-              <div
-                key={service.id}
-                ref={(el) => { itemRefs.current[index] = el; }}
-                onClick={() => setActiveIndex(isOpen ? null : index)}
-                className={`accordion-row relative group py-10 md:py-14 w-full transition-colors cursor-pointer ${
-                  isOpen ? "bg-white/[0.03]" : "hover:bg-white/[0.02]"
-                }`}
-              >
-                {/* ── Premium Animated Divider Lines ── */}
-                {/* Base subtle line */}
-                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 transition-colors duration-500 group-hover:bg-white/20" />
-                
-                {/* Animated glowing gradient line (triggers on hover or open) */}
-                <div 
-                  className={`absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-[#f04e00] via-[#f04e00]/50 to-transparent origin-left transition-transform duration-700 ease-out ${
-                    isOpen ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                  }`} 
-                />
-                
-                {/* ── Animated Toggle Icon (+ / -) ── */}
-                <div className="absolute top-12 md:top-16 right-4 md:right-8 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-white/20 bg-transparent transition-all duration-300 group-hover:border-white/50 z-10">
-                  <div className="relative w-3 h-3 md:w-3.5 md:h-3.5 flex items-center justify-center">
-                    {/* Horizontal Line */}
-                    <span className="absolute w-full h-[1.5px] bg-white rounded-full transition-transform duration-500 ease-in-out" />
-                    {/* Vertical Line */}
-                    <span 
-                      className={`absolute w-full h-[1.5px] bg-white rounded-full transition-all duration-500 ease-in-out ${
-                        isOpen ? "rotate-0 opacity-0" : "rotate-90 opacity-100"
-                      }`} 
-                    />
-                  </div>
-                </div>
+              return (
+                <div
+                  key={service.id}
+                  ref={(el) => { itemRefs.current[index] = el; }}
+                  onClick={() => setActiveIndex(isOpen ? null : index)}
+                  className={`accordion-row relative group py-10 md:py-14 w-full transition-colors cursor-pointer ${isOpen ? "bg-white/[0.03]" : "hover:bg-white/[0.02]"
+                    }`}
+                >
+                  {/* ── Premium Animated Divider Lines ── */}
+                  <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 transition-colors duration-500 group-hover:bg-white/20" />
 
-                <div className="flex flex-col lg:flex-row gap-6 lg:gap-16 px-4 md:px-8 pr-20 md:pr-28">
-                  
-                  {/* Fixed Number on Left */}
-                  <div className="w-16 md:w-[120px] flex-shrink-0 pt-2">
-                    <div className="relative inline-block">
-                      <span className="text-5xl md:text-6xl font-black text-white leading-none tracking-tighter transition-colors group-hover:text-white/80">
-                        {service.id}.
-                      </span>
-                      {/* Tiny Orange Accent Dot */}
-                      <div className="absolute bottom-1 -right-3 w-2.5 h-2.5 bg-[#f04e00]" />
+                  <div
+                    className={`absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-[#f04e00] via-[#f04e00]/50 to-transparent origin-left transition-transform duration-700 ease-out ${isOpen ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                      }`}
+                  />
+
+                  {/* ── Animated Toggle Icon (+ / -) ── */}
+                  <div className="absolute top-12 md:top-16 right-4 md:right-8 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-white/20 bg-transparent transition-all duration-300 group-hover:border-white/50 z-10">
+                    <div className="relative w-3 h-3 md:w-3.5 md:h-3.5 flex items-center justify-center">
+                      {/* Horizontal Line */}
+                      <span className="absolute w-full h-[1.5px] bg-white rounded-full transition-transform duration-500 ease-in-out" />
+                      {/* Vertical Line */}
+                      <span
+                        className={`absolute w-full h-[1.5px] bg-white rounded-full transition-all duration-500 ease-in-out ${isOpen ? "rotate-0 opacity-0" : "rotate-90 opacity-100"
+                          }`}
+                      />
                     </div>
                   </div>
 
-                  {/* Right Side (Changes based on click) */}
-                  <div className="flex-1 flex flex-col justify-center">
+                  <div className="flex flex-col lg:flex-row gap-6 lg:gap-16 px-4 md:px-8 pr-20 md:pr-28">
 
-                    {/* 1. Collapsed State */}
-                    <div className="collapsed-title w-full overflow-hidden">
-                      <div className="flex justify-start lg:justify-end items-center h-full pt-3">
-                        <h3 className="text-2xl md:text-3xl font-bold text-white transition-colors duration-300 group-hover:text-[#f04e00]">
-                          {service.title}
-                        </h3>
+                    {/* Fixed Number on Left */}
+                    <div className="w-16 md:w-[120px] flex-shrink-0 pt-2">
+                      <div className="relative inline-block">
+                        <span className="text-5xl md:text-6xl font-black text-white leading-none tracking-tighter transition-colors group-hover:text-white/80">
+                          {service.id}.
+                        </span>
+                        {/* Tiny Orange Accent Dot */}
+                        <div className="absolute bottom-1 -right-3 w-2.5 h-2.5 bg-[#f04e00]" />
                       </div>
                     </div>
 
-                    {/* 2. Expanded State */}
-                    <div className="expanded-body h-0 overflow-hidden w-full">
-                      <div className="inner-content pt-8 pb-4">
+                    {/* Right Side (Changes based on click) */}
+                    <div className="flex-1 flex flex-col justify-center">
 
-                        {/* Detailed Content */}
-                        <div className="flex flex-col gap-8 justify-center">
-                          <h3 className="text-5xl md:text-6xl lg:text-7xl font-black text-[#f04e00] leading-[0.9] tracking-tight">
+                      {/* 1. Collapsed State */}
+                      <div className="collapsed-title w-full overflow-hidden">
+                        <div className="flex justify-start lg:justify-end items-center h-full pt-3">
+                          <h3 className="text-2xl md:text-3xl font-bold text-white transition-colors duration-300 group-hover:text-[#f04e00]">
                             {service.title}
                           </h3>
-                          
-                          <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-xl font-light">
-                            {service.subtitle}
-                          </p>
-                          
-                          <div className="flex flex-wrap gap-4 mt-2">
-                            {service.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="border border-white/20 bg-white/5 text-white/90 text-xs font-semibold px-5 py-2.5 rounded-full"
-                              >
-                                {tag}
-                              </span>
-                            ))}
+                        </div>
+                      </div>
+
+                      {/* 2. Expanded State (NOW WITH IMAGE GRID) */}
+                      <div className="expanded-body h-0 overflow-hidden w-full">
+                        <div className="inner-content pt-8 pb-4 opacity-0">
+
+                          {/* Image & Text Flex Container */}
+                          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center lg:items-stretch">
+
+                            {/* LEFT: Premium Image Container */}
+                            <div className="w-full lg:w-[45%] h-[260px] md:h-[350px] relative rounded-2xl overflow-hidden border border-white/10 shrink-0 shadow-2xl">
+                              {/* Dark Overlay to blend perfectly with background */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-transparent to-transparent z-10" />
+                              <img
+                                src={service.image}
+                                alt={service.title}
+                                className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700 ease-out"
+                              />
+                            </div>
+
+                            {/* RIGHT: Text & Tags Container */}
+                            <div className="flex-1 flex flex-col gap-6 lg:gap-8 justify-center">
+                              <h3 className="text-4xl md:text-5xl lg:text-[4rem] font-black text-[#f04e00] leading-[0.9] tracking-tighter drop-shadow-lg">
+                                {service.title}
+                              </h3>
+
+                              <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-xl font-light">
+                                {service.subtitle}
+                              </p>
+
+                              {/* Actionable Tags */}
+                              <div className="flex flex-wrap gap-3 md:gap-4 mt-2">
+                                {service.tags.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="border border-white/20 bg-transparent hover:bg-white/5 transition-colors text-white/90 text-xs md:text-sm font-medium px-5 py-2.5 rounded-full cursor-default"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
                           </div>
                         </div>
-
                       </div>
-                    </div>
 
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
       </section>
     </div>
   );

@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -69,6 +69,49 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
 
   const [activeIndex, setActiveIndex] = useState(0);
   const prevIndexRef = useRef(0);
+
+  // Refs for each parallax-inner image layer
+  const parallaxInnerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Track pointer position for mouse-parallax
+  const mouseParallaxRaf = useRef<number | null>(null);
+
+  // Mouse-move parallax handler on the showcase wrapper
+  const handleShowcaseMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const el = showcaseRef.current;
+    const inner = parallaxInnerRefs.current[activeIndex];
+    if (!el || !inner) return;
+
+    if (mouseParallaxRaf.current) cancelAnimationFrame(mouseParallaxRaf.current);
+    mouseParallaxRaf.current = requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+      // Normalise to [-1, 1]
+      const nx = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
+      const ny = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
+      // Shift the inner image 14px opposite to cursor → depth illusion
+      gsap.to(inner, {
+        x: nx * -14,
+        y: ny * -10,
+        scale: 1.06,
+        duration: 0.9,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    });
+  }, [activeIndex]);
+
+  const handleShowcaseMouseLeave = useCallback(() => {
+    if (mouseParallaxRaf.current) cancelAnimationFrame(mouseParallaxRaf.current);
+    const inner = parallaxInnerRefs.current[activeIndex];
+    if (!inner) return;
+    gsap.to(inner, {
+      x: 0,
+      y: 0,
+      scale: 1,
+      duration: 1.2,
+      ease: "expo.out",
+      overwrite: "auto",
+    });
+  }, [activeIndex]);
 
   // ── 1. MASTER ENTRANCE & PINNING LOGIC ──
   useGSAP(() => {
@@ -243,6 +286,27 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
         }
       }
     );
+
+    // ── INNER-IMAGE SCROLL PARALLAX ──
+    // While the section is pinned, each image's inner content drifts upward
+    // at a slower rate than the container → classic parallax depth effect.
+    parallaxInnerRefs.current.forEach((inner) => {
+      if (!inner) return;
+      gsap.fromTo(
+        inner,
+        { yPercent: 0 },
+        {
+          yPercent: -8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: `+=${pinDistance}vh`,
+            scrub: 1.5,
+          },
+        }
+      );
+    });
 
     // Continuous floating animation for support visuals
     gsap.to(".support-visual", {
@@ -422,6 +486,8 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
             <div
               ref={showcaseRef}
               className="relative w-full max-w-[900px] aspect-[16/10] group"
+              onMouseMove={handleShowcaseMouseMove}
+              onMouseLeave={handleShowcaseMouseLeave}
             >
               {/* Layer 3: Soft Orange Ambient Glow */}
               <div className="absolute inset-0 bg-[#f04e00] blur-[100px] opacity-10 group-hover:opacity-20 transition-opacity duration-700 scale-90 z-0 pointer-events-none" />
@@ -444,12 +510,17 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                       className={`img-container-${i} absolute inset-0 will-change-transform`}
                       style={{ opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 10 : 1 }}
                     >
-                      <div className="parallax-inner w-full h-full relative">
+                      {/* parallax-inner: 10% oversize on each axis so the shift never reveals edges */}
+                      <div
+                        className="parallax-inner w-[110%] h-[110%] relative"
+                        style={{ top: "-5%", left: "-5%", willChange: "transform" }}
+                        ref={(el) => { parallaxInnerRefs.current[i] = el; }}
+                      >
                         <Image
                           src={p.image}
                           alt={p.title}
                           fill
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          className="object-cover"
                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 900px"
                           priority={i === 0}
                         />
