@@ -184,7 +184,7 @@ export default function SocialFooter() {
             </div>
             <div className="flex flex-col gap-2">
               <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest">(Phone)</span>
-              <span className="text-white text-lg font-bold hover:text-[#f04e00] transition-colors cursor-default">+91 9557247541</span>
+              <span className="text-white text-lg font-bold hover:text-[#f04e00] transition-colors cursor-default">+91 7459081892</span>
             </div>
           </div>
 
