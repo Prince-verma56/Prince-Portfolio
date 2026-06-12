@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   creator: "Prince Verma",
   openGraph: {
     title: "Prince Verma — Developer, Designer, Builder",
-    description: " AI & Data Analytics. Explore my portfolio of digital experiences and web engineering.",
+    description: " Fullstack Developer. Explore my portfolio of digital experiences and web engineering.",
     url: "https://princeverma.vercel.app", // Adjust if actual domain is different
     siteName: "Prince Verma Portfolio",
     images: [
@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "name": "Prince Verma",
     "url": "https://princeverma.vercel.app",
     "jobTitle": "Creative Developer & AI Engineer",
-    "alumniOf": " AI & Data Analytics",
+    "alumniOf": "Fullstack Developer",
     "sameAs": [
       "https://github.com/prince-verma56",
       "https://linkedin.com/in/prince-verma56"
