@@ -16,13 +16,13 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL("https://princeverma.vercel.app"),
   title: "Prince Verma — Creative Developer & AI Engineer",
-  description: "B.Tech AI & Data Analytics. Expert in Next.js, React, and cutting-edge 3D web experiences. Explore my award-winning portfolio.",
+  description: " Fullstack Developer ,  Expert in Next.js, React, and cutting-edge 3D web experiences. Explore my award-winning portfolio.",
   keywords: ["Software Engineer", "Web Developer", "React", "Next.js", "AI", "Data Analytics", "Portfolio", "UI/UX", "Frontend", "Full Stack"],
   authors: [{ name: "Prince Verma" }],
   creator: "Prince Verma",
   openGraph: {
     title: "Prince Verma — Developer, Designer, Builder",
-    description: "B.Tech AI & Data Analytics. Explore my portfolio of digital experiences and web engineering.",
+    description: " AI & Data Analytics. Explore my portfolio of digital experiences and web engineering.",
     url: "https://princeverma.vercel.app", // Adjust if actual domain is different
     siteName: "Prince Verma Portfolio",
     images: [
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Prince Verma — Developer, Designer, Builder",
-    description: "B.Tech AI & Data Analytics. Explore my portfolio of digital experiences and web engineering.",
+    description: " Devops Engineer. Explore my portfolio of digital experiences and web engineering.",
     creator: "@princeverma", // Adjust to real twitter handle if needed
     images: ["/og-image.jpg"],
   },
@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "name": "Prince Verma",
     "url": "https://princeverma.vercel.app",
     "jobTitle": "Creative Developer & AI Engineer",
-    "alumniOf": "B.Tech AI & Data Analytics",
+    "alumniOf": " AI & Data Analytics",
     "sameAs": [
       "https://github.com/prince-verma56",
       "https://linkedin.com/in/prince-verma56"
