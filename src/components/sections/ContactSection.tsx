@@ -339,7 +339,7 @@ export default function ContactSection({ isStandalonePage = false }: ContactSect
               <div className="flex flex-col gap-3">
                 <span className="text-white/40 text-[10px] font-mono tracking-widest uppercase">(Address)</span>
                 <p className="text-white text-base md:text-lg font-medium leading-relaxed">
-                  123 Market Street, <br /> Suite 400 <br /> Los Angeles, CA 90001
+                  Near GLA University, Mathura, <br /> Uttar Pradesh <br /> India
                 </p>
               </div>
               <div className="flex flex-col gap-3">
