@@ -8,7 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { useLoader } from "@/context/LoaderContext";
 import SlideTextButton from "@/components/kokonutui/slide-text-button";
 import { Button } from "./ui/button";
-import AudioDock from "@/components/global/AudioDock";
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -204,7 +204,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-3">
-            <AudioDock variant="navbar" className="flex md:hidden" />
+
             {/* Explicit cursor-pointer added */}
             <Button
               onClick={() => setIsMenuOpen(false)}

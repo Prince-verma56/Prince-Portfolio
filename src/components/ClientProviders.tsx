@@ -14,10 +14,7 @@ const SmoothCursor = dynamic(
   () => import("@/components/ui/smooth-cursor").then((m) => m.SmoothCursor),
   { ssr: false }
 );
-const AudioDock = dynamic(
-  () => import("@/components/global/AudioDock"),
-  { ssr: false }
-);
+
 const AudioInitializer = dynamic(
   () => import("@/components/global/AudioInitializer"),
   { ssr: false }
@@ -34,7 +31,7 @@ export default function ClientProviders({ children }: { children: React.ReactNod
             <Preloader />
             <Navbar />
             <ClientSmoothScroller>{children}</ClientSmoothScroller>
-            <AudioDock />
+
             <Toaster theme="dark" position="bottom-right" richColors />
           </AudioProvider>
         </LoaderProvider>
