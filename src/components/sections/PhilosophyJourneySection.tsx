@@ -253,8 +253,7 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
             <h2 className="text-[2.2rem] leading-[0.88] sm:text-4xl md:text-6xl lg:text-[clamp(4rem,9vw,8rem)] font-black uppercase tracking-tighter text-white text-center">
               EVERY PRODUCT <br />
               STARTS WITH <br />
-              <Highlighter action="underline" color="#facc15" strokeWidth={3} isView={true}>
-                <span className="text-[#facc15] inline-flex items-center gap-2 align-middle">
+              <span className="text-[#facc15] inline-flex items-center gap-2 align-middle">
                   AN IDEA.
                   <svg viewBox="0 0 36 12" className="w-7 h-2.5 md:w-9 md:h-3 inline-block stroke-[#facc15] stroke-[2] stroke-linecap-round fill-none">
                     <line x1="2" y1="3" x2="22" y2="3" className="speed-line-a" />
@@ -262,7 +261,6 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
                     <line x1="4" y1="9" x2="26" y2="9" className="speed-line-c" />
                   </svg>
                 </span>
-              </Highlighter>
             </h2>
 
             {/* Mobile-only supporting pill items */}
@@ -395,9 +393,7 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
           <div className="z-30 w-full max-w-7xl px-6 md:px-20 scene-title scene-3-title flex flex-col gap-5 md:gap-0">
             <h2 className="text-[2.2rem] leading-[0.88] sm:text-4xl md:text-6xl lg:text-[clamp(4.5rem,10vw,9rem)] font-black uppercase tracking-tighter text-white text-center md:text-left">
               Design <br />The <br />
-              <Highlighter action="underline" color="#facc15" strokeWidth={3} isView={true}>
-                <span className="text-[#ff8800]">Experience</span>
-              </Highlighter>
+              <span className="text-[#ff8800]">Experience</span>
             </h2>
 
             {/* Mobile-only mini mockup preview */}
@@ -481,9 +477,7 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
           <div className="z-30 w-full max-w-7xl px-6 md:px-20 scene-title scene-4-title flex flex-col gap-5 md:gap-0">
             <h2 className="text-[2.2rem] leading-[0.88] sm:text-4xl md:text-6xl lg:text-[clamp(4.5rem,10vw,9rem)] font-black uppercase text-white tracking-tighter drop-shadow-2xl text-center md:text-right">
               Build The <br />
-              <Highlighter action="underline" color="#facc15" strokeWidth={3} isView={true}>
-                <span className="text-[#ff8800]">Solution</span>
-              </Highlighter>
+              <span className="text-[#ff8800]">Solution</span>
             </h2>
 
             {/* Mobile-only compact arch nodes */}

@@ -258,7 +258,7 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
                 className="bg-gradient-to-r from-neutral-400 via-white to-neutral-400"
               />
               {" "}
-              <Highlighter color="#fbbf24" action="underline" strokeWidth={2} isView>
+              <Highlighter color="#fbbf24" action="underline" strokeWidth={2} padding={2} isView>
                 <ShimmerText
                   as="span"
                   text="full-stack products,"

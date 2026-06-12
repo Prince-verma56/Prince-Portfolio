@@ -27,6 +27,12 @@ export default function Navbar() {
   const [time, setTime] = useState("");
   const menuTl = useRef<gsap.core.Timeline | null>(null);
   const containerRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  // Track last known scroll position for direction detection
+  const lastScrollY = useRef(0);
+  const rafId = useRef<number | null>(null);
+  const isHidden = useRef(false);
+  const isMenuOpenRef = useRef(false);
 
   // Simple clock for the top right
   useEffect(() => {
@@ -118,19 +124,77 @@ export default function Navbar() {
 
   // Play/Reverse menu and lock scrolling
   useEffect(() => {
+    isMenuOpenRef.current = isMenuOpen;
     if (isMenuOpen) {
       menuTl.current?.play();
       document.body.style.overflow = "hidden";
+      // Always show header when menu opens
+      if (isHidden.current && headerRef.current) {
+        gsap.to(headerRef.current, { yPercent: 0, duration: 0.5, ease: "expo.out", overwrite: "auto" });
+        isHidden.current = false;
+      }
     } else {
       menuTl.current?.reverse();
       document.body.style.overflow = "auto";
     }
   }, [isMenuOpen]);
 
+  // ── Hide-on-down / show-on-up scroll behaviour ──
+  useEffect(() => {
+    if (!isLoaderFinished) return;
+
+    const HIDE_THRESHOLD = 80;   // px scrolled before we start hiding
+    const SHOW_DELTA     = 6;    // px scrolled up before we reveal
+
+    const onScroll = () => {
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+      rafId.current = requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const delta    = currentY - lastScrollY.current;
+        const header   = headerRef.current;
+        if (!header) return;
+
+        // Never hide while menu is open
+        if (isMenuOpenRef.current) {
+          lastScrollY.current = currentY;
+          return;
+        }
+
+        if (currentY > HIDE_THRESHOLD && delta > 0 && !isHidden.current) {
+          // Scrolling DOWN — slide header out of view
+          gsap.to(header, {
+            yPercent: -120,
+            duration: 0.55,
+            ease: "expo.inOut",
+            overwrite: "auto",
+          });
+          isHidden.current = true;
+        } else if (delta < -SHOW_DELTA && isHidden.current) {
+          // Scrolling UP — bring header back
+          gsap.to(header, {
+            yPercent: 0,
+            duration: 0.65,
+            ease: "expo.out",
+            overwrite: "auto",
+          });
+          isHidden.current = false;
+        }
+
+        lastScrollY.current = currentY;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    };
+  }, [isLoaderFinished]);
+
   return (
     <nav ref={containerRef}>
       {/* ── Main Top Bar (Fixed Header) ── */}
-      <header className="fixed top-0 left-0 w-full z-[9000] pointer-events-none px-6 md:px-10 pt-8 md:pt-10 flex justify-between items-start">
+      <header ref={headerRef} className="fixed top-0 left-0 w-full z-[9000] pointer-events-none px-6 md:px-10 pt-8 md:pt-10 flex justify-between items-start will-change-transform">
 
         {/* Massive Shrinking Logo (Top Left) */}
         {/* max-w-[70vw] ensures it truncates nicely on mobile without breaking layout */}

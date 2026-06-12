@@ -458,23 +458,28 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
               {projects.map((p, i) => {
                 const isActive = i === activeIndex;
                 return (
-                  <div key={p.id} className="relative flex items-center gap-4 group">
+                  <button
+                    key={p.id}
+                    onClick={() => setActiveIndex(i)}
+                    aria-label={`View project ${p.title}`}
+                    className="relative flex items-center gap-4 group text-left w-full cursor-pointer bg-transparent border-none outline-none focus-visible:outline-none"
+                  >
                     {/* Animated Active Indicator */}
-                    <div className="w-6 flex justify-end overflow-hidden">
-                      <span className={`block w-4 h-[2px] bg-[#f04e00] origin-right transition-transform duration-500 ${isActive ? "scale-x-100" : "scale-x-0"}`} />
+                    <div className="w-6 flex justify-end overflow-hidden shrink-0">
+                      <span className={`block w-4 h-[2px] bg-[#f04e00] origin-right transition-transform duration-500 ${isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-50"}`} />
                     </div>
 
                     <span
-                      className={`text-2xl xl:text-3xl tracking-wide transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative ${isActive
+                      className={`text-2xl xl:text-3xl tracking-wide transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative select-none ${isActive
                         ? "text-white font-black scale-100 origin-left"
-                        : "text-white/40 font-medium scale-95 blur-[1px] origin-left"
+                        : "text-white/40 font-medium scale-95 blur-[1px] origin-left group-hover:text-white/70 group-hover:blur-none group-hover:scale-[0.97]"
                         }`}
                     >
                       {p.title}
                       {/* Growing Underline for active state */}
-                      <div className={`absolute -bottom-1 left-0 h-[2px] bg-white transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] origin-left ${isActive ? "w-full scale-x-100" : "w-full scale-x-0"}`} />
+                      <div className={`absolute -bottom-1 left-0 h-[2px] bg-white transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] origin-left ${isActive ? "w-full scale-x-100" : "w-full scale-x-0 group-hover:scale-x-50"}`} />
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </div>

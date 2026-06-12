@@ -97,7 +97,7 @@ export function Highlighter({
   }, [action, color, strokeWidth, padding, iterations, isView, animate, animationDuration]);
 
   return (
-    <span ref={elementRef} className="relative inline-block">
+    <span ref={elementRef} className="relative inline">
       {children}
     </span>
   );

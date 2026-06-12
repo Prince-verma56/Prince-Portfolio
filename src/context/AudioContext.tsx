@@ -192,7 +192,11 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       sfxPoolRef.current.set(type, pool);
     });
 
-    return () => { cancelFade(); el.pause(); el.src = ""; };
+    return () => {
+      cancelFade();
+      const el = ambientRef.current;
+      if (el) { el.pause(); el.src = ""; }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
