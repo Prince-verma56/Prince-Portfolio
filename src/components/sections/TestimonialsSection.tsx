@@ -4,15 +4,15 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import InfiniteMenu from '../InfiniteMenu';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useLoader } from "@/context/LoaderContext";
 
 function TestimonialsSection() {
     const sectionRef = useRef<HTMLElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
+    const { isLoaderFinished } = useLoader();
 
     useGSAP(() => {
-        if (!sectionRef.current) return;
+        if (!isLoaderFinished || !sectionRef.current) return;
 
         // 1. Premium Slanted Entrance
         gsap.fromTo(
@@ -59,7 +59,7 @@ function TestimonialsSection() {
             }
         );
 
-    }, { scope: sectionRef });
+    }, { scope: sectionRef, dependencies: [isLoaderFinished] });
 
     // Premium colored portraits with rich professional metadata
     const items = [

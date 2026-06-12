@@ -1,11 +1,10 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Image from "next/image";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useLoader } from "@/context/LoaderContext";
 
 // Customizing the data slightly to allow for that beautiful mixed-color typography
 const achievements = [
@@ -27,8 +26,17 @@ const achievements = [
 export default function AchievementsSection() {
   const containerRef = useRef<HTMLElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const { isLoaderFinished } = useLoader();
+
+  // Refresh ScrollTrigger only after loader exits and layout is stable
+  useEffect(() => {
+    if (!isLoaderFinished) return;
+    const id = setTimeout(() => ScrollTrigger.refresh(), 200);
+    return () => clearTimeout(id);
+  }, [isLoaderFinished]);
 
   useGSAP(() => {
+    if (!isLoaderFinished || !containerRef.current) return;
     // 1. Overall Section Reveal
     gsap.fromTo(
       containerRef.current,
@@ -106,8 +114,7 @@ export default function AchievementsSection() {
       }
     });
 
-    ScrollTrigger.refresh();
-  }, { scope: containerRef, dependencies: [] });
+  }, { scope: containerRef, dependencies: [isLoaderFinished] });
 
   return (
     <section

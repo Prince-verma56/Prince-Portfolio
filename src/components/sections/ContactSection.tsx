@@ -132,9 +132,11 @@ export default function ContactSection({ isStandalonePage = false }: ContactSect
   };
 
   useGSAP(() => {
-    // ── 1. ALWAYS RUN INITIAL STATES IMMEDIATELY (UNCONDITIONAL) ──
-    gsap.set(".mask-line", { y: "110%", opacity: 0 });
-    gsap.set([".fade-in", ".faq-item", ".form-element"], { opacity: 0, y: 30 });
+    // ── 1. ALWAYS RUN INITIAL STATES IMMEDIATELY (SCOPED TO THIS SECTION ONLY) ──
+    const section = sectionRef.current;
+    if (!section) return;
+    gsap.set(section.querySelectorAll(".mask-line"), { y: "110%", opacity: 0 });
+    gsap.set(section.querySelectorAll(".fade-in, .faq-item, .form-element"), { opacity: 0, y: 30 });
 
     // ── 2. The Slanted Sheet Reveal (Parallax Effect) - Only on scroll page
     if (!isStandalonePage) {

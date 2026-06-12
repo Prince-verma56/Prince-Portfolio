@@ -150,7 +150,9 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
       if (isStandalonePage && tlRef.current) {
         tlRef.current.play();
       }
-      ScrollTrigger.refresh();
+      // Small delay so all lazy-loaded sections have mounted before recalculating scroll positions
+      const id = setTimeout(() => ScrollTrigger.refresh(), 200);
+      return () => clearTimeout(id);
     } else {
       if (isStandalonePage && tlRef.current) {
         tlRef.current.progress(0).pause();

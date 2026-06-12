@@ -56,6 +56,8 @@ export default function ServicesSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const accordionListRef = useRef<HTMLDivElement>(null);
   const { isLoaderFinished } = useLoader();
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -96,9 +98,9 @@ export default function ServicesSection() {
       }
     );
 
-    // Heading Reveal
+    // Heading Reveal — scoped to headingRef, not a global .mask-title-wrapper query
     gsap.fromTo(
-      ".mask-title-wrapper",
+      headingRef.current,
       { y: 60, opacity: 0 },
       {
         y: 0,
@@ -106,42 +108,48 @@ export default function ServicesSection() {
         duration: 1.5,
         ease: "expo.out",
         scrollTrigger: {
-          trigger: ".mask-title-wrapper",
+          trigger: headingRef.current,
           start: "top 85%",
         },
       }
     );
 
-    // Accordion Rows Staggered Entrance
-    gsap.fromTo(
-      ".accordion-row",
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1.2,
-        stagger: 0.1,
-        ease: "expo.out",
-        scrollTrigger: {
-          trigger: ".accordion-list",
-          start: "top 85%",
-          once: true,
-        }
-      }
-    );
+    // Accordion Rows Staggered Entrance — scoped to accordionListRef
+    const rows = accordionListRef.current
+      ? gsap.utils.toArray<HTMLElement>(accordionListRef.current.querySelectorAll(".accordion-row"))
+      : [];
 
-    // Accordion Rows Continuous Parallax
-    gsap.to(".accordion-row", {
-      yPercent: -10,
-      ease: "none",
-      stagger: 0.02,
-      scrollTrigger: {
-        trigger: ".accordion-list",
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 1,
-      }
-    });
+    if (rows.length) {
+      gsap.fromTo(
+        rows,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          stagger: 0.1,
+          ease: "expo.out",
+          scrollTrigger: {
+            trigger: accordionListRef.current,
+            start: "top 85%",
+            once: true,
+          }
+        }
+      );
+
+      // Accordion Rows Continuous Parallax
+      gsap.to(rows, {
+        yPercent: -10,
+        ease: "none",
+        stagger: 0.02,
+        scrollTrigger: {
+          trigger: accordionListRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1,
+        }
+      });
+    }
 
   }, { scope: sectionRef, dependencies: [isLoaderFinished] });
 
@@ -157,7 +165,12 @@ export default function ServicesSection() {
       if (activeIndex === index) {
         // OPENING ANIMATION
         gsap.to(collapsedTitle, { height: 0, opacity: 0, duration: 0.5, ease: "expo.inOut" });
-        gsap.to(expandedBody, { height: "auto", duration: 0.7, ease: "expo.inOut" });
+        gsap.to(expandedBody, {
+          height: "auto",
+          duration: 0.7,
+          ease: "expo.inOut",
+          onComplete: () => ScrollTrigger.refresh(),
+        });
         gsap.fromTo(
           innerContent,
           { opacity: 0, y: 30 },
@@ -165,13 +178,16 @@ export default function ServicesSection() {
         );
       } else {
         // CLOSING ANIMATION
-        gsap.to(expandedBody, { height: 0, duration: 0.6, ease: "expo.inOut" });
+        gsap.to(expandedBody, {
+          height: 0,
+          duration: 0.6,
+          ease: "expo.inOut",
+          onComplete: () => ScrollTrigger.refresh(),
+        });
         gsap.to(innerContent, { opacity: 0, y: 0, duration: 0.2, overwrite: true });
         gsap.to(collapsedTitle, { height: "auto", opacity: 1, duration: 0.5, delay: 0.2, ease: "expo.inOut" });
       }
     });
-
-    setTimeout(() => ScrollTrigger.refresh(), 800);
   }, { scope: sectionRef, dependencies: [activeIndex] });
 
 
@@ -193,7 +209,7 @@ export default function ServicesSection() {
         <div ref={contentRef} className="relative z-10 max-w-[1400px] mx-auto flex flex-col will-change-transform px-6 md:px-12 lg:px-20">
 
           {/* Top Titles Section */}
-          <div className="mask-title-wrapper flex flex-col items-end pb-8 mb-16 border-b border-white/10 w-full">
+          <div ref={headingRef} className="mask-title-wrapper flex flex-col items-end pb-8 mb-16 border-b border-white/10 w-full">
             <span className="text-white/60 font-mono tracking-widest text-sm mb-2 uppercase">
               (Services)
             </span>
@@ -203,7 +219,7 @@ export default function ServicesSection() {
           </div>
 
           {/* Accordion List */}
-          <div className="accordion-list flex flex-col w-full">
+          <div ref={accordionListRef} className="accordion-list flex flex-col w-full">
             {services.map((service, index) => {
               const isOpen = activeIndex === index;
 

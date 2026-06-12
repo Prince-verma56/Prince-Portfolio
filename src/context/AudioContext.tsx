@@ -22,8 +22,8 @@ const STORAGE_KEYS = {
   audioEnabled: "audio-enabled",
 };
 
-const AMBIENT_AUDIO_PATH = "/sounds/RockMusic.mp3";
-// const AMBIENT_AUDIO_PATH = "";
+// Set to your audio file path to enable ambient music, e.g. "/sounds/RockMusic.mp3"
+const AMBIENT_AUDIO_PATH = "";
 
 const SFX_FILES: Record<SFXType, string> = {
   whoosh: "/sounds/SciFi Enter.mp3",
@@ -172,11 +172,13 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       startAmbientAudio();
     });
 
-    const el = new Audio(AMBIENT_AUDIO_PATH);
-    el.loop = true;
-    el.volume = 0;
-    el.preload = "auto";
-    ambientRef.current = el;
+    if (AMBIENT_AUDIO_PATH) {
+      const el = new Audio(AMBIENT_AUDIO_PATH);
+      el.loop = true;
+      el.volume = 0;
+      el.preload = "auto";
+      ambientRef.current = el;
+    }
 
     const sfxTypes: SFXType[] = ["whoosh", "click", "tick", "impact", "swoosh"];
     sfxTypes.forEach((type) => {
