@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useLoader } from "@/context/LoaderContext";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
-import { Highlighter } from "@/components/ui/highlighter";
+import { FlipText } from "@/components/ui/flip-text";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -76,30 +76,55 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
     if (isStandalonePage) {
       // Intro sequence behavior for direct landing page views
       const tl = gsap.timeline({ paused: true });
-      tl.to(textElements, {
-        y: "0%",
-        opacity: 1,
-        rotate: 0,
-        duration: 1.1,
-        stagger: 0.06,
-        ease: "power4.out",
+      textElements.forEach((el, index) => {
+        const words = el.querySelectorAll('.word');
+        if (words.length > 0) {
+          gsap.set(el, { y: "0%", opacity: 1, rotate: 0 });
+          gsap.set(words, { y: "130%", opacity: 0, rotate: 4 });
+          tl.to(words, { y: "0%", opacity: 1, rotate: 0, duration: 1.1, stagger: 0.03, ease: "power4.out" }, index * 0.1);
+        } else {
+          tl.to(el, { y: "0%", opacity: 1, rotate: 0, duration: 1.1, ease: "power4.out" }, index * 0.1);
+        }
       });
       tlRef.current = tl;
     } else {
       // Dynamic scroll behavior: Each line reveals independently upon viewport entry
       textElements.forEach((el) => {
-        gsap.to(el, {
-          y: "0%",
-          opacity: 1,
-          rotate: 0,
-          duration: 0.95,
-          ease: "power4.out", // High-inertia premium decay curve
-          scrollTrigger: {
-            trigger: el.parentElement, // Triggers off the stable parent mask container
-            start: "top 88%",         // Activates naturally as the line enters the screen area
-            toggleActions: "play none none none",
-          }
-        });
+        const words = el.querySelectorAll('.word');
+        if (words.length > 0) {
+          // Un-hide the line wrapper so words can animate inside it
+          gsap.set(el, { y: "0%", opacity: 1, rotate: 0 });
+          // Hide words individually for sheet-like parallax reveal
+          gsap.set(words, { y: "130%", opacity: 0, rotate: 4 });
+          
+          gsap.to(words, {
+            y: "0%",
+            opacity: 1,
+            rotate: 0,
+            stagger: 0.05,
+            ease: "none",
+            scrollTrigger: {
+              trigger: el.parentElement,
+              start: "top 95%",
+              end: "bottom 60%",
+              scrub: 1,
+            }
+          });
+        } else {
+          // Fallback for lines without words
+          gsap.to(el, {
+            y: "0%",
+            opacity: 1,
+            rotate: 0,
+            duration: 0.95,
+            ease: "power4.out", // High-inertia premium decay curve
+            scrollTrigger: {
+              trigger: el.parentElement, // Triggers off the stable parent mask container
+              start: "top 88%",         // Activates naturally as the line enters the screen area
+              toggleActions: "play none none none",
+            }
+          });
+        }
       });
     }
 
@@ -205,99 +230,34 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
           
           <div className="overflow-hidden pb-2">
             <h2 className="mask-reveal-inner opacity-0 translate-y-[130%] rotate-2 text-[clamp(2.5rem,6vw,5.5rem)] font-medium leading-[1.05] tracking-tight">
-              <ShimmerText as="span" hoverOnly={true} text="Hi, I'm " className="bg-gradient-to-r from-white via-neutral-400 to-white" />
-              <Highlighter color="#f04e00" action="underline" strokeWidth={2} isView>
-                <ShimmerText as="span" hoverOnly={true} text="Prince" className="font-black text-[#f04e00]" />
-              </Highlighter>
+              <FlipText className="text-white">Hi, I'm </FlipText>
+              <FlipText className="font-black text-[#f04e00]">Prince</FlipText>
             </h2>
           </div>
 
           <div className="overflow-hidden pb-2">
             <h2 className="mask-reveal-inner opacity-0 translate-y-[130%] rotate-2 text-[clamp(2.5rem,6vw,5.5rem)] font-medium leading-[1.05] tracking-tight">
-              <ShimmerText as="span" hoverOnly={true} text="– a software developer" className="bg-gradient-to-r from-white via-neutral-400 to-white" />
+              <FlipText className="text-neutral-300">– a software developer</FlipText>
             </h2>
           </div>
 
           <div className="overflow-hidden pb-2 mt-4 md:mt-6">
             <h2 className="mask-reveal-inner opacity-0 translate-y-[130%] rotate-2 text-[clamp(1.75rem,5vw,4.5rem)] font-medium leading-[1.25] tracking-tight">
-              <ShimmerText
-                as="span"
-                text="passionate about crafting "
-                hoverOnly={true}
-                className="bg-gradient-to-r from-white via-neutral-400 to-white"
-              />
-              <ShimmerText
-                as="span"
-                text="exceptional "
-                hoverOnly={true}
-                className="font-bold bg-gradient-to-r from-white via-neutral-400 to-white"
-              />
-              <ShimmerText
-                as="span"
-                text="digital experiences through "
-                hoverOnly={true}
-                className="bg-gradient-to-r from-white via-neutral-400 to-white"
-              />
-              <Highlighter color="#38bdf8" action="underline" strokeWidth={2} isView>
-                <ShimmerText
-                  as="span"
-                  text="AI and design."
-                  hoverOnly={true}
-                  className="font-bold bg-gradient-to-r from-white via-neutral-400 to-white"
-                />
-              </Highlighter>
+              <FlipText className="text-neutral-300">passionate about crafting </FlipText>
+              <FlipText className="font-bold text-white">exceptional </FlipText>
+              <FlipText className="text-neutral-300">digital experiences through </FlipText>
+              <FlipText className="font-bold text-white">AI and design.</FlipText>
             </h2>
           </div>
           
-          <div className="overflow-hidden pb-2 mt-8 md:mt-12 flex flex-wrap gap-x-2 gap-y-1">
+          <div className="overflow-hidden pb-2 mt-8 md:mt-12">
             <h2 className="mask-reveal-inner opacity-0 translate-y-[130%] rotate-2 text-[clamp(1.5rem,4.5vw,4rem)] font-light leading-[1.3] tracking-tight">
-              <ShimmerText
-                as="span"
-                text="Building "
-                hoverOnly={true}
-                className="bg-gradient-to-r from-neutral-400 via-white to-neutral-400"
-              />
-              {" "}
-              <Highlighter color="#fbbf24" action="underline" strokeWidth={2} padding={2} isView>
-                <ShimmerText
-                  as="span"
-                  text="full-stack products,"
-                  hoverOnly={true}
-                  className="font-bold bg-gradient-to-r from-neutral-400 via-white to-neutral-400"
-                />
-              </Highlighter>
-              {" "}
-              <ShimmerText
-                as="span"
-                text="immersive"
-                hoverOnly={true}
-                className="bg-gradient-to-r from-neutral-400 via-white to-neutral-400"
-              />
-              {" "}
-              <Highlighter color="#f04e00" action="highlight" padding={4} strokeWidth={2} isView>
-                <ShimmerText
-                  as="span"
-                  text="3D experiences,"
-                  hoverOnly={true}
-                  className="font-bold bg-gradient-to-r from-neutral-400 via-white to-neutral-400"
-                />
-              </Highlighter>
-              {" "}
-              <ShimmerText
-                as="span"
-                text="and"
-                hoverOnly={true}
-                className="bg-gradient-to-r from-neutral-400 via-white to-neutral-400"
-              />
-              {" "}
-              <Highlighter color="#38bdf8" action="underline" strokeWidth={2} isView>
-                <ShimmerText
-                  as="span"
-                  text="AI-powered solutions."
-                  hoverOnly={true}
-                  className="font-bold bg-gradient-to-r from-neutral-400 via-white to-neutral-400"
-                />
-              </Highlighter>
+              <FlipText className="text-neutral-400">Building </FlipText>
+              <FlipText className="font-bold text-white">full-stack products, </FlipText>
+              <FlipText className="text-neutral-400">immersive </FlipText>
+              <FlipText className="font-bold text-white">3D experiences, </FlipText>
+              <FlipText className="text-neutral-400">and </FlipText>
+              <FlipText className="font-bold text-white">AI-powered solutions.</FlipText>
             </h2>
           </div>
         </div>

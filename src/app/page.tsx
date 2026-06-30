@@ -42,6 +42,10 @@ const AchievementsSection = dynamic(
   () => import("@/components/sections/AchievementsSection"),
   { ssr: false, loading: () => <div className="h-screen bg-black" /> }
 );
+const ResumeSection = dynamic(
+  () => import("@/components/sections/ResumeSection"),
+  { ssr: false, loading: () => <div className="h-screen bg-black" /> }
+);
 const SocialFooter = dynamic(
   () => import("@/components/SocialFooter"),
   { ssr: false, loading: () => <div className="h-64 bg-black" /> }
@@ -89,6 +93,7 @@ export default function Home() {
       <WorkSection />
       <TestimonialsSection />
       <AchievementsSection />
+      <ResumeSection />
       <SocialFooter />
       <FooterSection />
     </main>

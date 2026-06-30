@@ -275,3 +275,16 @@ input:-webkit-autofill:active {
 .speed-line-c {
   animation: speed-line-shift-1 0.7s ease-in-out infinite 0.3s;
 }
+
+/* ── Flip Text Hover Animation ── */
+@keyframes flip-char {
+  0% { transform: rotateX(0deg); opacity: 1; }
+  50% { transform: rotateX(-90deg); opacity: 0.2; }
+  50.1% { transform: rotateX(90deg); opacity: 0; }
+  100% { transform: rotateX(0deg); opacity: 1; }
+}
+
+.flip-text-wrapper:hover .flip-char {
+  animation: flip-char var(--flip-duration, 1s) ease-in-out forwards;
+  animation-delay: var(--flip-delay, 0s);
+}
