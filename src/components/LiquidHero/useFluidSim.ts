@@ -159,8 +159,12 @@ export function useFluidSim({
       // Video frame update
       if (videoEl && videoEl.readyState >= 2) {
         gl.bindTexture(gl.TEXTURE_2D, imageTex);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, videoEl);
-        mediaReady = true;
+        try {
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, videoEl);
+          mediaReady = true;
+        } catch (err) {
+          // Ignore empty video frames to prevent console spam and slow compiles
+        }
       }
 
       // Decay velocity each frame

@@ -99,7 +99,7 @@ export default function SocialFooter() {
     // 4. PREMIUM CONTENT REVEAL TIMELINE
     ScrollTrigger.create({
       trigger: footerRef.current,
-      start: "top 60%", // Triggers when footer is 40% up the screen
+      start: "top 80%", // Triggers sooner when footer enters the screen
       onEnter: () => {
         const tl = gsap.timeline();
 
@@ -145,23 +145,23 @@ export default function SocialFooter() {
       </div>
 
       {/* ── FOREGROUND CONTENT ── */}
-      <div className="relative z-10 max-w-[1400px] mx-auto flex flex-col gap-32">
+      <div className="relative z-10 max-w-[1400px] mx-auto flex flex-col gap-16 md:gap-32">
 
         {/* ── TOP: Massive CTA ── */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
-          <div className="flex flex-col gap-6 max-w-2xl">
+          <div className="flex flex-col gap-4 md:gap-6 max-w-2xl">
 
             {/* The Text Mask Wrappers */}
-            <h2 className="text-[clamp(4rem,10vw,8rem)] font-black uppercase leading-[0.85] tracking-tighter">
-              <div className="overflow-hidden pb-2">
+            <h2 className="text-[clamp(3.5rem,10vw,8rem)] font-black uppercase leading-[0.85] tracking-tighter">
+              <div className="overflow-hidden pb-1 md:pb-2">
                 <span className="footer-mask-text block origin-top-left">Let’s Work</span>
               </div>
-              <div className="overflow-hidden pb-4">
+              <div className="overflow-hidden pb-2 md:pb-4">
                 <span className="footer-mask-text block origin-top-left text-[#f04e00]">Together</span>
               </div>
             </h2>
 
-            <p className="footer-fade text-white/80 text-lg md:text-xl font-medium max-w-md">
+            <p className="footer-fade text-white/80 text-base md:text-xl font-medium max-w-md">
               Have a project in mind? We&apos;d love to hear about it. Let&apos;s create something great together!
             </p>
           </div>
@@ -172,50 +172,57 @@ export default function SocialFooter() {
         </div>
 
         {/* ── BOTTOM: Links & Socials ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pt-16 border-t border-white/10">
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-10 lg:gap-8 pt-10 md:pt-16 border-t border-white/10">
 
-          {/* Email / Phone */}
-          <div className="flex flex-col gap-6 footer-fade">
+          {/* 1. Contact Details (Email & Phone) */}
+          <div className="flex flex-col sm:flex-row lg:flex-col gap-8 sm:gap-16 lg:gap-8 footer-fade w-full lg:w-auto">
             <div className="flex flex-col gap-2">
               <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest">(Email)</span>
-              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=princeverma.dev96@gmail.com" target="_blank" rel="noopener noreferrer" className="text-[#f04e00] text-lg font-bold hover:text-white transition-colors">
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=princeverma.dev96@gmail.com" target="_blank" rel="noopener noreferrer" className="text-[#f04e00] text-base md:text-lg font-bold hover:text-white transition-colors break-all">
                 princeverma.dev96@gmail.com
               </a>
             </div>
             <div className="flex flex-col gap-2">
               <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest">(Phone)</span>
-              <span className="text-white text-lg font-bold hover:text-[#f04e00] transition-colors cursor-default">+91 7459081892</span>
+              <span className="text-white text-base md:text-lg font-bold hover:text-[#f04e00] transition-colors cursor-default">+91 7459081892</span>
             </div>
           </div>
 
-          {/* Site Links */}
-          <div className="flex flex-col gap-4 footer-fade">
-            <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-2">(Links)</span>
-            {["Home", "About", "Works", "Contact", "Blog"].map((link) => (
-              <Link key={link} href={`/${link.toLowerCase()}`} className="text-white/80 hover:text-white font-medium transition-colors w-fit">
-                {link}
-              </Link>
-            ))}
+          {/* 2. Links & Socials (Side-by-side on mobile to save vertical space) */}
+          <div className="flex flex-row gap-16 sm:gap-24 lg:gap-16 footer-fade w-full sm:w-auto">
+            {/* Site Links */}
+            <div className="flex flex-col gap-3 md:gap-4 flex-1 sm:flex-none">
+              <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-1 md:mb-2">(Links)</span>
+              <div className="flex flex-col gap-2 md:gap-4">
+                {["Home", "About", "Works", "Contact", "Blog"].map((link) => (
+                  <Link key={link} href={`/${link.toLowerCase()}`} className="text-white/80 hover:text-white text-sm md:text-base font-medium transition-colors w-fit">
+                    {link}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Socials */}
+            <div className="flex flex-col gap-3 md:gap-4 flex-1 sm:flex-none">
+              <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-1 md:mb-2">(Socials)</span>
+              <div className="flex flex-col gap-2 md:gap-4">
+                {[
+                  { name: "LinkedIn", url: "https://www.linkedin.com/in/prince-verma26/" },
+                  { name: "Instagram", url: "https://www.instagram.com/its.prince_charley/" },
+                  { name: "GitHub", url: "https://github.com/Prince-verma56" }
+                ].map((social) => (
+                  <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#f04e00] text-sm md:text-base font-medium transition-colors flex items-center gap-1 group w-fit">
+                    {social.name} <span className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-xs">↗</span>
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Socials */}
-          <div className="flex flex-col gap-4 footer-fade">
-            <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-2">(Socials)</span>
-            {[
-              { name: "LinkedIn", url: "https://www.linkedin.com/in/prince-verma26/" },
-              { name: "Instagram", url: "https://www.instagram.com/its.prince_charley/" },
-              { name: "GitHub", url: "https://github.com/Prince-verma56" }
-            ].map((social) => (
-              <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#f04e00] font-medium transition-colors flex items-center gap-1 group w-fit">
-                {social.name} <span className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-xs">↗</span>
-              </a>
-            ))}
-          </div>
-
-          {/* Newsletter */}
-          <div className="flex flex-col gap-4 footer-fade">
-            <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-2">(Newsletter)</span>
-            <p className="text-white/60 text-sm">Sign up for latest insights and updates.</p>
+          {/* 3. Newsletter */}
+          <div className="flex flex-col gap-2 md:gap-4 footer-fade w-full lg:w-1/3 xl:w-1/4 max-w-sm">
+            <span className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-1 md:mb-2">(Newsletter)</span>
+            <p className="text-white/60 text-xs md:text-sm">Sign up for latest insights and updates.</p>
             <form onSubmit={handleSubscribe} className="w-full">
               <input
                 type="text"
@@ -233,7 +240,7 @@ export default function SocialFooter() {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isSubmitting}
                   placeholder="Enter email address"
-                  className="bg-transparent w-full text-sm outline-none placeholder:text-white/30 text-white disabled:opacity-50"
+                  className="bg-transparent w-full text-xs md:text-sm outline-none placeholder:text-white/30 text-white disabled:opacity-50"
                 />
                 <SlideTextButton
                   type="submit"

@@ -703,7 +703,7 @@ export default function TechStackSection() {
       >
         {/* Ambient glow */}
         <div className="absolute top-[-150px] left-1/2 -translate-x-1/2 w-[60%] h-[300px] bg-[#f04e00] opacity-[0.08] blur-[130px] pointer-events-none rounded-full" />
-        <div className="absolute inset-0 z-0 opacity-[0.1] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+        <div className="absolute inset-0 z-0 opacity-[0.1] pointer-events-none mix-blend-overlay bg-[url('/noise.svg')]" />
 
         {/* Corner labels */}
         <div className="absolute top-8 left-8 text-white/20 font-mono text-[9px] tracking-[0.3em] uppercase z-20 select-none">PHASE {phases[activeIndex].id}</div>

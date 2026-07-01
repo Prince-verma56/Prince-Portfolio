@@ -209,7 +209,7 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
       <div className="top-glow-bg absolute top-[-100px] left-1/2 -translate-x-1/2 w-[50%] h-[200px] bg-[#f04e00] opacity-[0.15] blur-[100px] pointer-events-none rounded-[100%] z-20" />
       <div className="top-glow-line absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[2px] bg-gradient-to-r from-transparent via-[#f04e00]/90 to-transparent blur-[3px] pointer-events-none z-50" />
       <div className="top-glow-line absolute top-0 left-1/2 -translate-x-1/2 w-[20%] h-[2px] bg-gradient-to-r from-transparent via-white/40 to-transparent blur-[1px] pointer-events-none z-50" />
-      <div className="absolute inset-0 z-0 opacity-15 pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+      <div className="absolute inset-0 z-0 opacity-15 pointer-events-none mix-blend-overlay bg-[url('/noise.svg')]"></div>
 
       <div ref={wrapperRef} className="flex h-full w-[600vw] relative will-change-transform z-10">
 

@@ -26,11 +26,11 @@ const STORAGE_KEYS = {
 const AMBIENT_AUDIO_PATH = "";
 
 const SFX_FILES: Record<SFXType, string> = {
-  whoosh: "/sounds/SciFi Enter.mp3",
-  click: "/sounds/SciFi Enter.mp3",
-  tick: "/sounds/SciFi Enter.mp3",
-  impact: "/sounds/SciFi Enter.mp3",
-  swoosh: "/sounds/SciFi Enter.mp3",
+  whoosh: "/sounds/SciFi_Enter.mp3",
+  click: "/sounds/SciFi_Enter.mp3",
+  tick: "/sounds/SciFi_Enter.mp3",
+  impact: "/sounds/SciFi_Enter.mp3",
+  swoosh: "/sounds/SciFi_Enter.mp3",
 };
 
 const AudioContext = createContext<AudioContextType>({

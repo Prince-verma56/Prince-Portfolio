@@ -267,16 +267,16 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
       {/* 3D Tilted Marquee Track */}
       <div
         ref={tiltWrapperRef}
-        className="mt-20 md:mt-32 border-y border-white/10 py-6 md:py-10 bg-[#0a0a0a] flex overflow-hidden select-none will-change-transform shadow-2xl"
+        className="mt-20 md:mt-32 border-y border-white/10 py-8 md:py-10 bg-[#0a0a0a] flex items-center overflow-hidden select-none will-change-transform shadow-2xl"
       >
-        <div ref={marqueeRef} className="flex whitespace-nowrap gap-12 md:gap-16 will-change-transform pl-12">
+        <div ref={marqueeRef} className="flex items-center whitespace-nowrap gap-12 md:gap-16 will-change-transform pl-12">
           {[...techStack, ...techStack, ...techStack, ...techStack].map((tech, idx) => (
             <span
               key={idx}
-              className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white flex items-center gap-12 md:gap-16"
+              className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white flex items-center gap-12 md:gap-16 leading-none pt-2 md:pt-0"
             >
               <span>{tech}</span>
-              <span className="text-xl md:text-3xl text-[#f04e00]">•</span>
+              <span className="text-xl md:text-3xl text-[#f04e00] pb-2 md:pb-0">•</span>
             </span>
           ))}
         </div>

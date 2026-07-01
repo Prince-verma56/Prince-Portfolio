@@ -164,7 +164,7 @@ export default function AchievementsSection() {
           <div className="max-w-5xl text-center px-4">
             <div className="overflow-hidden pb-2">
               <h3 className="text-mask text-3xl md:text-5xl lg:text-[3.5rem] font-light text-white leading-tight tracking-tight">
-                <span className="font-bold text-[#f04e00]">{achievements[0].title}:</span> {achievements[0].descriptionPart1} <span className="font-bold text-[#f04e00]">₹{achievements[0].prize}</span> {achievements[0].descriptionPart2}
+                <span className="font-bold text-[#f04e00] mix-blend-difference">{achievements[0].title}:</span> {achievements[0].descriptionPart1} <span className="font-bold text-[#f04e00] mix-blend-difference">₹{achievements[0].prize}</span> {achievements[0].descriptionPart2}
               </h3>
             </div>
           </div>

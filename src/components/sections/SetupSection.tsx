@@ -67,7 +67,7 @@ export default function SetupSection() {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
-        start: "top 65%",
+        start: "top 40%",
         toggleActions: "play none none none",
       }
     });
@@ -86,8 +86,8 @@ export default function SetupSection() {
 
       // 3. Activate Environment Glow & Badges
       .to(".model-glow", {
-        opacity: 1, duration: 2, ease: "power2.inOut"
-      }, "-=1.0")
+        opacity: 0.25, duration: 3, ease: "power2.inOut"
+      }, "-=0.5")
       .to(".setup-badge", {
         opacity: 1, scale: 1, duration: 0.6, stagger: 0.05, ease: "back.out(1.5)"
       }, "-=1.2");
@@ -148,13 +148,13 @@ export default function SetupSection() {
       className="relative w-full min-h-screen bg-[#050505] text-white py-24 md:py-32 border-t border-white/10 rounded-t-[40px] md:rounded-t-[64px] shadow-[0_-50px_100px_rgba(0,0,0,0.9)] overflow-hidden flex items-center z-10 -mt-32"
     >
       {/* ── BACKGROUND ELEMENTS ── */}
-      <div className="absolute inset-0 z-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      <div className="absolute inset-0 z-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('/noise.svg')]" />
       <div className="parallax-setup-bg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[18vw] font-black text-white/[0.02] pointer-events-none select-none tracking-tighter whitespace-nowrap z-0">
         WORKSPACE
       </div>
 
       <div className="setup-parallax-content w-full h-full relative z-10 flex items-center">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 relative w-full">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 relative w-full mt-16 md:mt-24">
 
           {/* Responsive Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 lg:gap-28 items-center">
@@ -163,7 +163,7 @@ export default function SetupSection() {
             <div className="lg:col-span-7 relative w-full aspect-square md:aspect-4/3 group perspective-[1000px]">
 
               {/* Ambient Radial Glow */}
-              <div className="model-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-[#ff530365] opacity-[0.15] blur-[100px] rounded-full pointer-events-none transition-opacity duration-700 group-hover:opacity-[0.25]" />
+              <div className="model-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-[#ff530365] opacity-0 blur-[100px] rounded-full pointer-events-none transition-opacity duration-700 group-hover:opacity-[0.4]" />
 
               {/* Technical Grid Overlay Background */}
               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-50 rounded-3xl [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_70%)] pointer-events-none" />

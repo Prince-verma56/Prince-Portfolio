@@ -744,7 +744,7 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items, scale = 1.0 }) => {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center">
+    <div className="relative w-full h-full flex flex-col md:items-center justify-center min-h-[900px] md:min-h-0">
       
       {/* ── MASSIVE BACKGROUND TYPOGRAPHY (Depth Layer) ── */}
       <AnimatePresence mode="wait">
@@ -755,7 +755,7 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items, scale = 1.0 }) => {
             animate={{ opacity: 0.03, scale: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
             transition={{ duration: 1.5, ease: "easeOut" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[18vw] font-black uppercase text-white pointer-events-none z-0 whitespace-nowrap select-none"
+            className="absolute top-[250px] md:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[22vw] md:text-[18vw] font-black uppercase text-white pointer-events-none z-0 whitespace-nowrap select-none"
           >
             {activeItem.bgWord}
           </motion.div>
@@ -765,40 +765,40 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items, scale = 1.0 }) => {
       {/* ── SEAMLESS GRADIENT MASKS (Prevents Text Overlap) ── */}
       <div className="absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-[#050505] via-[#050505]/80 to-transparent z-[5] pointer-events-none hidden md:block" />
       <div className="absolute inset-y-0 right-0 w-[40%] bg-gradient-to-l from-[#050505] via-[#050505]/80 to-transparent z-[5] pointer-events-none hidden md:block" />
-      <div className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent z-[5] pointer-events-none block md:hidden" />
+      <div className="absolute inset-x-0 top-0 h-[450px] bg-gradient-to-t from-[#050505] via-[#050505]/30 to-transparent z-[5] pointer-events-none block md:hidden" />
 
       {/* ── WEBGL CANVAS ── */}
       <canvas
         id="infinite-grid-menu-canvas"
         ref={canvasRef}
-        className="absolute inset-0 cursor-grab active:cursor-grabbing w-full h-full outline-none z-0"
+        className="absolute inset-x-0 top-0 md:inset-0 cursor-grab active:cursor-grabbing w-full h-[500px] md:h-full outline-none z-0"
       />
 
       {/* ── PREMIUM INTERACTIVE OVERLAY PANELS ── */}
       {activeItem && (
-        <div className="absolute inset-0 z-10 pointer-events-none flex flex-col md:flex-row justify-between items-center px-6 py-10 md:px-16 md:py-0 w-full h-full max-w-[1600px] mx-auto">
+        <div className="relative md:absolute md:inset-0 z-10 pointer-events-none flex flex-col md:flex-row justify-between items-center px-4 pt-[520px] pb-10 md:px-16 md:py-0 w-full md:h-full max-w-[1600px] mx-auto gap-6 md:gap-0">
           
           {/* LEFT PANEL: Professional Identity & Verification */}
           <motion.div
-             className={`pointer-events-auto w-full md:max-w-sm flex flex-col gap-6 transition-opacity duration-500 self-start md:self-center mt-12 md:mt-0 ${isMoving ? 'opacity-35' : 'opacity-100'} bg-white/[0.02] p-8 rounded-3xl border border-white/5 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative overflow-hidden`}
+             className={`pointer-events-auto w-full md:max-w-sm flex flex-col gap-5 md:gap-6 transition-opacity duration-500 md:self-center ${isMoving ? 'opacity-35' : 'opacity-100'} bg-[#0a0a0a] md:bg-white/[0.02] p-6 md:p-8 rounded-3xl border border-white/5 md:backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative overflow-hidden`}
           >
               <div className="absolute top-0 left-0 w-[3px] h-full bg-gradient-to-b from-[#f04e00] to-transparent opacity-80" />
               
-              <div className="flex flex-col gap-2">
-                 <h2 className="text-4xl md:text-5xl font-black uppercase text-white tracking-tighter leading-none drop-shadow-lg">{activeItem.name}</h2>
-                 <p className="text-[#f04e00] font-mono text-xs uppercase tracking-widest">{activeItem.role} <span className="text-white/30 px-1">@</span> <span className="text-white/80">{activeItem.company}</span></p>
+              <div className="flex flex-col gap-1.5 md:gap-2">
+                 <h2 className="text-3xl md:text-5xl font-black uppercase text-white tracking-tighter leading-none drop-shadow-lg">{activeItem.name}</h2>
+                 <p className="text-[#f04e00] font-mono text-[10px] md:text-xs uppercase tracking-widest">{activeItem.role} <span className="text-white/30 px-1">@</span> <span className="text-white/80">{activeItem.company}</span></p>
               </div>
-              <p className="text-white/60 text-sm leading-relaxed drop-shadow-md">{activeItem.relationship}</p>
+              <p className="text-white/60 text-xs md:text-sm leading-relaxed drop-shadow-md">{activeItem.relationship}</p>
               <div className="flex flex-wrap gap-2">
                  {activeItem.badges.map(b => (
-                     <span key={b} className="border border-[#f04e00]/30 bg-[#f04e00]/5 text-white/80 text-[10px] font-mono uppercase px-3 py-1.5 rounded-full shadow-sm">
+                     <span key={b} className="border border-[#f04e00]/30 bg-[#f04e00]/5 text-white/80 text-[9px] md:text-[10px] font-mono uppercase px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-sm">
                          {b}
                      </span>
                  ))}
               </div>
-              <div className="flex flex-col gap-2 border-t border-white/10 pt-6 mt-2">
+              <div className="flex flex-col gap-2 border-t border-white/10 pt-4 md:pt-6 mt-1 md:mt-2">
                  {activeItem.stats.map(s => (
-                     <span key={s} className="text-white/50 font-mono text-[10px] uppercase tracking-widest flex items-center gap-2 drop-shadow-md">
+                     <span key={s} className="text-white/50 font-mono text-[9px] md:text-[10px] uppercase tracking-widest flex items-center gap-2 drop-shadow-md">
                          <span className="w-1.5 h-1.5 bg-[#f04e00] rounded-full shadow-[0_0_8px_#f04e00]" /> {s}
                      </span>
                  ))}
@@ -807,10 +807,10 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items, scale = 1.0 }) => {
 
           {/* RIGHT PANEL: Recognition Quotes & Skill Analytics */}
           <motion.div
-             className={`pointer-events-auto w-full md:max-w-[420px] flex flex-col gap-8 transition-opacity duration-500 self-end md:self-center mb-12 md:mb-0 ${isMoving ? 'opacity-35' : 'opacity-100'}`}
+             className={`pointer-events-auto w-full md:max-w-[420px] flex flex-col gap-6 md:gap-8 transition-opacity duration-500 md:self-center ${isMoving ? 'opacity-35' : 'opacity-100'}`}
           >
-             <div className="flex flex-col relative bg-white/[0.02] p-8 rounded-3xl border border-white/5 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-                <span className="absolute -top-6 -left-2 text-[#f04e00] text-[100px] leading-[1] font-serif select-none drop-shadow-md opacity-40">"</span>
+             <div className="flex flex-col relative bg-[#0a0a0a] md:bg-white/[0.02] p-6 md:p-8 rounded-3xl border border-white/5 md:backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                <span className="absolute -top-4 -left-1 md:-top-6 md:-left-2 text-[#f04e00] text-[80px] md:text-[100px] leading-[1] font-serif select-none drop-shadow-md opacity-40">"</span>
                 <AnimatePresence mode="wait">
                   <motion.p
                      key={activeItem.quote}
@@ -818,22 +818,22 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items, scale = 1.0 }) => {
                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                      exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                     className="text-white/90 text-lg leading-relaxed italic drop-shadow-lg relative z-10 font-medium"
+                     className="text-white/90 text-sm md:text-lg leading-relaxed italic drop-shadow-lg relative z-10 font-medium"
                   >
                      {activeItem.quote}
                   </motion.p>
                 </AnimatePresence>
              </div>
 
-             <div className="flex flex-col gap-5 bg-white/[0.02] p-8 rounded-3xl border border-white/5 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative overflow-hidden group">
+             <div className="flex flex-col gap-4 md:gap-5 bg-[#0a0a0a] md:bg-white/[0.02] p-6 md:p-8 rounded-3xl border border-white/5 md:backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#f04e00] to-transparent opacity-40" />
                 {activeItem.skills.map((skill, index) => (
-                   <div key={skill.name} className="flex flex-col gap-2.5">
-                      <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-white/60">
+                   <div key={skill.name} className="flex flex-col gap-2 md:gap-2.5">
+                      <div className="flex justify-between items-center text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-white/60">
                          <span>{skill.name}</span>
-                         <span className="text-[#f04e00] font-bold text-xs">{skill.value}%</span>
+                         <span className="text-[#f04e00] font-bold text-[10px] md:text-xs">{skill.value}%</span>
                       </div>
-                      <div className="w-full h-[4px] bg-white/10 rounded-full overflow-hidden shadow-inner">
+                      <div className="w-full h-[3px] md:h-[4px] bg-white/10 rounded-full overflow-hidden shadow-inner">
                          <motion.div
                             key={`${activeItem.name}-${skill.name}`}
                             initial={{ width: 0 }}

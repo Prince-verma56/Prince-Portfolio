@@ -507,7 +507,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                 <Link href={projects[activeIndex].link} className="absolute inset-0 cursor-none overflow-hidden rounded-2xl border border-white/10 group-hover:border-white/30 transition-colors duration-500 shadow-[0_0_50px_rgba(0,0,0,0.5)] block w-full h-full">
 
                   {/* Layer 2: Noise Texture Overlay */}
-                  <div className="absolute inset-0 z-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] mix-blend-overlay pointer-events-none" />
+                  <div className="absolute inset-0 z-20 bg-[url('/noise.svg')] opacity-[0.04] mix-blend-overlay pointer-events-none" />
 
                   {/* Mapped Images for Crossfades */}
                   {projects.map((p, i) => (

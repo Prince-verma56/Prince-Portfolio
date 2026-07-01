@@ -155,7 +155,7 @@ function TestimonialsSection() {
             </div>
 
             {/* ── SPHERE CONTAINER ── */}
-            <div className="sphere-container relative w-full h-[700px] md:h-[800px] max-w-[1600px] mx-auto">
+            <div className="sphere-container relative w-full h-auto min-h-[1000px] md:min-h-0 md:h-[800px] max-w-[1600px] mx-auto">
                 {/* Central Soft Glow Aura */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#f04e00] rounded-full blur-[140px] opacity-15 pointer-events-none z-0" />
                 
