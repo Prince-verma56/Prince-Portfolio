@@ -521,21 +521,21 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
           </div>
 
           {/* Metrics grid — 2x2 on mobile, row on desktop */}
-          <div className="grid grid-cols-2 md:flex md:flex-wrap justify-center gap-4 md:gap-12 lg:gap-20 text-center z-30 border border-white/10 bg-gradient-to-br from-[#111]/90 to-[#070707]/90 backdrop-blur-2xl rounded-2xl py-5 px-5 md:py-10 md:px-16 shadow-[0_20px_60px_rgba(0,0,0,0.7)] border-t border-t-[#f04e00]/30 hover:border-t-[#f04e00]/80 transition-all duration-700 w-full md:max-w-none max-w-[92%]">
+          <div className="grid grid-cols-2 md:flex md:flex-wrap justify-center gap-4 md:gap-8 lg:gap-12 text-center z-30 border border-white/10 bg-gradient-to-br from-[#111]/90 to-[#070707]/90 backdrop-blur-2xl rounded-2xl py-4 px-5 md:py-6 md:px-10 shadow-[0_20px_60px_rgba(0,0,0,0.7)] border-t border-t-[#f04e00]/30 hover:border-t-[#f04e00]/80 transition-all duration-700 w-auto max-w-[92%] md:max-w-none mx-auto inline-flex">
             <div className="metric-item flex flex-col items-center opacity-0 py-1">
-              <span className="text-[2rem] md:text-5xl lg:text-7xl font-black text-white leading-none"><span ref={perfRef}>0</span></span>
+              <span className="text-[2rem] md:text-4xl lg:text-6xl font-black text-white leading-none"><span ref={perfRef}>0</span></span>
               <span className="font-mono text-[8px] md:text-xs uppercase tracking-[0.15em] text-[#f04e00] mt-2 font-bold">Performance</span>
             </div>
-            <div className="metric-item flex flex-col items-center border-l border-white/10 pl-4 md:pl-12 lg:pl-20 opacity-0 py-1">
-              <span className="text-[2rem] md:text-5xl lg:text-7xl font-black text-white leading-none"><span ref={accessRef}>0</span></span>
+            <div className="metric-item flex flex-col items-center border-l border-white/10 pl-4 md:pl-8 lg:pl-12 opacity-0 py-1">
+              <span className="text-[2rem] md:text-4xl lg:text-6xl font-black text-white leading-none"><span ref={accessRef}>0</span></span>
               <span className="font-mono text-[8px] md:text-xs uppercase tracking-[0.15em] text-white/50 mt-2 font-bold">Accessibility</span>
             </div>
-            <div className="metric-item flex flex-col items-center border-t border-white/10 pt-4 md:border-t-0 md:border-l md:pt-0 md:pl-12 lg:pl-20 opacity-0 py-1">
-              <span className="text-[2rem] md:text-5xl lg:text-7xl font-black text-white leading-none"><span ref={bestRef}>0</span></span>
+            <div className="metric-item flex flex-col items-center border-t border-white/10 pt-4 md:border-t-0 md:border-l md:pt-0 md:pl-8 lg:pl-12 opacity-0 py-1">
+              <span className="text-[2rem] md:text-4xl lg:text-6xl font-black text-white leading-none"><span ref={bestRef}>0</span></span>
               <span className="font-mono text-[8px] md:text-xs uppercase tracking-[0.15em] text-white/50 mt-2 font-bold">Best Practices</span>
             </div>
-            <div className="metric-item flex flex-col items-center border-t border-l border-white/10 pt-4 pl-4 md:border-t-0 md:pt-0 md:pl-12 lg:pl-20 opacity-0 py-1">
-              <span className="text-[2rem] md:text-5xl lg:text-7xl font-black text-white leading-none"><span ref={loadRef}>6.2s</span></span>
+            <div className="metric-item flex flex-col items-center border-t border-l border-white/10 pt-4 pl-4 md:border-t-0 md:pt-0 md:pl-8 lg:pl-12 opacity-0 py-1">
+              <span className="text-[2rem] md:text-4xl lg:text-6xl font-black text-white leading-none"><span ref={loadRef}>6.2s</span></span>
               <span className="font-mono text-[8px] md:text-xs uppercase tracking-[0.15em] text-white/50 mt-2 font-bold">Load Time</span>
             </div>
           </div>
