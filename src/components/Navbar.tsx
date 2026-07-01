@@ -8,6 +8,8 @@ import { useGSAP } from "@gsap/react";
 import { useLoader } from "@/context/LoaderContext";
 import SlideTextButton from "@/components/kokonutui/slide-text-button";
 import { Button } from "./ui/button";
+import ResumePopup from "./ResumePopup";
+import { FileText } from "lucide-react";
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -144,14 +146,14 @@ export default function Navbar() {
     if (!isLoaderFinished) return;
 
     const HIDE_THRESHOLD = 80;   // px scrolled before we start hiding
-    const SHOW_DELTA     = 6;    // px scrolled up before we reveal
+    const SHOW_DELTA = 6;    // px scrolled up before we reveal
 
     const onScroll = () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
       rafId.current = requestAnimationFrame(() => {
         const currentY = window.scrollY;
-        const delta    = currentY - lastScrollY.current;
-        const header   = headerRef.current;
+        const delta = currentY - lastScrollY.current;
+        const header = headerRef.current;
         if (!header) return;
 
         // Never hide while menu is open
@@ -294,6 +296,13 @@ export default function Navbar() {
               </Link>
             </div>
           ))}
+
+          {/* New Resume CTA below nav links */}
+          <div className="mt-8 md:mt-10 relative z-[90]">
+            <div className="menu-link-item">
+              <ResumePopup />
+            </div>
+          </div>
         </div>
 
         {/* ── Bottom Footer Info (UPDATED TO MATCH YOUR REQUEST) ── */}
