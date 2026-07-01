@@ -27,6 +27,7 @@ interface SlideTextButtonProps extends Omit<React.HTMLAttributes<HTMLElement>, "
   animateEntrance?: boolean;
   target?: string;
   rel?: string;
+  download?: string | boolean;
 }
 
 const SlideTextButton = React.forwardRef<HTMLElement, SlideTextButtonProps>(

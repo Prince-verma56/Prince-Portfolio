@@ -254,13 +254,13 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
               EVERY PRODUCT <br />
               STARTS WITH <br />
               <span className="text-[#facc15] inline-flex items-center gap-2 align-middle">
-                  AN IDEA.
-                  <svg viewBox="0 0 36 12" className="w-7 h-2.5 md:w-9 md:h-3 inline-block stroke-[#facc15] stroke-[2] stroke-linecap-round fill-none">
-                    <line x1="2" y1="3" x2="22" y2="3" className="speed-line-a" />
-                    <line x1="8" y1="6" x2="32" y2="6" className="speed-line-b" />
-                    <line x1="4" y1="9" x2="26" y2="9" className="speed-line-c" />
-                  </svg>
-                </span>
+                AN IDEA.
+                <svg viewBox="0 0 36 12" className="w-7 h-2.5 md:w-9 md:h-3 inline-block stroke-[#facc15] stroke-[2] stroke-linecap-round fill-none">
+                  <line x1="2" y1="3" x2="22" y2="3" className="speed-line-a" />
+                  <line x1="8" y1="6" x2="32" y2="6" className="speed-line-b" />
+                  <line x1="4" y1="9" x2="26" y2="9" className="speed-line-c" />
+                </svg>
+              </span>
             </h2>
 
             {/* Mobile-only supporting pill items */}
@@ -451,21 +451,21 @@ export default function PhilosophyJourneySection({ bgImage }: { bgImage?: string
               <path className="arch-line" d="M 350 400 L 500 500 L 700 400" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="1000" strokeDashoffset="1000" />
               <path className="arch-line" d="M 500 500 L 500 650 L 750 700" fill="none" stroke="rgba(240,78,0,0.5)" strokeWidth="1.5" strokeDasharray="1000" strokeDashoffset="1000" />
             </svg>
-            <div className="arch-node absolute top-[30%] left-[10%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
+            <div className="arch-node absolute top-[40%] left-[10%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
               <MonitorSmartphone className="w-4 h-4 text-[#61dafb] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-[9px] uppercase tracking-[0.25em] text-white/30 font-mono">Interface</span>
                 <span className="font-mono text-xs text-white/90 tracking-wide font-bold uppercase">User Experience</span>
               </div>
             </div>
-            <div className="arch-node absolute top-[30%] left-[26%] min-w-[230px] bg-[#0c0c0c]/95 border border-[#f04e00]/10 border-l-2 border-l-[#f04e00] px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
+            <div className="arch-node absolute top-[40%] left-[36%] min-w-[230px] bg-[#0c0c0c]/95 border border-[#f04e00]/10 border-l-2 border-l-[#f04e00] px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
               <Cpu className="w-4 h-4 text-[#f04e00] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-[9px] uppercase tracking-[0.25em] text-[#f04e00]/70 font-mono">Core</span>
                 <span className="font-mono text-xs text-white tracking-wide font-bold uppercase">Solution Engine</span>
               </div>
             </div>
-            <div className="arch-node absolute bottom-[35%] left-[28%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
+            <div className="arch-node absolute bottom-[15%] left-[36%] min-w-[230px] bg-[#0c0c0c]/90 border border-white/10 border-l-2 border-l-[#f04e00]/60 px-5 py-4 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.75)]">
               <Database className="w-4 h-4 text-[#3ecf8e] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-[9px] uppercase tracking-[0.25em] text-white/30 font-mono">Data</span>
