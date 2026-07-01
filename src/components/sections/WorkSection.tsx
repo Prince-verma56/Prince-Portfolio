@@ -16,7 +16,7 @@ const projects = [
     title: "Adhayaya",
     subtitle: "Indian Heritage & Travel Platform",
     tags: ["Next.js", "WebGL", "Travel"],
-    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1781108027/Screenshot_2026-06-09_202735_ixq9ul.png",
+    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1782910188/03f9965c-b113-4798-b35b-1b7ac88cfd06.png",
     link: "/works/adhayaya",
     year: "2024",
     visual: (
@@ -26,27 +26,13 @@ const projects = [
       </svg>
     )
   },
-{
-  id: "02",
-  title: "NeonScript",
-  subtitle: "AI-Powered Desktop IDE",
-  tags: ["Tauri", "React", "TypeScript"],
-  image: "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022516_z8c2db.png",
-  link: "/works/neonscript",
-  year: "2025",
-  visual: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" className="w-24 h-24 text-white">
-      <path d="M8 3H4a1 1 0 0 0-1 1v4M8 3h8M8 3v18m8-18h4a1 1 0 0 1 1 1v4M16 3v18M3 8h18M3 16h18" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  ),
-},
   {
-    id: "03",
-    title: "Hazu",
-    subtitle: "Predictive Analytics Dashboard",
+    id: "02",
+    title: "Aurey",
+    subtitle: "3D Korean Cosmetic Brand Site ",
     tags: ["React", "D3.js", "ML"],
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1800&q=90",
-    link: "/works/hazu",
+    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1782911204/Screenshot_2026-07-01_183449_dvahxx.png",
+    link: "/works/aurey",
     year: "2023",
     visual: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" className="w-24 h-24 text-white">
@@ -55,6 +41,21 @@ const projects = [
       </svg>
     )
   },
+  {
+    id: "03",
+    title: "NeonScript",
+    subtitle: "AI-Powered Desktop IDE",
+    tags: ["Tauri", "React", "TypeScript"],
+    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022516_z8c2db.png",
+    link: "/works/neonscript",
+    year: "2025",
+    visual: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" className="w-24 h-24 text-white">
+        <path d="M8 3H4a1 1 0 0 0-1 1v4M8 3h8M8 3v18m8-18h4a1 1 0 0 1 1 1v4M16 3v18M3 8h18M3 16h18" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+
 ];
 
 interface WorkSectionProps {
@@ -85,8 +86,8 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
     mouseParallaxRaf.current = requestAnimationFrame(() => {
       const rect = el.getBoundingClientRect();
       // Normalise to [-1, 1]
-      const nx = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
-      const ny = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
+      const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
       // Shift the inner image 14px opposite to cursor → depth illusion
       gsap.to(inner, {
         x: nx * -14,
@@ -490,7 +491,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
 
             <div
               ref={showcaseRef}
-              className="relative w-full max-w-[900px] aspect-[16/10] group"
+              className="relative w-full max-w-[900px] aspect-video group"
               onMouseMove={handleShowcaseMouseMove}
               onMouseLeave={handleShowcaseMouseLeave}
             >
@@ -515,17 +516,17 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                       className={`img-container-${i} absolute inset-0 will-change-transform`}
                       style={{ opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 10 : 1 }}
                     >
-                      {/* parallax-inner: 10% oversize on each axis so the shift never reveals edges */}
+                      {/* parallax-inner: scaled to allow parallax shift without revealing edges */}
                       <div
-                        className="parallax-inner w-[110%] h-[110%] relative"
-                        style={{ top: "-5%", left: "-5%", willChange: "transform" }}
+                        className="parallax-inner w-full h-full relative scale-[1.1]"
+                        style={{ willChange: "transform" }}
                         ref={(el) => { parallaxInnerRefs.current[i] = el; }}
                       >
                         <Image
                           src={p.image}
                           alt={p.title}
                           fill
-                          className="object-cover"
+                          className="object-cover object-center"
                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 900px"
                           priority={i === 0}
                         />

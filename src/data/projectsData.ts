@@ -41,12 +41,12 @@ export const projectsData: ProjectData[] = [
     year: "2026",
     timeline: "3 Months",
     services: "Next.js / WebGL / Strategic Branding",
-    liveLink: "https://adhayaya.dev",
-    heroImage: "https://res.cloudinary.com/dtslaveid/image/upload/v1781108027/Screenshot_2026-06-09_202735_ixq9ul.png",
+    liveLink: "https://adhayaya-travel.vercel.app/",
+    heroImage: "https://res.cloudinary.com/dtslaveid/image/upload/v1782910188/03f9965c-b113-4798-b35b-1b7ac88cfd06.png",
     galleryImages: [
-      "https://images.unsplash.com/photo-1473163928189-364b2c4e1135?w=1200&q=80",
-      "https://images.unsplash.com/photo-1548013146-72479768bada?w=1200&q=80",
-      "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=1800&q=90"
+      "https://res.cloudinary.com/dtslaveid/image/upload/v1782910604/fc37c924-f706-4b87-abd8-a4013827e725.png",
+      "https://res.cloudinary.com/dtslaveid/image/upload/v1782910256/Screenshot_2026-07-01_182040_aq5rgq.png",
+      "https://res.cloudinary.com/dtslaveid/image/upload/v1782910256/Screenshot_2026-07-01_182005_ln6oz5.png"
     ],
     challenge: "Traditional travel guides struggle to captivate younger audiences, making ancient history feel dry and distant. The challenge was to bridge historical archives with modern interactive web technology, creating a friction-free spatial visualization interface that loads instantly on mobile.",
     solution: "We engineered a lightweight WebGL architecture nested within a high-performance Next.js application. Dynamic SVG maps, custom monument layouts, and structured micro-interactions translate historical data into responsive visual narratives that reward visitor curiosity.",
@@ -108,26 +108,76 @@ export const projectsData: ProjectData[] = [
     darkHero: true,
   },
   {
-    id: "hazu",
-    title: "Hazu",
-    description: "A business predictive analytics intelligence dashboard designed to streamline internal logistics pipelines, supply chain predictions, and global cargo tracking.",
-    year: "2023",
-    timeline: "6 Months",
-    services: "React / D3.js / Machine Learning",
-    liveLink: "https://hazu.io",
-    heroImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1800&q=90",
+    id: "aurey",
+    title: "Aurey",
+    tagline: "Build Your Digital Presence with AI.",
+    category: "Portfolio Platform",
+    status: "live",
+
+    year: "2026",
+    timeline: "Active",
+    role: "Full-Stack Developer & UI Engineer",
+    client: "Personal Brand",
+    industry: "Portfolio / Web Platform",
+
+    services: "React / Node.js / AI Integration",
+    techStack: {
+      frontend: [
+        "React",
+        "Vite",
+        "Tailwind CSS",
+        "Framer Motion",
+        "GSAP",
+        "shadcn/ui"
+      ],
+      backend: [
+        "Node.js",
+        "Express.js",
+        "MongoDB",
+        "Cloudinary"
+      ],
+      ai: [
+        "OpenAI",
+        "Nebius AI",
+        "ImageKit"
+      ],
+      deployment: [
+        "Vercel",
+        "Render",
+        "GitHub"
+      ],
+    },
+
+    liveLink: "https://aurey-sample.vercel.app/auth",
+    caseStudy: "/work/aurey",
+    githubLink: "https://github.com/Prince-verma56/Aurey-Sample",
+
+    heroImage: "https://res.cloudinary.com/dtslaveid/image/upload/v1782911204/Screenshot_2026-07-01_183449_dvahxx.png",
     galleryImages: [
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80",
-      "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=1200&q=80",
-      "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1800&q=90"
+      "https://res.cloudinary.com/dtslaveid/image/upload/v1782911884/430f4d31-9be3-417c-a2ff-336c61d0659f.png",
+      "https://res.cloudinary.com/dtslaveid/image/upload/v1782911919/Screenshot_2026-07-01_184800_pcgick.png",
+      "https://res.cloudinary.com/dtslaveid/image/upload/v1782911200/Screenshot_2026-07-01_183610_haqqkr.png",
     ],
-    challenge: "Enterprise managers are frequently overwhelmed by complex spreadsheets, making it difficult to detect supply chain blockages before they occur. The goal was to build a dashboard that transforms million-row datasets into clear, actionable predictive flows.",
-    solution: "Using advanced D3.js layout algorithms and Web Workers, we built custom interactive Sankey and network graphs that update in real-time. A background machine learning service continuously processes inventory reports, highlighting potential bottlenecks up to 72 hours in advance.",
+
+    description:
+      "Aurey is an AI-powered portfolio platform designed to help developers, designers, freelancers, and creators showcase their work with premium visuals, smooth interactions, and intelligent features. It combines modern UI, animations, and AI tools into a fast, responsive web experience.",
+
+    challenge:
+      "Most portfolio websites look generic, lack storytelling, and fail to showcase projects in an engaging way. Building a portfolio often requires significant design knowledge, custom development, and ongoing maintenance.",
+
+    solution:
+      "Aurey provides a modern portfolio experience with reusable project showcases, AI-powered content generation, smooth GSAP and Framer Motion animations, responsive layouts, optimized performance, and scalable architecture. It allows creators to present their work professionally while keeping content management simple.",
+
     results: [
-      { value: "3.2x", label: "Speedup in Management Audits" },
-      { value: "22%", label: "Decrease in Inventory Costs" },
-      { value: "94%", label: "Bottleneck Warning Success Rate" },
-      { value: "8", label: "Global Warehouses Synced" }
-    ]
-  }
+      { value: "100%", label: "Responsive Experience" },
+      { value: "95+", label: "Lighthouse Performance" },
+      { value: "AI", label: "Powered Content Features" },
+      { value: "Modern", label: "Interactive UI & Animations" },
+    ],
+
+    featured: true,
+    order: 1,
+    accentColor: "#7C3AED",
+    darkHero: true,
+  },
 ];
