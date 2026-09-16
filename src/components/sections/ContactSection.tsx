@@ -209,13 +209,13 @@ export default function ContactSection({ isStandalonePage = false }: ContactSect
 
   }, { scope: sectionRef, dependencies: [isStandalonePage] });
 
-  // ── 5. Play timelines and refresh ScrollTriggers when loader finishes ──
+  // ── 5. Play timelines when loader finishes ──
+  // (ScrollTrigger refreshes are coordinated centrally in SmoothScroller.)
   useEffect(() => {
     if (isLoaderFinished) {
       if (isStandalonePage && tlRef.current) {
         tlRef.current.play();
       }
-      ScrollTrigger.refresh();
     } else {
       if (isStandalonePage && tlRef.current) {
         tlRef.current.progress(0).pause();

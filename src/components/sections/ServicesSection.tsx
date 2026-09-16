@@ -169,7 +169,8 @@ export default function ServicesSection() {
           height: "auto",
           duration: 0.7,
           ease: "expo.inOut",
-          onComplete: () => ScrollTrigger.refresh(),
+          // The body-height ResizeObserver in SmoothScroller refreshes ScrollTrigger once,
+          // instead of one full refresh per row per click.
         });
         gsap.fromTo(
           innerContent,
@@ -182,7 +183,6 @@ export default function ServicesSection() {
           height: 0,
           duration: 0.6,
           ease: "expo.inOut",
-          onComplete: () => ScrollTrigger.refresh(),
         });
         gsap.to(innerContent, { opacity: 0, y: 0, duration: 0.2, overwrite: true });
         gsap.to(collapsedTitle, { height: "auto", opacity: 1, duration: 0.5, delay: 0.2, ease: "expo.inOut" });

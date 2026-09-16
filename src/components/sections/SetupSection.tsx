@@ -4,6 +4,9 @@ import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useLoader } from "@/context/LoaderContext";
+
+const MODEL_URL = "/models/SetupDesk_draco.glb";
 
 // Must be dynamically imported with ssr:false — Three.js/WebGL is browser-only
 const ModelViewer = dynamic(() => import("../ModelViewer"), {
@@ -33,6 +36,26 @@ export default function SetupSection() {
   const [hasEnteredView, setHasEnteredView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isModelLoaded, setIsModelLoaded] = useState(false);
+  const { isLoaderFinished } = useLoader();
+
+  // Warm the three.js chunk and fetch the model while the user is still in the
+  // sections above, so arriving here no longer coincides with a ~600 KB script
+  // parse plus a GLB decode (that overlap was the stutter on entering Workspace).
+  useEffect(() => {
+    if (!isLoaderFinished) return;
+    let cancelled = false;
+    const warm = () => {
+      import("../ModelViewer")
+        .then((m) => { if (!cancelled) m.preloadModel?.(MODEL_URL); })
+        .catch(() => { /* non-critical */ });
+    };
+    const hasIdle = typeof window.requestIdleCallback === "function";
+    const id = hasIdle ? window.requestIdleCallback(warm, { timeout: 4000 }) : window.setTimeout(warm, 1500);
+    return () => {
+      cancelled = true;
+      if (hasIdle) window.cancelIdleCallback(id); else window.clearTimeout(id);
+    };
+  }, [isLoaderFinished]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -43,7 +66,8 @@ export default function SetupSection() {
           observer.disconnect();
         }
       },
-      { rootMargin: "400px" }
+      // Mount (and warm up) the WebGL scene about 1.5 viewports early, off-screen.
+      { rootMargin: "1400px 0px" }
     );
     observer.observe(containerRef.current);
     return () => {
@@ -59,6 +83,7 @@ export default function SetupSection() {
     gsap.set(".setup-fade", { opacity: 0, y: 30 });
     gsap.set(".setup-block", { opacity: 0, x: 20 });
     gsap.set(".setup-badge", { opacity: 0, scale: 0.8 });
+    gsap.set(".setup-line", { scaleX: 0 });
     // Note: model-container is NOT hidden here — the WebGL canvas must always be visible
     // or the Three.js renderer will not initialise correctly.
     gsap.set(".model-glow", { opacity: 0 });
@@ -78,6 +103,8 @@ export default function SetupSection() {
       .to(".setup-fade", {
         opacity: 1, y: 0, duration: 1, ease: "power3.out"
       }, "-=0.8")
+      // Divider draws in from the left instead of only fading
+      .to(".setup-line", { scaleX: 1, duration: 1.1, ease: "expo.out" }, "-=0.9")
 
       // 2. Stagger Stacked Blocks
       .to(".setup-block", {
@@ -163,7 +190,8 @@ export default function SetupSection() {
             <div className="lg:col-span-7 relative w-full aspect-square md:aspect-4/3 group perspective-[1000px]">
 
               {/* Ambient Radial Glow */}
-              <div className="model-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-[#ff530365] opacity-0 blur-[100px] rounded-full pointer-events-none transition-opacity duration-700 group-hover:opacity-[0.4]" />
+              {/* Pre-shaped radial glow: a live 100px blur() over the WebGL canvas was re-filtered every frame */}
+              <div className="model-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] rounded-full pointer-events-none opacity-0 transition-opacity duration-700 group-hover:opacity-[0.4] bg-[radial-gradient(circle,rgba(255,83,3,0.45)_0%,rgba(255,83,3,0.14)_38%,transparent_68%)]" />
 
               {/* Technical Grid Overlay Background */}
               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-50 rounded-3xl [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_70%)] pointer-events-none" />
@@ -173,7 +201,7 @@ export default function SetupSection() {
                 {hasEnteredView ? (
                   <>
                     <ModelViewer
-                      url="/models/SetupDesk_draco.glb"
+                      url={MODEL_URL}
                       width="100%"
                       height="100%"
                       autoRotate={true}
@@ -198,7 +226,7 @@ export default function SetupSection() {
                       onModelLoaded={() => setIsModelLoaded(true)}
                     />
                     {/* HTML loader overlay */}
-                    <div className={`absolute inset-0 bg-[#050505]/95 backdrop-blur-md z-30 flex flex-col items-center justify-center rounded-3xl transition-all duration-700 pointer-events-none ${isModelLoaded ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}>
+                    <div className={`absolute inset-0 bg-[#050505]/95 backdrop-blur-md z-30 flex flex-col items-center justify-center rounded-3xl transition-[opacity,transform,visibility] duration-700 pointer-events-none ${isModelLoaded ? "opacity-0 scale-95 invisible" : "opacity-100 scale-100"}`}>
                       <div className="relative w-16 h-16 flex items-center justify-center">
                         <div className="absolute inset-0 border-2 border-white/5 rounded-full" />
                         <div className="absolute inset-0 border-2 border-t-[#f04e00] rounded-full animate-spin shadow-[0_0_15px_rgba(240,78,0,0.4)]" />
@@ -220,7 +248,7 @@ export default function SetupSection() {
               <div className="absolute bottom-4 right-4 w-4 h-4 border-b border-r border-white/25 pointer-events-none transition-all duration-700 group-hover:border-[#f04e00]/60" />
 
               {/* ── HUD PANEL: TOP LEFT (SYSTEM DIAGNOSTICS) ── */}
-              <div className="absolute top-6 left-6 flex flex-col gap-2.5 p-3.5 bg-black/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-500 scale-95 group-hover:scale-100 -translate-x-2 group-hover:translate-x-0 w-[170px] select-none">
+              <div className="absolute top-6 left-6 flex flex-col gap-2.5 p-3.5 bg-black/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-20 pointer-events-none opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,transform,visibility] duration-500 scale-95 group-hover:scale-100 -translate-x-2 group-hover:translate-x-0 w-[170px] select-none">
                 <div className="flex justify-between items-center border-b border-white/10 pb-1.5">
                   <span className="font-space text-[8px] text-[#f04e00] tracking-widest uppercase font-bold">SYSTEM DIAGNOSTICS</span>
                   <span className="w-1.5 h-1.5 bg-[#00e676] rounded-full animate-pulse shadow-[0_0_8px_#00e676]" />
@@ -244,7 +272,7 @@ export default function SetupSection() {
               </div>
 
               {/* ── HUD PANEL: TOP RIGHT (VIEWPORT ANALYTICS) ── */}
-              <div className="absolute top-6 right-6 flex flex-col gap-2 p-3.5 bg-black/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-500 scale-95 group-hover:scale-100 translate-x-2 group-hover:translate-x-0 w-[150px] select-none">
+              <div className="absolute top-6 right-6 flex flex-col gap-2 p-3.5 bg-black/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-20 pointer-events-none opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,transform,visibility] duration-500 scale-95 group-hover:scale-100 translate-x-2 group-hover:translate-x-0 w-[150px] select-none">
                 <div className="flex justify-between items-center border-b border-white/10 pb-1.5">
                   <span className="font-space text-[8px] text-white/50 tracking-widest uppercase font-bold">VIEWPORT INFO</span>
                 </div>
@@ -265,7 +293,7 @@ export default function SetupSection() {
               </div>
 
               {/* ── HUD PANEL: BOTTOM DETAILS ── */}
-              <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center p-3 bg-black/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0 text-[9px] text-white/50 select-none">
+              <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center p-3 bg-black/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-20 pointer-events-none opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,transform,visibility] duration-500 translate-y-2 group-hover:translate-y-0 text-[9px] text-white/50 select-none">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-[#f04e00] rounded-full animate-ping" />
                   <span className="tracking-wider uppercase text-white/70 font-semibold">STREAM ACTIVE: 6.95MB GLB</span>
@@ -303,7 +331,7 @@ export default function SetupSection() {
                 <div className="overflow-hidden pb-2"><span className="mask-setup-text block origin-top-left text-[#f04e00]">WORKSPACE</span></div>
               </h2>
 
-              <div className="setup-fade h-px w-16 bg-gradient-to-r from-[#f04e00] to-transparent mb-6" />
+              <div className="setup-fade setup-line origin-left h-px w-16 bg-gradient-to-r from-[#f04e00] to-transparent mb-6" />
 
               <p className="setup-fade text-white/60 text-lg leading-relaxed max-w-md mb-10">
                 The environment where ideas become products. Optimized for deep work, rapid iteration, and seamless engineering.
@@ -314,8 +342,10 @@ export default function SetupSection() {
                 {workspaceBlocks.map((block) => (
                   <div
                     key={block.id}
-                    className="setup-block flex items-start gap-4 p-4 bg-[#0a0a0a] border border-white/5 rounded-xl hover:bg-white/[0.02] hover:border-white/10 transition-colors group"
+                    className="setup-block relative overflow-hidden flex items-start gap-4 p-4 bg-[#0a0a0a] border border-white/5 rounded-xl hover:bg-white/[0.02] hover:border-white/10 hover:translate-x-1 transition-[background-color,border-color,transform] duration-500 group"
                   >
+                    {/* Accent rail grows in on hover */}
+                    <span className="absolute left-0 top-3 bottom-3 w-px bg-[#f04e00] origin-center scale-y-0 group-hover:scale-y-100 transition-transform duration-500 ease-out" aria-hidden="true" />
                     <span className="font-space text-xs text-white/30 font-bold mt-0.5 group-hover:text-[#f04e00] transition-colors">{block.id}</span>
                     <div className="flex flex-col gap-1">
                       <span className="font-bold text-white text-sm tracking-wide">{block.title}</span>

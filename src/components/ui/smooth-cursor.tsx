@@ -24,24 +24,13 @@ function isTrackablePointer(pointerType: string) {
   return pointerType !== "touch"
 }
 
+// One ancestor walk instead of nine; this runs on every element boundary crossing.
+const INTERACTIVE_SELECTOR =
+  'button, a, input, textarea, select, [role="button"], [role="link"], [data-pointer="true"], .cursor-pointer'
+
 function isInteractiveElement(target: HTMLElement | null): boolean {
   if (!target) return false
-
-  const interactiveSelectors = [
-    'button',
-    'a',
-    'input',
-    'textarea',
-    'select',
-    '[role="button"]',
-    '[role="link"]',
-    '[data-pointer="true"]',
-    '.cursor-pointer',
-  ]
-
-  return interactiveSelectors.some(
-    (selector) => target.closest(selector) !== null
-  )
+  return target.closest(INTERACTIVE_SELECTOR) !== null
 }
 
 const DefaultCursorSVG: FC = () => {
@@ -127,6 +116,11 @@ export function SmoothCursor({
   const [isVisible, setIsVisible] = useState(false)
   const [isHoveringHidden, setIsHoveringHidden] = useState(false)
   const [isHoveringInteractive, setIsHoveringInteractive] = useState(false)
+  // Mirrors of the booleans above so the high-frequency handlers can bail
+  // out without dispatching a React update when nothing changed.
+  const visibleRef = useRef(false)
+  const hoveringHiddenRef = useRef(false)
+  const hoveringInteractiveRef = useRef(false)
 
   const cursorX = useSpring(0, springConfig)
   const cursorY = useSpring(0, springConfig)
@@ -149,6 +143,7 @@ export function SmoothCursor({
       setIsEnabled(nextIsEnabled)
 
       if (!nextIsEnabled) {
+        visibleRef.current = false
         setIsVisible(false)
       }
     }
@@ -188,7 +183,10 @@ export function SmoothCursor({
         return
       }
 
-      setIsVisible(true)
+      if (!visibleRef.current) {
+        visibleRef.current = true
+        setIsVisible(true)
+      }
 
       const currentPos = { x: e.clientX, y: e.clientY }
       updateVelocity(currentPos)
@@ -250,14 +248,20 @@ export function SmoothCursor({
       const isHiddenElement = target.closest('[data-hide-cursor="true"]') !== null
       const isInteractive = isInteractiveElement(target)
 
-      setIsHoveringHidden(isHiddenElement)
-      setIsHoveringInteractive(isInteractive)
-
-      // Set native cursor to pointer if hovering interactive element
-      document.body.style.cursor = isInteractive ? "pointer" : "none"
+      // Only touch React when a value actually changes. The native cursor is
+      // already hidden globally (body style + globals.css), so there is no
+      // per-event write to document.body.style, which invalidated document style.
+      if (isHiddenElement !== hoveringHiddenRef.current) {
+        hoveringHiddenRef.current = isHiddenElement
+        setIsHoveringHidden(isHiddenElement)
+      }
+      if (isInteractive !== hoveringInteractiveRef.current) {
+        hoveringInteractiveRef.current = isInteractive
+        setIsHoveringInteractive(isInteractive)
+      }
     }
 
-    window.addEventListener("mouseover", handleMouseOver)
+    window.addEventListener("mouseover", handleMouseOver, { passive: true })
 
     return () => {
       window.removeEventListener("pointermove", throttledPointerMove)

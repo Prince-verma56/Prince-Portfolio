@@ -580,14 +580,28 @@ function PhaseVisuals({ activeIndex, isLoaderFinished }: { activeIndex: number; 
     prevIndexRef.current = activeIndex;
   }, { scope: containerRef, dependencies: [activeIndex, isLoaderFinished] });
 
+  // Hidden neighbour phases keep their SVG packet animations paused: an animating SVG
+  // child dirties layout on every frame even when the phase is visibility:hidden.
+  useEffect(() => {
+    const root = containerRef.current;
+    if (!root) return;
+    root.querySelectorAll<SVGSVGElement>("[class*='phase-content-'] svg").forEach((svg) => {
+      const isActive = svg.closest(`.phase-content-${activeIndex}`) !== null;
+      if (isActive) svg.unpauseAnimations?.(); else svg.pauseAnimations?.();
+    });
+  }, [activeIndex]);
+
   return (
     <div ref={containerRef} className="relative w-full max-w-[1100px] h-full mx-auto flex flex-col items-center justify-center z-10">
       {phases.map((phase, i) => (
         <div
           key={`phase-${phase.id}`}
-          className={`phase-content-${i} absolute inset-0 w-full flex flex-col items-center justify-center will-change-transform transition-opacity duration-500 ease-in-out`}
+          className={`phase-content-${i} absolute inset-0 w-full flex flex-col items-center justify-center transition-[opacity,visibility] duration-500 ease-in-out`}
           style={{
             opacity: i === activeIndex ? 1 : 0,
+            // visibility stays "visible" for the whole fade and only then hides,
+            // so inactive phases skip paint without losing the crossfade.
+            visibility: i === activeIndex ? "visible" : "hidden",
             zIndex: i === activeIndex ? 10 : 1,
             pointerEvents: i === activeIndex ? "auto" : "none",
           }}
@@ -609,7 +623,9 @@ function PhaseVisuals({ activeIndex, isLoaderFinished }: { activeIndex: number; 
           {/* Visual canvas */}
           <div className="w-full mb-6 md:mb-8 flex items-center justify-center overflow-visible">
             <div className="scale-[0.55] min-[400px]:scale-[0.68] min-[500px]:scale-[0.8] sm:scale-90 md:scale-100 origin-center flex items-center justify-center shrink-0 w-[600px] h-[320px] relative">
-              {phase.visual}
+              {/* Active phase and its neighbours are mounted so a phase switch never mounts
+                  charts mid-scroll; SMIL animations in the hidden neighbours are paused below. */}
+              {Math.abs(i - activeIndex) <= 1 ? phase.visual : null}
             </div>
           </div>
 
@@ -637,6 +653,7 @@ export default function TechStackSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const { isLoaderFinished } = useLoader();
   const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => setIsMounted(true), []);
 
@@ -669,10 +686,15 @@ export default function TechStackSection() {
       pin: true,
       pinSpacing: true,
       anticipatePin: 1,
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         const currentScreen = Math.floor(self.progress * TOTAL_SCREENS);
         const targetIndex = Math.max(0, Math.min(TOTAL_PHASES - 1, currentScreen));
-        setActiveIndex((prev) => (prev !== targetIndex ? targetIndex : prev));
+        // Compare against a ref so React is only touched when the phase really changes.
+        if (targetIndex !== activeIndexRef.current) {
+          activeIndexRef.current = targetIndex;
+          setActiveIndex(targetIndex);
+        }
       },
     });
 

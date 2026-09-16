@@ -1,7 +1,7 @@
 "use client";
 import { FC, useRef, useState, useEffect, MutableRefObject } from 'react';
 import { mat4, quat, vec2, vec3 } from 'gl-matrix';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "motion/react";
 
 // --- WebGL Shaders ---
 const discVertShaderSource = `#version 300 es
@@ -261,18 +261,30 @@ class ArcballControl {
   private readonly EPSILON = 0.1;
   private readonly IDENTITY_QUAT = quat.create();
 
+  private onDown = (e: PointerEvent) => {
+    vec2.set(this.pointerPos, e.clientX, e.clientY);
+    vec2.copy(this.previousPointerPos, this.pointerPos);
+    this.isPointerDown = true;
+  };
+  private onUp = () => { this.isPointerDown = false; };
+  private onMove = (e: PointerEvent) => {
+    if (this.isPointerDown) vec2.set(this.pointerPos, e.clientX, e.clientY);
+  };
+
   constructor(private canvas: HTMLCanvasElement, private updateCallback: (dt: number) => void) {
-    canvas.addEventListener('pointerdown', (e: PointerEvent) => {
-      vec2.set(this.pointerPos, e.clientX, e.clientY);
-      vec2.copy(this.previousPointerPos, this.pointerPos);
-      this.isPointerDown = true;
-    });
-    canvas.addEventListener('pointerup', () => this.isPointerDown = false);
-    canvas.addEventListener('pointerleave', () => this.isPointerDown = false);
-    canvas.addEventListener('pointermove', (e: PointerEvent) => {
-      if (this.isPointerDown) vec2.set(this.pointerPos, e.clientX, e.clientY);
-    });
+    // Named handlers so destroy() can remove them; passive because none call preventDefault.
+    canvas.addEventListener('pointerdown', this.onDown, { passive: true });
+    canvas.addEventListener('pointerup', this.onUp, { passive: true });
+    canvas.addEventListener('pointerleave', this.onUp, { passive: true });
+    canvas.addEventListener('pointermove', this.onMove, { passive: true });
     canvas.style.touchAction = 'none';
+  }
+
+  public destroy(): void {
+    this.canvas.removeEventListener('pointerdown', this.onDown);
+    this.canvas.removeEventListener('pointerup', this.onUp);
+    this.canvas.removeEventListener('pointerleave', this.onUp);
+    this.canvas.removeEventListener('pointermove', this.onMove);
   }
 
   public update(deltaTime: number, targetFrameDuration = 16): void {
@@ -400,6 +412,25 @@ class InfiniteGridMenu {
   private _frames = 0;
   private movementActive = false;
 
+  private _rafId = 0;
+  private _disposed = false;
+  private _forceFrames = 2;
+  private _scaleDelta = 0;
+  private _camDelta = 0;
+  private _lastItemIndex = -1;
+  // Scratch buffers reused every frame (the old animate() allocated ~340 typed
+  // arrays per frame, i.e. ~20k/s of garbage while the sphere was on screen).
+  private _p = vec3.create();
+  private _neg = vec3.create();
+  private _scaleVec = vec3.create();
+  private _m = mat4.create();
+  private _t = mat4.create();
+  private _origin = vec3.fromValues(0, 0, 0);
+  private _up = vec3.fromValues(0, 1, 0);
+  private _back = vec3.create();
+  private _invQ = quat.create();
+  private _nt = vec3.create();
+
   public isVisible = true;
   private wasVisible = true;
 
@@ -435,16 +466,58 @@ class InfiniteGridMenu {
     if (!this.gl) return;
     if (resizeCanvasToDisplaySize(this.canvas)) this.gl.viewport(0, 0, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight);
     this.updateProjectionMatrix();
+    this._forceFrames = 2;
+  }
+
+  /** Start (or restart) the frame loop. Safe to call repeatedly. */
+  public start(): void {
+    if (this._disposed || this._rafId) return;
+    this._rafId = requestAnimationFrame(t => this.run(t));
+  }
+
+  /** Called by the IntersectionObserver; restarts the loop when the sphere is back on screen. */
+  public setVisible(visible: boolean): void {
+    this.isVisible = visible;
+    if (visible) {
+      this._forceFrames = 2;
+      this.start();
+    }
+  }
+
+  /**
+   * Cancel the loop and release the GL resources (previously leaked on unmount).
+   * Deliberately does NOT call WEBGL_lose_context: React reuses the same <canvas>
+   * across effect re-runs (Strict Mode, prop changes), and a lost context would
+   * make the next InfiniteGridMenu on that canvas fail to compile its program.
+   */
+  public dispose(): void {
+    this._disposed = true;
+    if (this._rafId) cancelAnimationFrame(this._rafId);
+    this._rafId = 0;
+    this.control?.destroy();
+    const gl = this.gl;
+    if (gl) {
+      if (this.discProgram) gl.deleteProgram(this.discProgram);
+      if (this.discVAO) gl.deleteVertexArray(this.discVAO);
+      if (this.discInstances?.buffer) gl.deleteBuffer(this.discInstances.buffer);
+      if (this.tex) gl.deleteTexture(this.tex);
+    }
+    this.discProgram = null;
+    this.discVAO = null;
+    this.tex = null;
+    this.gl = null;
   }
 
   public run(time = 0): void {
-    if (!this.gl) return;
-    requestAnimationFrame(t => this.run(t));
+    this._rafId = 0;
+    if (!this.gl || this._disposed) return;
 
+    // Off-screen: stop scheduling entirely; setVisible(true) restarts the loop.
     if (!this.isVisible) {
       this.wasVisible = false;
       return;
     }
+    this._rafId = requestAnimationFrame(t => this.run(t));
 
     if (!this.wasVisible) {
       this._time = time;
@@ -456,7 +529,18 @@ class InfiniteGridMenu {
     this._deltaFrames = this._deltaTime / this.TARGET_FRAME_DURATION;
     this._frames += this._deltaFrames;
     this.animate(this._deltaTime);
-    this.render();
+    // Skip the GPU pass when nothing on the sphere changed. A new canvas frame also
+    // forces the compositor to re-blur the three glass panels above it, so an idle
+    // sphere used to cost three backdrop-filter passes per frame for nothing.
+    if (this.needsRender()) this.render();
+  }
+
+  private needsRender(): boolean {
+    if (this._forceFrames > 0) { this._forceFrames--; return true; }
+    return this.control.isPointerDown
+      || Math.abs(this.smoothRotationVelocity) > 1e-4
+      || this._scaleDelta > 1e-4
+      || this._camDelta > 1e-4;
   }
 
   private init(onInit?: (instance: InfiniteGridMenu) => void): void {
@@ -554,9 +638,11 @@ class InfiniteGridMenu {
         ctx.drawImage(img, x + offsetX, y + offsetY, drawWidth, drawHeight);
         ctx.restore();
       });
+      if (this._disposed) return;
       gl.bindTexture(gl.TEXTURE_2D, this.tex);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
       gl.generateMipmap(gl.TEXTURE_2D);
+      this._forceFrames = 2; // draw the freshly loaded atlas even if the sphere is idle
     });
   }
 
@@ -588,25 +674,30 @@ class InfiniteGridMenu {
   private animate(deltaTime: number): void {
     if (!this.gl) return;
     this.control.update(deltaTime, this.TARGET_FRAME_DURATION);
-    const positions = this.instancePositions.map(p => vec3.transformQuat(vec3.create(), p, this.control.orientation));
-    
-    const nearestIndex = this.findNearestVertexIndex();
 
-    positions.forEach((p, ndx) => {
+    const nearestIndex = this.findNearestVertexIndex();
+    const SCALE_INTENSITY = 0.6;
+    vec3.set(this._back, 0, 0, -this.SPHERE_RADIUS);
+    let maxScaleDelta = 0;
+
+    for (let ndx = 0; ndx < this.instancePositions.length; ndx++) {
+      const p = vec3.transformQuat(this._p, this.instancePositions[ndx], this.control.orientation);
       this.targetScales[ndx] = ndx === nearestIndex ? 1.15 : 1.0;
+      const scaleDelta = Math.abs(this.targetScales[ndx] - this.currentScales[ndx]);
+      if (scaleDelta > maxScaleDelta) maxScaleDelta = scaleDelta;
       this.currentScales[ndx] += (this.targetScales[ndx] - this.currentScales[ndx]) * 0.15;
 
-      const SCALE_INTENSITY = 0.6;
       const s = (Math.abs(p[2]) / this.SPHERE_RADIUS) * SCALE_INTENSITY + (1 - SCALE_INTENSITY);
       const finalScale = s * 0.25 * this.scaleFactor * this.currentScales[ndx];
-      
-      const matrix = mat4.create();
-      mat4.multiply(matrix, matrix, mat4.fromTranslation(mat4.create(), vec3.negate(vec3.create(), p)));
-      mat4.multiply(matrix, matrix, mat4.targetTo(mat4.create(), [0, 0, 0], p, [0, 1, 0]));
-      mat4.multiply(matrix, matrix, mat4.fromScaling(mat4.create(), [finalScale, finalScale, finalScale]));
-      mat4.multiply(matrix, matrix, mat4.fromTranslation(mat4.create(), [0, 0, -this.SPHERE_RADIUS]));
+
+      const matrix = this._m;
+      mat4.fromTranslation(matrix, vec3.negate(this._neg, p));
+      mat4.multiply(matrix, matrix, mat4.targetTo(this._t, this._origin, p, this._up));
+      mat4.multiply(matrix, matrix, mat4.fromScaling(this._t, vec3.set(this._scaleVec, finalScale, finalScale, finalScale)));
+      mat4.multiply(matrix, matrix, mat4.fromTranslation(this._t, this._back));
       mat4.copy(this.discInstances.matrices[ndx], matrix);
-    });
+    }
+    this._scaleDelta = maxScaleDelta;
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.discInstances.buffer);
     this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, this.discInstances.matricesArray);
@@ -672,21 +763,27 @@ class InfiniteGridMenu {
     if (!this.control.isPointerDown) {
       const nearestVertexIndex = this.findNearestVertexIndex();
       const itemIndex = nearestVertexIndex % Math.max(1, this.items.length);
-      this.onActiveItemChange(itemIndex);
+      // Only notify React when the snapped item actually changes (this used to
+      // dispatch a state update on every idle frame).
+      if (itemIndex !== this._lastItemIndex) {
+        this._lastItemIndex = itemIndex;
+        this.onActiveItemChange(itemIndex);
+      }
       this.control.snapTargetDirection = vec3.normalize(vec3.create(), this.getVertexWorldPosition(nearestVertexIndex));
     } else {
       cameraTargetZ += this.control.rotationVelocity * 80 + 2.5;
       damping = 7 / timeScale;
     }
 
+    this._camDelta = Math.abs(cameraTargetZ - this.camera.position[2]);
     this.camera.position[2] += (cameraTargetZ - this.camera.position[2]) / damping;
     this.updateCameraMatrix();
   }
 
   private findNearestVertexIndex(): number {
     const n = this.control.snapDirection;
-    const inversOrientation = quat.conjugate(quat.create(), this.control.orientation);
-    const nt = vec3.transformQuat(vec3.create(), n, inversOrientation);
+    const inversOrientation = quat.conjugate(this._invQ, this.control.orientation);
+    const nt = vec3.transformQuat(this._nt, n, inversOrientation);
     let maxD = -1;
     let nearest = 0;
     for (let i = 0; i < this.instancePositions.length; ++i) {
@@ -721,23 +818,29 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items, scale = 1.0 }) => {
     };
 
     if (canvas && items.length > 0) {
-      sketch = new InfiniteGridMenu(canvas, items, handleActiveItem, setIsMoving, sk => sk.run(), scale);
+      sketch = new InfiniteGridMenu(canvas, items, handleActiveItem, setIsMoving, sk => sk.start(), scale);
 
       observer = new IntersectionObserver(([entry]) => {
-        if (sketch) {
-          sketch.isVisible = entry.isIntersecting;
-        }
+        sketch?.setVisible(entry.isIntersecting);
       }, { rootMargin: '100px' });
       observer.observe(canvas);
     }
 
-    const handleResize = () => { if (sketch) sketch.resize(); };
+    let resizeFrame = 0;
+    const handleResize = () => {
+      if (resizeFrame) return;
+      resizeFrame = requestAnimationFrame(() => { resizeFrame = 0; sketch?.resize(); });
+    };
     window.addEventListener('resize', handleResize);
-    handleResize();
+    sketch?.resize();
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      if (resizeFrame) cancelAnimationFrame(resizeFrame);
       if (observer && canvas) observer.disconnect();
+      // Cancel the frame loop and release GL resources (previously leaked on unmount).
+      sketch?.dispose();
+      sketch = null;
     };
   }, [items, scale]);
 

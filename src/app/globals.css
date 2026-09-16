@@ -248,13 +248,18 @@ input:-webkit-autofill:active {
   0%, 100% { transform: scaleX(1) scaleY(1); opacity: 0.85; }
   50%       { transform: scaleX(1.4) scaleY(0.9) translateY(0.5px); opacity: 1; }
 }
+/* Paused unless the journey section is pinned (.journey-active is toggled by
+   its ScrollTrigger). These are SVG transforms, which animate on the main
+   thread, so they must not run for the whole page lifetime. */
 .rocket-flame-inner {
   animation: flame-flicker 0.12s ease-in-out infinite;
-  transform-origin: 15px 20px;
+  animation-play-state: paused;
+  transform-origin: 12.5% 50%; /* flame root, now on the <svg> element itself */
 }
 .rocket-flame-outer {
   animation: flame-flicker 0.2s ease-in-out infinite alternate;
-  transform-origin: 15px 20px;
+  animation-play-state: paused;
+  transform-origin: 12.5% 50%; /* flame root, now on the <svg> element itself */
 }
 @keyframes speed-line-shift-1 {
   0%   { transform: translateX(0px); opacity: 0.5; }
@@ -268,23 +273,78 @@ input:-webkit-autofill:active {
 }
 .speed-line-a {
   animation: speed-line-shift-1 0.7s ease-in-out infinite;
+  animation-play-state: paused;
 }
 .speed-line-b {
   animation: speed-line-shift-2 0.7s ease-in-out infinite 0.15s;
+  animation-play-state: paused;
 }
 .speed-line-c {
   animation: speed-line-shift-1 0.7s ease-in-out infinite 0.3s;
+  animation-play-state: paused;
+}
+.journey-active .rocket-flame-inner,
+.journey-active .rocket-flame-outer,
+.journey-active .speed-line-a,
+.journey-active .speed-line-b,
+.journey-active .speed-line-c {
+  animation-play-state: running;
 }
 
-/* ── Flip Text Hover Animation ── */
-@keyframes flip-char {
-  0% { transform: rotateX(0deg); opacity: 1; }
-  50% { transform: rotateX(-90deg); opacity: 0.2; }
-  50.1% { transform: rotateX(90deg); opacity: 0; }
-  100% { transform: rotateX(0deg); opacity: 1; }
+/* ── Flip Text (see components/ui/flip-text.tsx) ──
+   Characters are hidden until the wrapper gets .is-inview, flip in with a
+   per-character perspective, and end on `transform: none` so they hold no
+   compositor layer at rest. Hover replays a full spin (same as the old motion
+   version's rotateX: 360). Only animating characters are composited. */
+.flip-text-wrapper .flip-char {
+  opacity: 0;
+}
+.flip-text-wrapper.is-inview .flip-char {
+  animation: flip-in var(--flip-duration, 1.2s) cubic-bezier(0.22, 1, 0.36, 1) var(--flip-delay, 0s) both;
+}
+.flip-text-wrapper.is-inview:hover .flip-char {
+  animation: flip-spin var(--flip-duration, 1.2s) ease-in-out var(--flip-hover-delay, 0s) forwards;
+}
+@keyframes flip-in {
+  from { opacity: 0; transform: perspective(1000px) rotateX(90deg); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes flip-spin {
+  from { opacity: 1; transform: perspective(1000px) rotateX(0deg); }
+  to   { opacity: 1; transform: perspective(1000px) rotateX(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-text-wrapper .flip-char { opacity: 1; animation: none !important; }
 }
 
-.flip-text-wrapper:hover .flip-char {
-  animation: flip-char var(--flip-duration, 1s) ease-in-out forwards;
-  animation-delay: var(--flip-delay, 0s);
+/* ── Preloader: masked letter reveal ──
+   Each letter rises through its own overflow-hidden mask using a
+   transform-only CSS animation. It runs on the compositor thread, so the
+   reveal stays smooth even while the main thread is busy hydrating.
+   GSAP (Preloader.tsx) handles the counter and the exit. */
+.preloader-mask {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.preloader-letter {
+  display: inline-block;
+  transform: translate3d(0, 130%, 0) rotate(4deg);
+  transform-origin: 0% 100%;
+  will-change: transform;
+  backface-visibility: hidden;
+  animation: preloader-rise 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(0.15s + var(--i, 0) * 0.07s);
+}
+
+@keyframes preloader-rise {
+  from { transform: translate3d(0, 130%, 0) rotate(4deg); }
+  to   { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader-letter {
+    animation: none;
+    transform: none;
+  }
 }

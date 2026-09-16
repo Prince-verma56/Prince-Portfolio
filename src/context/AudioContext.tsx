@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from "react";
 
 export type SFXType = "whoosh" | "click" | "tick" | "impact" | "swoosh";
 
@@ -50,6 +50,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const sfxPoolRef = useRef<Map<SFXType, HTMLAudioElement[]>>(new Map());
   const fadeRafRef = useRef<number | null>(null);
   const hasStartedRef = useRef(false);
+  const sfxVoiceRef = useRef(0);
 
   const [volume, setVolumeState] = useState(0.12);
   const [muted, setMutedState] = useState(false);
@@ -152,8 +153,9 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     if (mutedRef.current || !audioEnabledRef.current) return;
     const pool = sfxPoolRef.current.get(type);
     if (!pool?.length) return;
+    // Reuse the oldest voice instead of cloning a new media element per overlap.
     const audio = pool.find((a) => a.paused || a.currentTime === 0)
-      ?? (pool[0].cloneNode() as HTMLAudioElement);
+      ?? pool[(sfxVoiceRef.current++) % pool.length];
     audio.currentTime = 0;
     audio.volume = clamp(volumeRef.current * 0.6);
     audio.play().catch(() => { });
@@ -180,14 +182,22 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       ambientRef.current = el;
     }
 
+    // One pool per distinct file. All five SFX types currently share one mp3,
+    // so this creates 3 media elements instead of 15 at page load.
     const sfxTypes: SFXType[] = ["whoosh", "click", "tick", "impact", "swoosh"];
+    const poolsByFile = new Map<string, HTMLAudioElement[]>();
     sfxTypes.forEach((type) => {
-      const pool: HTMLAudioElement[] = [];
-      for (let i = 0; i < 3; i++) {
-        const a = new Audio(SFX_FILES[type]);
-        a.preload = "auto";
-        a.volume = 0.3;
-        pool.push(a);
+      const file = SFX_FILES[type];
+      let pool = poolsByFile.get(file);
+      if (!pool) {
+        pool = [];
+        for (let i = 0; i < 3; i++) {
+          const a = new Audio(file);
+          a.preload = "auto";
+          a.volume = 0.3;
+          pool.push(a);
+        }
+        poolsByFile.set(file, pool);
       }
       sfxPoolRef.current.set(type, pool);
     });
@@ -238,8 +248,15 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [startAmbientAudio]);
 
+  // Stable value object. This provider wraps the whole app, so a fresh object
+  // per render re-rendered every consumer (incl. all useSFX callers) on any change.
+  const value = useMemo(
+    () => ({ volume, muted, audioEnabled, isPlaying, setVolume, toggleMute, playSfx, togglePlayPause, startAmbientAudio }),
+    [volume, muted, audioEnabled, isPlaying, setVolume, toggleMute, playSfx, togglePlayPause, startAmbientAudio]
+  );
+
   return (
-    <AudioContext.Provider value={{ volume, muted, audioEnabled, isPlaying, setVolume, toggleMute, playSfx, togglePlayPause, startAmbientAudio }}>
+    <AudioContext.Provider value={value}>
       {children}
     </AudioContext.Provider>
   );

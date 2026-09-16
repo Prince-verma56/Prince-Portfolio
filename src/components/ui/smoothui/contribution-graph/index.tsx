@@ -1,8 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import type React from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export interface ContributionData {
   count: number;
@@ -54,9 +54,9 @@ const isDateInValidRange = (currentDate: Date, startDate: Date, endDate: Date, t
   return isInRange || isPreviousYearDecember || isNextYearJanuary;
 };
 
-const createDayData = (currentDate: Date, contributionData: ContributionData[]): ContributionData => {
+const createDayData = (currentDate: Date, contributionByDate: Map<string, ContributionData>): ContributionData => {
   const dateString = currentDate.toISOString().split("T")[0];
-  const existingData = contributionData.find((d) => d.date === dateString);
+  const existingData = contributionByDate.get(dateString);
   return {
     date: dateString,
     count: existingData?.count ?? LEVEL_0,
@@ -123,6 +123,8 @@ export function ContributionGraph({ data = [], year = new Date().getFullYear(), 
     const startDate = new Date(year, JANUARY_MONTH, DAY_1);
     const endDate = new Date(year, DECEMBER_MONTH, DAY_31);
     const days: ContributionData[] = [];
+    // O(1) lookups instead of a 365-item find() per cell (~135k comparisons on mount).
+    const contributionByDate = new Map(data.map((d) => [d.date, d] as const));
 
     const firstSunday = new Date(startDate);
     firstSunday.setDate(startDate.getDate() - startDate.getDay());
@@ -133,7 +135,7 @@ export function ContributionGraph({ data = [], year = new Date().getFullYear(), 
         currentDate.setDate(firstSunday.getDate() + weekNum * DAYS_IN_WEEK + day);
 
         if (isDateInValidRange(currentDate, startDate, endDate, year)) {
-          days.push(createDayData(currentDate, data));
+          days.push(createDayData(currentDate, contributionByDate));
         } else {
           days.push({ date: "", count: LEVEL_0, level: LEVEL_0 });
         }
@@ -144,14 +146,14 @@ export function ContributionGraph({ data = [], year = new Date().getFullYear(), 
 
   const monthHeaders = useMemo(() => calculateMonthHeaders(year), [year]);
 
-  const handleDayHover = (day: ContributionData, event: React.MouseEvent) => {
+  const handleDayHover = useCallback((day: ContributionData, event: React.MouseEvent) => {
     if (showTooltips && day.date) {
       setHoveredDay(day);
       setTooltipPosition({ x: event.clientX, y: event.clientY });
     }
-  };
+  }, [showTooltips]);
 
-  const handleDayLeave = () => setHoveredDay(null);
+  const handleDayLeave = useCallback(() => setHoveredDay(null), []);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -164,19 +166,9 @@ export function ContributionGraph({ data = [], year = new Date().getFullYear(), 
     return `${count} contributions`;
   };
 
-  return (
-    <div className={`contribution-graph flex flex-col w-full ${className}`}>
-      
-      {/* ── CUSTOM HORIZONTAL SCROLLBAR CONTAINER ── */}
-      <div className="w-full overflow-x-auto pb-6 pt-2 pr-4
-        [&::-webkit-scrollbar]:h-2.5 
-        [&::-webkit-scrollbar-track]:rounded-full 
-        [&::-webkit-scrollbar-track]:bg-white/5 
-        [&::-webkit-scrollbar-thumb]:rounded-full 
-        [&::-webkit-scrollbar-thumb]:bg-white/20 
-        hover:[&::-webkit-scrollbar-thumb]:bg-white/40 
-        transition-all"
-      >
+  // The 371-cell grid is memoized so hovering (which only changes tooltip state)
+  // no longer reconciles every cell on each mouseenter.
+  const grid = useMemo(() => (
         <table className="border-separate border-spacing-[3px] text-xs w-max">
           <caption className="sr-only">Contribution Graph for {year}</caption>
 
@@ -216,7 +208,7 @@ export function ContributionGraph({ data = [], year = new Date().getFullYear(), 
                   return (
                     <td className="h-[12px] w-[12px] md:h-[14px] md:w-[14px] cursor-pointer p-0" key={cellKey} onMouseEnter={(e) => handleDayHover(dayData, e)} onMouseLeave={handleDayLeave}>
                       <div
-                        className={`h-[12px] w-[12px] md:h-[14px] md:w-[14px] rounded-sm transition-all duration-300 ${
+                        className={`h-[12px] w-[12px] md:h-[14px] md:w-[14px] rounded-sm transition-[transform,box-shadow] duration-300 ${
                           CONTRIBUTION_COLORS[dayData.level]
                         } hover:ring-1 hover:ring-white hover:scale-110`}
                       />
@@ -227,6 +219,22 @@ export function ContributionGraph({ data = [], year = new Date().getFullYear(), 
             ))}
           </tbody>
         </table>
+  ), [yearData, monthHeaders, year, handleDayHover, handleDayLeave]);
+
+  return (
+    <div className={`contribution-graph flex flex-col w-full ${className}`}>
+      
+      {/* ── CUSTOM HORIZONTAL SCROLLBAR CONTAINER ── */}
+      <div className="w-full overflow-x-auto pb-6 pt-2 pr-4
+        [&::-webkit-scrollbar]:h-2.5 
+        [&::-webkit-scrollbar-track]:rounded-full 
+        [&::-webkit-scrollbar-track]:bg-white/5 
+        [&::-webkit-scrollbar-thumb]:rounded-full 
+        [&::-webkit-scrollbar-thumb]:bg-white/20 
+        hover:[&::-webkit-scrollbar-thumb]:bg-white/40 
+        transition-all"
+      >
+        {grid}
       </div>
 
       {showTooltips && hoveredDay && (

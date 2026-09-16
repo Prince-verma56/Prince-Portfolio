@@ -57,17 +57,49 @@ export default function Navbar() {
     if (isLoaderFinished) {
       // ── 1. The Shrinking Logo Effect ──
       if (isHome) {
-        gsap.to(".nav-logo-text", {
-          fontSize: "24px", // Shrinks to normal logo size on scroll
-          ease: "power2.inOut",
-          scrollTrigger: {
-            id: "logo-shrink",
-            trigger: document.body,
-            start: "top top",
-            end: "300px top",
-            scrub: 1,
-          },
-        });
+        // Scrub `scale` (compositor-only) instead of `font-size` (layout + glyph
+        // re-shaping every frame). The ® keeps its on-screen size by scrubbing to
+        // 1em, and once the scrub settles at the small end the real 24px font-size
+        // is swapped in so the link's hit area matches what is visible.
+        const logo = containerRef.current?.querySelector<HTMLElement>(".nav-logo-text");
+        const mark = logo?.querySelector<HTMLElement>("sup");
+        if (logo) {
+          const TARGET_PX = 24;
+          let isSmall = false;
+          const largePx = () => {
+            const inline = logo.style.fontSize;
+            logo.style.fontSize = "";
+            const px = parseFloat(getComputedStyle(logo).fontSize) || TARGET_PX;
+            logo.style.fontSize = inline;
+            return px;
+          };
+          const toSmall = () => {
+            if (isSmall) return;
+            isSmall = true;
+            logo.style.fontSize = `${TARGET_PX}px`;
+            gsap.set(logo, { scale: 1 });
+          };
+          const toLarge = () => {
+            if (!isSmall) return;
+            isSmall = false;
+            logo.style.fontSize = "";
+            gsap.set(logo, { scale: TARGET_PX / largePx() });
+          };
+          const shrink = gsap.timeline({
+            scrollTrigger: {
+              id: "logo-shrink",
+              trigger: document.body,
+              start: "top top",
+              end: "300px top",
+              scrub: 1,
+              invalidateOnRefresh: true,
+              onUpdate: (self) => { if (self.progress < 1) toLarge(); },
+              onScrubComplete: (self) => { if (self.progress === 1) toSmall(); },
+            },
+          });
+          shrink.to(logo, { scale: () => TARGET_PX / largePx(), ease: "power2.inOut" }, 0);
+          if (mark) shrink.to(mark, { fontSize: "1em", ease: "power2.inOut" }, 0);
+        }
       } else {
         // Clear inline style so Tailwind class controls the font size
         gsap.set(".nav-logo-text", { clearProps: "all" });

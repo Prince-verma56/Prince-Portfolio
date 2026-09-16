@@ -1,7 +1,7 @@
 /// <reference types="@react-three/fiber" />
 // @ts-nocheck
 'use client';
-import { FC, Suspense, useRef, useLayoutEffect, useEffect, useState } from 'react';
+import { FC, Suspense, useRef, useLayoutEffect, useEffect, useState, useMemo } from 'react';
 import { Canvas, useFrame, useThree, invalidate } from '@react-three/fiber';
 import {
   OrbitControls,
@@ -57,6 +57,35 @@ const isTouch =
   typeof window !== 'undefined' &&
   ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 const deg2rad = (d: number) => (d * Math.PI) / 180;
+
+/** Start fetching + parsing a GLB ahead of time (called from SetupSection during idle). */
+export const preloadModel = (url: string) => useGLTF.preload(url);
+
+type FadeState = { t: number; mats: THREE.Material[]; done: boolean };
+
+/** Shadow flags + (optionally) transparent material clones for the fade-in, applied to a fresh clone. */
+function prepareScene(scene: THREE.Object3D, fadeIn: boolean) {
+  const mats: THREE.Material[] = [];
+  scene.traverse((o: any) => {
+    if (!o.isMesh) return;
+    o.castShadow = true;
+    o.receiveShadow = true;
+    if (fadeIn) {
+      const list: THREE.Material[] = Array.isArray(o.material) ? o.material : [o.material];
+      const clones = list.map((m) => { const c = m.clone(); c.transparent = true; c.opacity = 0; mats.push(c); return c; });
+      o.material = Array.isArray(o.material) ? clones : clones[0];
+    }
+  });
+  return { scene, mats };
+}
+
+/** Advances the fade by dt seconds; returns true on the frame it completes. */
+function advanceFade(fade: FadeState, dt: number): boolean {
+  fade.t = Math.min(1, fade.t + dt * 2.5); // ~0.4s, same pace as the old 25×16ms ticks
+  for (const m of fade.mats) m.opacity = fade.t;
+  if (fade.t >= 1) { fade.done = true; return true; }
+  return false;
+}
 const DECIDE = 8;
 const ROTATE_SPEED = 0.005;
 const INERTIA = 0.925;
@@ -148,7 +177,7 @@ const ModelInner: FC<ModelInnerProps> = ({
 }) => {
   const outer = useRef<THREE.Group>(null!);
   const inner = useRef<THREE.Group>(null!);
-  const { camera, gl } = useThree();
+  const { camera, gl, advance } = useThree();
 
   const vel = useRef({ x: 0, y: 0 });
   const tPar = useRef({ x: 0, y: 0 });
@@ -158,9 +187,23 @@ const ModelInner: FC<ModelInnerProps> = ({
 
   // ── Load the GLTF at the top level (rules of hooks compliant) ──
   const { scene: gltfScene } = useGLTF(url);
-  const content = gltfScene.clone(true);
+  // Clone once per loaded scene, not on every render (each clone duplicated the
+  // whole graph and, with fadeIn, a full set of materials that was never disposed).
+  const prepared = useMemo(() => prepareScene(gltfScene.clone(true), fadeIn), [gltfScene, fadeIn]);
+  const content = prepared.scene;
+  useEffect(() => () => { prepared.mats.forEach((m) => m.dispose()); }, [prepared]);
 
   const pivotW = useRef(new THREE.Vector3());
+  const ndcScratch = useRef(new THREE.Vector3());
+  const fadeRef = useRef<FadeState | null>(null);
+  // Pointer handlers coalesce their invalidate() into one per frame; R3F's
+  // invalidate() otherwise queues up to 60 extra renders for a burst of events.
+  const frameQueued = useRef(false);
+  const invalidateOnce = () => {
+    if (frameQueued.current) return;
+    frameQueued.current = true;
+    requestAnimationFrame(() => { frameQueued.current = false; invalidate(); });
+  };
 
   useLayoutEffect(() => {
     if (!content || !inner.current) return;
@@ -174,24 +217,6 @@ const ModelInner: FC<ModelInnerProps> = ({
     // Center and scale the model
     g.position.set(-sphere.center.x * s, -sphere.center.y * s, -sphere.center.z * s);
     g.scale.setScalar(s);
-
-    // Enable shadows and set up fade-in
-    g.traverse((o: any) => {
-      if (o.isMesh) {
-        o.castShadow = true;
-        o.receiveShadow = true;
-        if (fadeIn) {
-          if (Array.isArray(o.material)) {
-            o.material = o.material.map((m: THREE.Material) => m.clone());
-            o.material.forEach((m: any) => { m.transparent = true; m.opacity = 0; });
-          } else {
-            o.material = o.material.clone();
-            o.material.transparent = true;
-            o.material.opacity = 0;
-          }
-        }
-      }
-    });
 
     // Set rotation
     outer.current.rotation.set(initPitch, initYaw, 0);
@@ -210,25 +235,22 @@ const ModelInner: FC<ModelInnerProps> = ({
     g.getWorldPosition(pivotW.current);
     pivot.copy(pivotW.current);
 
-    // Fade-in animation
+    // Warm-up frame. With frameloop="never" nothing renders until the section intersects,
+    // so shader compilation and texture uploads would land on the first visible frame.
+    // Rendering once now (while still off-screen) moves that cost out of the scroll.
+    advance?.(performance.now());
+
+    // Fade-in runs inside the R3F frame loop (vsync-aligned, stops when done)
+    // instead of a 16ms setInterval that traversed the scene graph on its own clock.
     if (fadeIn) {
-      let t = 0;
-      const id = setInterval(() => {
-        t += 0.04;
-        const v = Math.min(t, 1);
-        g.traverse((o: any) => {
-          if (o.isMesh) {
-            if (Array.isArray(o.material)) o.material.forEach((m: any) => { m.opacity = v; });
-            else o.material.opacity = v;
-          }
-        });
-        invalidate();
-        if (v >= 1) { clearInterval(id); onLoaded?.(); }
-      }, 16);
-      return () => clearInterval(id);
+      fadeRef.current = { t: 0, mats: prepared.mats, done: false };
+      invalidate();
     } else {
       onLoaded?.();
     }
+    return () => {
+      fadeRef.current = null;
+    };
   }, [url]); // re-run when url changes
 
   /* ─── Desktop drag rotation ─── */
@@ -247,7 +269,7 @@ const ModelInner: FC<ModelInnerProps> = ({
       lx = e.clientX;
       outer.current.rotation.y += dx * ROTATE_SPEED;
       vel.current = { x: dx * ROTATE_SPEED, y: 0 };
-      invalidate();
+      invalidateOnce();
     };
     const up = () => { drag = false; };
     el.addEventListener('pointerdown', down);
@@ -261,7 +283,7 @@ const ModelInner: FC<ModelInnerProps> = ({
 
   /* ─── Touch rotation only (no pinch-zoom) ─── */
   useEffect(() => {
-    if (!isTouch) return;
+    if (!isTouch || !enableManualRotation) return;
     const el = gl.domElement;
     const pts = new Map<number, { x: number; y: number }>();
     let sx = 0, lx = 0;
@@ -280,13 +302,15 @@ const ModelInner: FC<ModelInnerProps> = ({
       lx = e.clientX;
       outer.current.rotation.y += dx * ROTATE_SPEED;
       vel.current = { x: dx * ROTATE_SPEED, y: 0 };
-      invalidate();
+      invalidateOnce();
     };
     const up = (e: PointerEvent) => {
       pts.delete(e.pointerId);
     };
     el.addEventListener('pointerdown', down, { passive: true });
-    window.addEventListener('pointermove', move, { passive: false });
+    // Passive: the handler never calls preventDefault, and a non-passive
+    // window-level pointermove blocks fast-path touch scrolling site-wide.
+    window.addEventListener('pointermove', move, { passive: true });
     window.addEventListener('pointerup', up, { passive: true });
     window.addEventListener('pointercancel', up, { passive: true });
     return () => {
@@ -299,26 +323,33 @@ const ModelInner: FC<ModelInnerProps> = ({
 
   /* ─── Mouse parallax / hover tilt ─── */
   useEffect(() => {
-    if (isTouch) return;
+    // Nothing to track unless a pointer-driven effect is enabled (SetupSection disables both).
+    if (isTouch || (!enableMouseParallax && !enableHoverRotation)) return;
     const mm = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse') return;
       const nx = (e.clientX / window.innerWidth) * 2 - 1;
       const ny = (e.clientY / window.innerHeight) * 2 - 1;
       if (enableMouseParallax) tPar.current = { x: -nx * PARALLAX_MAG, y: -ny * PARALLAX_MAG };
       if (enableHoverRotation) tHov.current = { x: ny * HOVER_MAG, y: nx * HOVER_MAG };
-      invalidate();
+      invalidateOnce();
     };
-    window.addEventListener('pointermove', mm);
+    window.addEventListener('pointermove', mm, { passive: true });
     return () => window.removeEventListener('pointermove', mm);
   }, [enableMouseParallax, enableHoverRotation]);
 
   /* ─── Animation frame ─── */
   useFrame((_, dt) => {
     let need = false;
+    const fade = fadeRef.current;
+    if (fade && !fade.done) {
+      if (advanceFade(fade, dt)) onLoaded?.();
+      need = true;
+    }
     cPar.current.x += (tPar.current.x - cPar.current.x) * PARALLAX_EASE;
     cPar.current.y += (tPar.current.y - cPar.current.y) * PARALLAX_EASE;
 
-    const ndc = pivotW.current.clone().project(camera);
+    // Reuse one scratch vector instead of allocating a Vector3 every frame.
+    const ndc = ndcScratch.current.copy(pivotW.current).project(camera);
     ndc.x += xOff + cPar.current.x;
     ndc.y += yOff + cPar.current.y;
     outer.current.position.copy(ndc.unproject(camera));

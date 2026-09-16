@@ -1,7 +1,6 @@
 "use client";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Image from "next/image";
 import { useLoader } from "@/context/LoaderContext";
@@ -27,13 +26,6 @@ export default function AchievementsSection() {
   const containerRef = useRef<HTMLElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { isLoaderFinished } = useLoader();
-
-  // Refresh ScrollTrigger only after loader exits and layout is stable
-  useEffect(() => {
-    if (!isLoaderFinished) return;
-    const id = setTimeout(() => ScrollTrigger.refresh(), 200);
-    return () => clearTimeout(id);
-  }, [isLoaderFinished]);
 
   useGSAP(() => {
     if (!isLoaderFinished || !containerRef.current) return;

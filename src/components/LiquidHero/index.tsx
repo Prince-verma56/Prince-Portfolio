@@ -28,6 +28,29 @@ type LiquidHeroProps = {
   transitionSpeed?: number;
 };
 
+type ShaderTunables = {
+  waveIntensity: number;
+  rippleIntensity: number;
+  animationSpeed: number;
+  waveFrequency: number;
+  rippleFrequency: number;
+  distortionAmount: number;
+};
+
+// Pushes prop tunables into the live material without recompiling the shader.
+// Kept outside the component so the React Compiler lint doesn't treat the
+// uniform writes as mutation of effect-captured state.
+function applyShaderTunables(material: THREE.ShaderMaterial | null, t: ShaderTunables) {
+  const u = material?.uniforms;
+  if (!u) return;
+  u.waveIntensity.value = t.waveIntensity;
+  u.rippleIntensity.value = t.rippleIntensity;
+  u.animationSpeed.value = t.animationSpeed;
+  u.waveFrequency.value = t.waveFrequency;
+  u.rippleFrequency.value = t.rippleFrequency;
+  u.distortionAmount.value = t.distortionAmount;
+}
+
 export default function LiquidHero({
   imageUrl,
   videoUrl,
@@ -50,15 +73,8 @@ export default function LiquidHero({
   const mountRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [isHovered, setIsHovered] = useState(false);
-  const [isPressed, setIsPressed] = useState(false);
-  const [isTouch, setIsTouch] = useState(false);
-  // Initialize isTouch immediately before any effects run
+  // Touch detection lives in a ref because it is read inside the render loop.
   const isTouchRef = useRef(false);
-
-  const mouseCoordsRef = useRef({ x: 0, y: 0 });
-  const currentCoordsRef = useRef({ x: 0, y: 0 });
-  const isPressedRef = useRef(false);
 
   // Three.js instances refs for animation and resize handlers
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -68,14 +84,16 @@ export default function LiquidHero({
   const timeRef = useRef(0);
   const isHoveredRef = useRef(false);
   const isPlayingRef = useRef(isPlaying);
+  // Hover tunables are read per frame; refs keep them current without
+  // rebuilding the GL scene when the props change.
+  const hoverRippleRef = useRef(hoverRippleMultiplier);
+  const transitionSpeedRef = useRef(transitionSpeed);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoReady, setVideoReady] = useState(false);
 
   // Initialize isTouch IMMEDIATELY before any other effects
   useEffect(() => {
-    const touch = window.matchMedia("(pointer: coarse)").matches;
-    setIsTouch(touch);
-    isTouchRef.current = touch;
+    isTouchRef.current = window.matchMedia("(pointer: coarse)").matches;
   }, []);
 
   // Initialize video element when component mounts
@@ -133,15 +151,18 @@ export default function LiquidHero({
 
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    // A full-screen textured quad has no geometry edges, so MSAA buys nothing.
+    // Fragment cost scales with DPR², so cap lower on coarse-pointer devices.
+    const maxDpr = isTouchRef.current ? 1 : 1.5;
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: false,
       alpha: true,
       powerPreference: "high-performance",
       precision: "highp",
     });
 
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxDpr));
     renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.position = "absolute";
     renderer.domElement.style.top = "0";
@@ -154,6 +175,7 @@ export default function LiquidHero({
 
     let texture: THREE.Texture;
     let videoElement: HTMLVideoElement | null = null;
+    let updateImageRes: (() => void) | null = null;
 
     if (videoUrl && videoRef.current) {
       videoElement = videoRef.current;
@@ -165,7 +187,7 @@ export default function LiquidHero({
       texture.generateMipmaps = false;
       texture.needsUpdate = true;
 
-      const updateImageRes = () => {
+      updateImageRes = () => {
         if (materialRef.current?.uniforms?.uImageResolution && videoElement) {
           materialRef.current.uniforms.uImageResolution.value.set(
             videoElement.videoWidth || 1920,
@@ -334,87 +356,132 @@ export default function LiquidHero({
     rendererRef.current = renderer;
     materialRef.current = material;
 
-    // Responsive resize handler
+    // Resize: coalesced to one frame; also refreshes the cached canvas rect.
+    let cachedRect = renderer.domElement.getBoundingClientRect();
+    let resizeFrame = 0;
     const handleResize = () => {
-      const w = mountElement.offsetWidth;
-      const h = mountElement.offsetHeight;
-      renderer.setSize(w, h);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      // Update shader uniforms
-      material.uniforms.uResolution.value.set(w, h);
+      if (resizeFrame) return;
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = 0;
+        const w = mountElement.offsetWidth;
+        const h = mountElement.offsetHeight;
+        renderer.setSize(w, h);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxDpr));
+        material.uniforms.uResolution.value.set(w, h);
+        cachedRect = renderer.domElement.getBoundingClientRect();
+      });
     };
 
     window.addEventListener("resize", handleResize);
 
-    // Event handlers ONLY if NOT a touch device!
-    if (!isTouchRef.current) {
-      const handleMouseMove = (event: MouseEvent) => {
-        const rect = renderer.domElement.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width;
-        const y = 1 - (event.clientY - rect.top) / rect.height;
-        mouseRef.current = { x, y };
-      };
-
-      const handleMouseEnter = () => {
-        isHoveredRef.current = true;
-      };
-
-      const handleMouseLeave = () => {
-        isHoveredRef.current = false;
-      };
-
-      const targetTarget = renderer.domElement.parentElement || renderer.domElement;
-      targetTarget.addEventListener("mousemove", handleMouseMove);
-      targetTarget.addEventListener("mouseenter", handleMouseEnter);
-      targetTarget.addEventListener("mouseleave", handleMouseLeave);
+    // Pointer handlers only on fine-pointer devices. The rect is cached (refreshed
+    // on enter, on resize and every 30 frames) so mousemove never forces layout.
+    const pointerTarget = renderer.domElement.parentElement || renderer.domElement;
+    const handleMouseMove = (event: MouseEvent) => {
+      const rect = cachedRect;
+      if (!rect.width || !rect.height) return;
+      const x = (event.clientX - rect.left) / rect.width;
+      const y = 1 - (event.clientY - rect.top) / rect.height;
+      mouseRef.current = { x, y };
+    };
+    const handleMouseEnter = () => {
+      isHoveredRef.current = true;
+      cachedRect = renderer.domElement.getBoundingClientRect();
+    };
+    const handleMouseLeave = () => {
+      isHoveredRef.current = false;
+    };
+    const hasPointerHandlers = !isTouchRef.current;
+    if (hasPointerHandlers) {
+      pointerTarget.addEventListener("mousemove", handleMouseMove, { passive: true });
+      pointerTarget.addEventListener("mouseenter", handleMouseEnter);
+      pointerTarget.addEventListener("mouseleave", handleMouseLeave);
     }
 
+    // The loop only schedules itself while the hero is on screen; the observer
+    // restarts it when the section scrolls back into view.
     let isVisible = true;
-    const observer = new IntersectionObserver(([entry]) => {
-      isVisible = entry.isIntersecting;
-    }, { rootMargin: '200px' });
-    observer.observe(mountElement);
+    let animFrameId = 0;
+    let lastFrameTime = 0;
+    let frameCount = 0;
+    let renderedPausedFrame = false;
 
-    let animFrameId: number;
-    const animate = () => {
+    const animate = (now: number) => {
+      animFrameId = 0;
+      if (!isVisible) return;
       animFrameId = requestAnimationFrame(animate);
 
-      if (!isVisible) return; // Pause calculations and rendering off-screen!
+      const mat = materialRef.current;
+      const rend = rendererRef.current;
+      const scn = sceneRef.current;
+      if (!mat || !rend || !scn) return;
 
-      if (isPlayingRef.current) {
-        timeRef.current += 0.016;
+      // While the preloader covers the page, draw one frame and stop: a full-screen
+      // shader pass during hydration is the most expensive thing on the page.
+      if (!isPlayingRef.current) {
+        if (!renderedPausedFrame) {
+          renderedPausedFrame = true;
+          rend.render(scn, camera);
+        }
+        return;
+      }
+      renderedPausedFrame = false;
+
+      // Real frame delta (clamped) so motion speed is independent of refresh rate.
+      const dt = lastFrameTime ? Math.min(now - lastFrameTime, 48) / 1000 : 0.016;
+      lastFrameTime = now;
+      timeRef.current += dt;
+
+      if (hasPointerHandlers && ++frameCount % 30 === 0) {
+        cachedRect = renderer.domElement.getBoundingClientRect();
       }
 
-      if (materialRef.current) {
-        materialRef.current.uniforms.time.value = timeRef.current;
-        materialRef.current.uniforms.mouse.value.set(
-          mouseRef.current.x,
-          mouseRef.current.y
-        );
-        const targetIntensity = isHoveredRef.current && !isTouch
-          ? hoverRippleMultiplier
-          : 0.3;
-        const currentIntensity =
-          materialRef.current.uniforms.hoverIntensity.value;
-        materialRef.current.uniforms.hoverIntensity.value +=
-          (targetIntensity - currentIntensity) * transitionSpeed;
-        materialRef.current.uniforms.texture1.value.needsUpdate = true;
-      }
+      mat.uniforms.time.value = timeRef.current;
+      mat.uniforms.mouse.value.set(mouseRef.current.x, mouseRef.current.y);
+      const targetIntensity = isHoveredRef.current && !isTouchRef.current
+        ? hoverRippleRef.current
+        : 0.3;
+      const currentIntensity = mat.uniforms.hoverIntensity.value;
+      mat.uniforms.hoverIntensity.value += (targetIntensity - currentIntensity) * transitionSpeedRef.current;
+      // VideoTexture uploads new frames itself; forcing needsUpdate here re-uploaded
+      // the texture every frame (and re-uploaded a static image forever).
 
-      if (rendererRef.current && sceneRef.current) {
-        rendererRef.current.render(sceneRef.current, camera);
-      }
+      rend.render(scn, camera);
     };
-    animate();
+
+    const startLoop = () => {
+      if (!animFrameId) animFrameId = requestAnimationFrame(animate);
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) {
+        lastFrameTime = 0;
+        if (hasPointerHandlers) cachedRect = renderer.domElement.getBoundingClientRect();
+        startLoop();
+      }
+    }, { rootMargin: '200px' });
+    observer.observe(mountElement);
+    startLoop();
 
     // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
+      if (resizeFrame) cancelAnimationFrame(resizeFrame);
+      if (hasPointerHandlers) {
+        pointerTarget.removeEventListener("mousemove", handleMouseMove);
+        pointerTarget.removeEventListener("mouseenter", handleMouseEnter);
+        pointerTarget.removeEventListener("mouseleave", handleMouseLeave);
+      }
       observer.disconnect();
-      cancelAnimationFrame(animFrameId);
+      isVisible = false;
+      if (animFrameId) cancelAnimationFrame(animFrameId);
 
       if (videoElement) {
+        if (updateImageRes) {
+          videoElement.removeEventListener('loadedmetadata', updateImageRes);
+          videoElement.removeEventListener('loadeddata', updateImageRes);
+        }
         videoElement.pause();
         videoElement.removeAttribute('src');
         videoElement.load();
@@ -433,54 +500,25 @@ export default function LiquidHero({
       material.dispose();
       texture.dispose();
     };
-  }, [
-    imageUrl,
-    videoUrl,
-    waveIntensity,
-    rippleIntensity,
-    animationSpeed,
-    hoverRippleMultiplier,
-    transitionSpeed,
-    waveFrequency,
-    rippleFrequency,
-    distortionAmount,
-  ]);
+    // Only a new media source justifies rebuilding the GL scene; the tunables
+    // are pushed into uniforms by the effect below without recompiling shaders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageUrl, videoUrl]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isTouchRef.current) {
-      mouseCoordsRef.current = { x: e.clientX, y: e.clientY };
-    }
-  };
+  useEffect(() => {
+    hoverRippleRef.current = hoverRippleMultiplier;
+    transitionSpeedRef.current = transitionSpeed;
+    applyShaderTunables(materialRef.current, {
+      waveIntensity, rippleIntensity, animationSpeed, waveFrequency, rippleFrequency, distortionAmount,
+    });
+  }, [waveIntensity, rippleIntensity, animationSpeed, waveFrequency, rippleFrequency, distortionAmount, hoverRippleMultiplier, transitionSpeed]);
 
-  const handleMouseEnter = (e: React.MouseEvent) => {
-    if (!isTouchRef.current) {
-      setIsHovered(true);
-      isHoveredRef.current = true;
-      mouseCoordsRef.current = { x: e.clientX, y: e.clientY };
-      currentCoordsRef.current = { x: e.clientX, y: e.clientY };
-    }
-  };
-
+  // Pointer state is driven by the DOM listeners inside the GL effect; the
+  // React handlers that used to mirror it into unused state are gone.
   return (
     <section
       ref={containerRef}
       className="relative w-full h-screen overflow-hidden bg-black select-none"
-      onMouseMove={isTouch ? undefined : handleMouseMove}
-      onMouseDown={isTouch ? undefined : () => {
-        isPressedRef.current = true;
-        setIsPressed(true);
-      }}
-      onMouseUp={isTouch ? undefined : () => {
-        isPressedRef.current = false;
-        setIsPressed(false);
-      }}
-      onMouseEnter={isTouch ? undefined : handleMouseEnter}
-      onMouseLeave={isTouch ? undefined : () => {
-        setIsHovered(false);
-        isHoveredRef.current = false;
-        isPressedRef.current = false;
-        setIsPressed(false);
-      }}
       style={{ touchAction: 'auto' }} // Full touch action allowed on mobile
     >
       <div

@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -61,8 +61,9 @@ function TestimonialsSection() {
 
     }, { scope: sectionRef, dependencies: [isLoaderFinished] });
 
-    // Premium colored portraits with rich professional metadata
-    const items = [
+    // Premium colored portraits with rich professional metadata. Memoized: a new
+    // array on every render re-created the WebGL menu (context + frame loop).
+    const items = useMemo(() => [
         {
             image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80',
             name: 'Aarav Sharma',
@@ -138,7 +139,7 @@ function TestimonialsSection() {
             ],
             bgWord: 'TRUST'
         }
-    ];
+    ], []);
 
     return (
         <section ref={sectionRef} className="relative z-20 w-full bg-[#050505] pt-32 md:pt-48 pb-12 border-t border-white/10 overflow-hidden will-change-transform -mt-32 rounded-t-[40px] md:rounded-t-[64px] shadow-[0_-50px_100px_rgba(0,0,0,0.9)]">

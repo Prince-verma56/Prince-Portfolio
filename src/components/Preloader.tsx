@@ -1,166 +1,137 @@
 "use client";
-import { useRef } from "react";
+import { useRef, type CSSProperties } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { usePathname } from "next/navigation";
 import { useLoader } from "@/context/LoaderContext";
 
-gsap.registerPlugin();
+const WORD = "PRINCE";
 
-// Explicit initial coordinate pairs from your brand specification
-const letterSpecs = [
-  { char: "P", x: -350, y: 0, rotate: -8 },
-  { char: "R", x: 220, y: -180, rotate: 6 },
-  { char: "I", x: 0, y: -250, rotate: -5 },
-  { char: "N", x: -220, y: 180, rotate: 10 },
-  { char: "C", x: 300, y: 0, rotate: -12 },
-  { char: "E", x: 0, y: 250, rotate: 4 },
-];
+// yPercent that fully hides an element outside its overflow-hidden mask.
+// Keep in sync with the `130%` used by `.preloader-letter` in globals.css.
+const HIDDEN = 130;
 
 export default function Preloader() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const wordWrapperRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const percentRef = useRef<HTMLDivElement>(null);
   const trademarkRef = useRef<HTMLSpanElement>(null);
   const pathname = usePathname();
   const { setIsLoaderFinished } = useLoader();
 
-  useGSAP(() => {
-    // 1. HARD RESET AND IMMEDIATE STATE PROTECTION (PREVENTS FLASH OF FULL TEXT)
-    setIsLoaderFinished(false);
-    gsap.set(containerRef.current, { yPercent: 0, display: "flex" });
-    gsap.set(percentRef.current, { opacity: 1, y: 0 });
-    gsap.set(trademarkRef.current, { opacity: 0, scale: 0.5 });
-    if (percentRef.current) percentRef.current.textContent = "0%";
+  useGSAP(
+    () => {
+      const container = containerRef.current;
+      const content = contentRef.current;
+      const percent = percentRef.current;
+      const trademark = trademarkRef.current;
+      if (!container || !content || !percent || !trademark) return;
 
-    const progress = { value: 0 };
-    
-    // Create an elegant, longer, cinematic timeline with a small delay for hydration recovery
-    const tl = gsap.timeline({
-      delay: 0.15,
-      onComplete: () => {
+      setIsLoaderFinished(false);
+
+      const progress = { value: 0 };
+      const paint = () => {
+        percent.textContent = `${Math.round(progress.value)}%`;
+      };
+
+      // Reset for route-change re-runs. `y: 0` also neutralises the SSR inline
+      // px transform GSAP would otherwise read, so the yPercent tween lands on 0.
+      gsap.set(container, { yPercent: 0, opacity: 1, display: "flex" });
+      gsap.set(content, { yPercent: 0 });
+      gsap.set(percent, { y: 0, yPercent: HIDDEN });
+      gsap.set(trademark, { opacity: 0, y: 8 });
+      paint();
+
+      const finish = () => {
         setIsLoaderFinished(true);
-        gsap.set(containerRef.current, { display: "none" });
-      },
-    });
+        gsap.set(container, { display: "none" });
+      };
 
-    // ── PHASE 1: LETTER DISCOVERY (Slightly slower, 0.5s duration) ──
-    tl.to(".loader-letter", {
-      opacity: 1,
-      duration: 0.5,
-      ease: "power2.out",
-    }, 0);
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // ── PHASE 5: PROGRESS COUNTER (Lengthened to 2.2s for high-end feel) ──
-    tl.to(progress, {
-      value: 100,
-      duration: 2.2,
-      ease: "power3.out",
-      onUpdate: () => {
-        if (percentRef.current) {
-          percentRef.current.textContent = Math.round(progress.value) + "%";
-        }
-      },
-    }, 0);
+      if (reduceMotion) {
+        gsap
+          .timeline({ onComplete: finish })
+          .set(percent, { yPercent: 0 })
+          .set(trademark, { opacity: 1, y: 0 })
+          .to(progress, { value: 100, duration: 1, ease: "none", onUpdate: paint })
+          .to(container, { opacity: 0, duration: 0.4, ease: "power1.out" });
+        return;
+      }
 
-    // ── PHASE 2: LETTER ASSEMBLY (Increased duration to 1.4s & smooth expo ease) ──
-    tl.to(".loader-letter", {
-      x: 0,
-      y: 0,
-      rotate: 0,
-      filter: "blur(0px)",
-      scale: 1,
-      duration: 1.4,
-      stagger: 0.06,
-      ease: "expo.out",
-    }, 0.4); // Starts smoothly mid-discovery
+      // The letters rise through their masks with a pure CSS animation
+      // (`.preloader-letter` in globals.css). That runs on the compositor, so it
+      // stays smooth while React hydrates and heavy chunks load. GSAP only drives
+      // what genuinely needs JS: the counter and the exit choreography.
+      // No force3D default: it would leak onto the plain counter object tween and
+      // GSAP warns about it; transforms already animate as translate3d while tweening.
+      const tl = gsap.timeline({
+        delay: 0.1,
+        onComplete: finish,
+      });
 
-    // ── PHASE 3: ALIGNMENT SNAP (Smooth premium cushion overshoot) ──
-    // Formed word finishes grouping around 2.15s - 2.2s mark
-    tl.to(wordWrapperRef.current, {
-      scale: 1.06,
-      duration: 0.15,
-      ease: "power2.out",
-    }, 2.15)
-    .to(wordWrapperRef.current, {
-      scale: 1,
-      duration: 0.2,
-      ease: "back.out(1.5)",
-    })
-    // Trademark symbol floats in elegantly
-    .to(trademarkRef.current, {
-      opacity: 1,
-      scale: 1,
-      duration: 0.3,
-      ease: "power3.out",
-    }, 2.15);
+      // ── ENTER: counter rises through its mask, mark fades in after the word lands ──
+      tl.to(percent, { yPercent: 0, duration: 0.8, ease: "power4.out" }, 0.35)
+        .to(trademark, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 1.15);
 
-    // ── PHASE 4: BRAND ENERGY PULSE (Cinematic aura via high-performance text-shadow) ──
-    tl.to(wordWrapperRef.current, {
-      textShadow: "0 0 35px rgba(0,0,0,0.35)",
-      duration: 0.2,
-      yoyo: true,
-      repeat: 1,
-      ease: "power2.inOut",
-    }, 2.4);
+      // ── COUNT ──
+      tl.to(progress, { value: 100, duration: 2.2, ease: "power2.inOut", onUpdate: paint }, 0.3);
 
-    // ── PHASE 6: PANEL EXIT (Perfect micro-pause after hits 100%) ──
-    tl.to(containerRef.current, {
-      yPercent: -100,
-      duration: 1.2,
-      ease: "expo.inOut",
-    }, 2.65);
+      // ── EXIT: counter and mark leave through the mask… ──
+      tl.to(percent, { yPercent: -HIDDEN, duration: 0.5, ease: "power3.in" }, 2.6)
+        .to(trademark, { opacity: 0, y: -8, duration: 0.3, ease: "power2.in" }, 2.6);
 
-  }, { scope: containerRef, dependencies: [pathname] });
+      // ── …then the sheet lifts while the word lags behind it (parallax) ──
+      tl.to(container, { yPercent: -100, duration: 1.1, ease: "expo.inOut" }, 2.8)
+        .to(content, { yPercent: 55, duration: 1.1, ease: "expo.inOut" }, 2.8);
+    },
+    { scope: containerRef, dependencies: [pathname] }
+  );
 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[99999] bg-[#f04e00] flex flex-col items-center justify-center text-black select-none"
+      className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#f04e00] text-black select-none"
       style={{ willChange: "transform" }}
     >
-      <div className="flex flex-col items-center justify-center">
-        
-        {/* Main Branding Block */}
-        <div className="overflow-visible flex items-start leading-none pb-2">
-          <h1 
-            ref={wordWrapperRef} 
-            className="text-[clamp(3.5rem,10vw,7rem)] font-black uppercase tracking-tighter flex items-center leading-none select-none will-change-transform"
-          >
-            {letterSpecs.map((spec, index) => (
+      <div ref={contentRef} className="flex flex-col items-center justify-center will-change-transform">
+        {/* Main branding block */}
+        <div className="flex items-start leading-none pb-2">
+          <h1 className="flex items-center text-[clamp(3.5rem,10vw,7rem)] font-black uppercase leading-none tracking-normal">
+            {WORD.split("").map((char, i) => (
+              // Keyed on pathname so a route change remounts the letters and replays the CSS rise.
               <span
-                key={index}
-                // Inline styles ensure layout-stable state is rendered on server and client before hydration
-                style={{
-                  opacity: 0,
-                  transform: `translate3d(${spec.x}px, ${spec.y}px, 0) scale(0.65) rotate(${spec.rotate}deg)`,
-                  filter: "blur(16px)",
-                  display: "inline-block",
-                  willChange: "transform, opacity",
-                }}
-                className={`loader-letter letter-${index}`}
+                key={`${pathname}-${i}`}
+                className="preloader-mask"
+                // Tight tracking via margins instead of letter-spacing, so the masks never clip glyph edges.
+                style={{ marginRight: i < WORD.length - 1 ? "-0.045em" : 0 }}
               >
-                {spec.char}
+                <span className="preloader-letter" style={{ "--i": i } as CSSProperties}>
+                  {char}
+                </span>
               </span>
             ))}
           </h1>
-          
-          <span 
-            ref={trademarkRef} 
-            className="text-[clamp(12px,2.5vw,1.75rem)] font-bold mt-2 ml-1 opacity-0 pointer-events-none select-none will-change-transform"
+
+          <span
+            ref={trademarkRef}
+            className="mt-2 ml-1 text-[clamp(12px,2.5vw,1.75rem)] font-bold opacity-0 pointer-events-none will-change-transform"
           >
             ®
           </span>
         </div>
 
-        {/* Centered Percentage Progress */}
-        <div 
-          ref={percentRef} 
-          className="mt-6 text-sm md:text-base font-mono font-bold tracking-[0.2em] opacity-80"
-        >
-          0%
+        {/* Progress counter inside its own mask */}
+        <div className="mt-6 overflow-hidden leading-tight">
+          <div
+            ref={percentRef}
+            className="font-mono text-sm md:text-base font-bold tracking-[0.2em] tabular-nums opacity-80 will-change-transform"
+            // Hidden before hydration so there is no flash of "0%" sitting in place.
+            style={{ transform: "translate3d(0, 130%, 0)" }}
+          >
+            0%
+          </div>
         </div>
-
       </div>
     </div>
   );

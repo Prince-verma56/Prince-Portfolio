@@ -75,6 +75,13 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
   const parallaxInnerRefs = useRef<(HTMLDivElement | null)[]>([]);
   // Track pointer position for mouse-parallax
   const mouseParallaxRaf = useRef<number | null>(null);
+  // Showcase rect measured on enter (the section is pinned while hovered),
+  // not on every mousemove, so pointer events never force a layout.
+  const showcaseRectRef = useRef<DOMRect | null>(null);
+
+  const handleShowcaseMouseEnter = useCallback(() => {
+    showcaseRectRef.current = showcaseRef.current?.getBoundingClientRect() ?? null;
+  }, []);
 
   // Mouse-move parallax handler on the showcase wrapper
   const handleShowcaseMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -84,7 +91,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
 
     if (mouseParallaxRaf.current) cancelAnimationFrame(mouseParallaxRaf.current);
     mouseParallaxRaf.current = requestAnimationFrame(() => {
-      const rect = el.getBoundingClientRect();
+      const rect = showcaseRectRef.current ?? (showcaseRectRef.current = el.getBoundingClientRect());
       // Normalise to [-1, 1]
       const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
@@ -101,6 +108,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
   }, [activeIndex]);
 
   const handleShowcaseMouseLeave = useCallback(() => {
+    showcaseRectRef.current = null;
     if (mouseParallaxRaf.current) cancelAnimationFrame(mouseParallaxRaf.current);
     const inner = parallaxInnerRefs.current[activeIndex];
     if (!inner) return;
@@ -309,14 +317,22 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
       );
     });
 
-    // Continuous floating animation for support visuals
-    gsap.to(".support-visual", {
+    // Continuous floating animation for support visuals, paused while the
+    // section is off-screen so it doesn't tick for the whole page lifetime.
+    const float = gsap.to(".support-visual", {
       y: 15,
       rotation: 5,
       duration: 4,
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
+      paused: true,
+    });
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "top bottom",
+      end: "bottom top",
+      onToggle: (self) => (self.isActive ? float.play() : float.pause()),
     });
 
   }, { scope: sectionRef, dependencies: [isStandalonePage, isLoaderFinished] });
@@ -492,6 +508,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
             <div
               ref={showcaseRef}
               className="relative w-full max-w-[900px] aspect-video group"
+              onMouseEnter={handleShowcaseMouseEnter}
               onMouseMove={handleShowcaseMouseMove}
               onMouseLeave={handleShowcaseMouseLeave}
             >

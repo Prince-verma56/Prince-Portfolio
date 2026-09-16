@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 interface FlipTextProps {
     className?: string;
@@ -13,6 +12,17 @@ interface FlipTextProps {
     together?: boolean;
 }
 
+/**
+ * Per-character 3D flip-in when the text scrolls into view, and a full spin on hover.
+ *
+ * Implemented with CSS animations (see `.flip-char` in globals.css) instead of one
+ * motion.span per character with `preserve-3d`. That version left every character
+ * holding a 3D transform at rest, which promoted each one to its own compositor
+ * layer: ~235 of the ~300 layers on the page came from these headings and made the
+ * per-frame layer-tree update the largest main-thread cost while scrolling. CSS
+ * keyframes composite the characters only while they animate and return them to
+ * `transform: none` afterwards, so they hold zero layers at rest.
+ */
 export function FlipText({
     className,
     children,
@@ -22,44 +32,48 @@ export function FlipText({
     together = false,
 }: FlipTextProps) {
     const words = useMemo(() => children.split(separator), [children, separator]);
-    const [flipCount, setFlipCount] = useState(0);
+    const rootRef = useRef<HTMLDivElement>(null);
+    const [inView, setInView] = useState(false);
+
+    // Same trigger as the old whileInView: once, when within 10% of the viewport.
+    useEffect(() => {
+        const el = rootRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setInView(true);
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: "-10% 0px" }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     return (
-        <motion.div
-            className={cn("flip-text-wrapper inline-block leading-none", className)}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, margin: "-10%" }}
-            onMouseEnter={() => setFlipCount(c => c + 1)}
-            style={{ perspective: "1000px" }}
+        <div
+            ref={rootRef}
+            className={cn("flip-text-wrapper inline-block leading-none", inView && "is-inview", className)}
         >
             {words.map((word, wordIndex) => (
-                <span key={wordIndex} className="word inline-block whitespace-nowrap" style={{ transformStyle: "preserve-3d" }}>
+                <span key={wordIndex} className="word inline-block whitespace-nowrap">
                     {word.split("").map((char, charIndex) => {
-                        const calculatedDelay = together ? 0 : (charIndex * 0.03) + (wordIndex * 0.1);
+                        const entranceDelay = delay + (together ? 0 : charIndex * 0.03 + wordIndex * 0.1);
+                        const hoverDelay = together ? 0 : charIndex * 0.03;
                         return (
-                            <motion.span
+                            <span
                                 key={charIndex}
-                                className="inline-block relative"
-                                style={{ transformStyle: "preserve-3d", transformOrigin: "50% 50%" }}
-                                custom={flipCount}
-                                variants={{
-                                    initial: { rotateX: 90, opacity: 0 },
-                                    animate: (currentCount) => ({
-                                        rotateX: currentCount * 360,
-                                        opacity: 1,
-                                        transition: {
-                                            duration: duration,
-                                            ease: currentCount > 0 ? "easeInOut" : "easeOut",
-                                            delay: currentCount > 0 
-                                                ? (together ? 0 : (charIndex * 0.03)) 
-                                                : (delay + calculatedDelay)
-                                        }
-                                    })
-                                }}
+                                className="flip-char inline-block"
+                                style={{
+                                    "--flip-duration": `${duration}s`,
+                                    "--flip-delay": `${entranceDelay}s`,
+                                    "--flip-hover-delay": `${hoverDelay}s`,
+                                } as CSSProperties}
                             >
                                 {char}
-                            </motion.span>
+                            </span>
                         );
                     })}
                     {separator === " " && wordIndex < words.length - 1 && (
@@ -70,7 +84,7 @@ export function FlipText({
                     )}
                 </span>
             ))}
-        </motion.div>
+        </div>
     );
 }
 

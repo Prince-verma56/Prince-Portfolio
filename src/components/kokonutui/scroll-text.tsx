@@ -6,7 +6,7 @@
  * @version: 1.1.0
  */
 
-import { motion, type Variants } from "framer-motion"; // Note: 'motion/react' is usually 'framer-motion' in standard setups
+import { motion, type Variants } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 

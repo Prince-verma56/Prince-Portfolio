@@ -175,9 +175,8 @@ export default function AboutSection({ isStandalonePage = false }: AboutSectionP
       if (isStandalonePage && tlRef.current) {
         tlRef.current.play();
       }
-      // Small delay so all lazy-loaded sections have mounted before recalculating scroll positions
-      const id = setTimeout(() => ScrollTrigger.refresh(), 200);
-      return () => clearTimeout(id);
+      // ScrollTrigger refreshes are coordinated centrally in SmoothScroller
+      // (a ResizeObserver on <body> fires once when lazy sections mount).
     } else {
       if (isStandalonePage && tlRef.current) {
         tlRef.current.progress(0).pause();

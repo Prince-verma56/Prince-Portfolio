@@ -4,6 +4,9 @@ import { useLoader } from "@/context/LoaderContext";
 
 const LiquidHero = dynamic(() => import("./LiquidHero"), {
   ssr: false,
+  // Reserve the hero's full height while the three.js chunk loads so the
+  // sections below (and their ScrollTrigger positions) don't shift when it mounts.
+  loading: () => <div className="h-screen w-full bg-black" aria-hidden="true" />,
 });
 
 export default function ClientLiquidHero({
@@ -30,7 +33,7 @@ export default function ClientLiquidHero({
       imageUrl={imageUrl}
       videoUrl={videoUrl}
       // Pass the loader state as the 'isPlaying' prop to the child
-      isPlaying={isLoaderFinished} 
+      isPlaying={isLoaderFinished}
       strength={strength}
       brushRadius={brushRadius}
       dissipation={dissipation}
