@@ -142,36 +142,6 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
 
     // ── Restored: Section Clip-Path (Slant -> Flat) ──
     if (!isStandalonePage) {
-      gsap.fromTo(
-        sectionRef.current,
-        { clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" },
-        {
-          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top bottom",
-            end: "top top",
-            scrub: 1,
-          }
-        }
-      );
-
-      // Top glowing lines SVG path unslanting
-      gsap.fromTo(
-        [".work-top-line", ".work-top-glow"],
-        { attr: { d: "M 0 12 L 100 0" } },
-        {
-          attr: { d: "M 0 0 L 100 0" },
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top bottom",
-            end: "top top",
-            scrub: 1,
-          }
-        }
-      );
 
       // ── Restored: Velvet Parallax Smooth Slide ──
       gsap.fromTo(
@@ -391,150 +361,130 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
     <section
       ref={sectionRef}
       id="work"
-      className={`relative z-30 bg-[#050505] w-full min-h-screen overflow-hidden flex items-center will-change-transform drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)] ${isStandalonePage ? "pt-24 md:pt-28 lg:pt-36" : ""
-        }`}
-      style={isStandalonePage ? {} : { clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" }}
+      className={`relative z-30 bg-[#050505] w-full min-h-screen overflow-hidden flex items-center will-change-transform ${isStandalonePage ? "pt-24 md:pt-28 lg:pt-36" : ""}`}
     >
-      {/* ── Slanted Glowing Top Separator Line ── */}
+      {/* ── Premium Blurry Top Separator ── */}
       {!isStandalonePage && (
-        <svg className="absolute inset-0 w-full h-full pointer-events-none z-40" preserveAspectRatio="none" viewBox="0 0 100 100">
-          <defs>
-            <linearGradient id="workTopLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="transparent" />
-              <stop offset="30%" stopColor="#f04e00" stopOpacity="0.8" />
-              <stop offset="70%" stopColor="#f04e00" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="transparent" />
-            </linearGradient>
-            <linearGradient id="workTopGlowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="transparent" />
-              <stop offset="30%" stopColor="#f04e00" stopOpacity="0.25" />
-              <stop offset="70%" stopColor="#f04e00" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="transparent" />
-            </linearGradient>
-            <filter id="workTopGlowBlur" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          <path
-            className="work-top-glow"
-            d="M 0 12 L 100 0"
-            vectorEffect="non-scaling-stroke"
-            fill="none"
-            stroke="url(#workTopGlowGrad)"
-            strokeWidth="8"
-            filter="url(#workTopGlowBlur)"
-          />
-          <path
-            className="work-top-line"
-            d="M 0 12 L 100 0"
-            vectorEffect="non-scaling-stroke"
-            fill="none"
-            stroke="url(#workTopLineGrad)"
-            strokeWidth="1.5"
-          />
-        </svg>
+        <>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-40" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/4 h-[2px] bg-gradient-to-r from-transparent via-[#f04e00]/40 to-transparent z-40 blur-[2px]" />
+        </>
       )}
+
+      {/* ── Background Image Layer ── */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <Image
+          src="/Images/BG%20Images/WorkSpaceSectionBG.png"
+          alt="Works Section Background"
+          fill
+          className="object-cover opacity-100"
+          priority
+        />
+        <div className="absolute inset-0 bg-[#050505]/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/70 via-transparent to-[#050505]/70" />
+      </div>
 
       {/* ── Restored: Ultra Premium Edge Lighting (Left Focused) ── */}
       <div className="top-left-glow-bg absolute top-[-150px] left-[-10%] w-[50%] h-[300px] bg-[#f04e00] opacity-[0.15] blur-[120px] pointer-events-none rounded-[100%] z-0" />
       <div className="top-left-glow-bg absolute top-[-50px] left-[-5%] w-[30%] h-[150px] bg-[#f04e00] opacity-[0.25] blur-[80px] pointer-events-none rounded-[100%] z-0" />
       <div className="top-left-glow-line absolute top-[-20px] left-0 w-[20%] h-[50px] bg-white opacity-[0.1] blur-[30px] pointer-events-none rounded-[100%] z-0" />
 
-      <div ref={contentRef} className="relative z-10 w-full max-w-[1500px] mx-auto px-6 md:px-16 flex flex-col justify-center gap-6 md:gap-12 h-full will-change-transform pt-16 md:pt-0">
-
-        {/* ── LATEST WORK. HEADING ── */}
-        <div className="mask-title-wrapper overflow-hidden pb-1 select-none pointer-events-none w-full">
-          <h2 className="mask-title translate-y-[110%] opacity-0 text-[clamp(2.5rem,7vw,6.5rem)] font-black uppercase text-[#f04e00] leading-[0.85] tracking-tighter">
-            LATEST WORK.
-          </h2>
-        </div>
-
-        {/* ── COLUMNS WRAPPER ── */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 w-full">
+      <div ref={contentRef} className={`relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-12 xl:px-16 flex flex-col justify-center h-full will-change-transform ${isStandalonePage ? "" : "pt-16 md:pt-0"}`}>
+        
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 w-full h-full">
 
           {/* ── LEFT NAVIGATION COLUMN ── */}
-          <div className="work-left-col w-full md:w-[35%] lg:w-[30%] flex flex-col justify-center gap-6 md:gap-12 md:pr-10">
-
-            <div className="flex flex-col">
-              <span className="text-white/30 text-[10px] font-mono tracking-[0.3em] uppercase mb-4">
-                SELECTED PROJECT
-              </span>
-
-              {/* Morphing Project Number */}
-              <div className="relative h-[100px] overflow-hidden">
-                {projects.map((p, i) => (
-                  <div
-                    key={`num-${p.id}`}
-                    className={`absolute inset-0 flex items-center transition-transform duration-[800ms] ease-[cubic-bezier(0.87,0,0.13,1)] ${i === activeIndex
-                      ? "translate-y-0 opacity-100"
-                      : i < activeIndex
-                        ? "-translate-y-full opacity-0"
-                        : "translate-y-full opacity-0"
-                      }`}
-                  >
-                    <span className="text-[6rem] xl:text-[8rem] font-black text-[#f04e00] leading-none tracking-tighter">
-                      {p.id}.
-                    </span>
-                  </div>
-                ))}
-              </div>
+          <div className="work-left-col w-full lg:w-[35%] xl:w-[30%] flex flex-col justify-center gap-10 lg:gap-14 shrink-0">
+            
+            {/* ── LATEST WORK. HEADING (Moved to Left Col for better space usage) ── */}
+            <div className="mask-title-wrapper overflow-hidden pb-1 select-none pointer-events-none w-full">
+              <h2 className="mask-title translate-y-[110%] opacity-0 text-[clamp(3rem,6vw,5.5rem)] font-black uppercase text-[#f04e00] leading-[0.85] tracking-tighter">
+                LATEST<br/>WORK.
+              </h2>
             </div>
 
-            {/* Dynamic Navigation List */}
-            <div className="flex flex-col gap-6 relative">
-              {projects.map((p, i) => {
-                const isActive = i === activeIndex;
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => setActiveIndex(i)}
-                    aria-label={`View project ${p.title}`}
-                    className="relative flex items-center gap-4 group text-left w-full cursor-pointer bg-transparent border-none outline-none focus-visible:outline-none"
-                  >
-                    {/* Animated Active Indicator */}
-                    <div className="w-6 flex justify-end overflow-hidden shrink-0">
-                      <span className={`block w-4 h-[2px] bg-[#f04e00] origin-right transition-transform duration-500 ${isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-50"}`} />
-                    </div>
-
-                    <span
-                      className={`text-2xl xl:text-3xl tracking-wide transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative select-none ${isActive
-                        ? "text-white font-black scale-100 origin-left"
-                        : "text-white/40 font-medium scale-95 blur-[1px] origin-left group-hover:text-white/70 group-hover:blur-none group-hover:scale-[0.97]"
+            <div className="flex flex-col gap-8 lg:gap-12">
+              {/* Morphing Project Number */}
+              <div className="flex flex-col">
+                <span className="text-white/30 text-[10px] font-mono tracking-[0.3em] uppercase mb-4">
+                  SELECTED PROJECT
+                </span>
+                <div className="relative h-[80px] xl:h-[100px] overflow-hidden">
+                  {projects.map((p, i) => (
+                    <div
+                      key={`num-${p.id}`}
+                      className={`absolute inset-0 flex items-center transition-transform duration-[800ms] ease-[cubic-bezier(0.87,0,0.13,1)] ${i === activeIndex
+                        ? "translate-y-0 opacity-100"
+                        : i < activeIndex
+                          ? "-translate-y-full opacity-0"
+                          : "translate-y-full opacity-0"
                         }`}
                     >
-                      {p.title}
-                      {/* Growing Underline for active state */}
-                      <div className={`absolute -bottom-1 left-0 h-[2px] bg-white transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] origin-left ${isActive ? "w-full scale-x-100" : "w-full scale-x-0 group-hover:scale-x-50"}`} />
-                    </span>
-                  </button>
-                );
-              })}
+                      <span className="text-[5rem] xl:text-[7rem] font-black text-[#f04e00] leading-none tracking-tighter">
+                        {p.id}.
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Dynamic Navigation List */}
+              <div className="flex flex-col gap-4 relative">
+                {projects.map((p, i) => {
+                  const isActive = i === activeIndex;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => setActiveIndex(i)}
+                      aria-label={`View project ${p.title}`}
+                      className="relative flex items-center gap-4 group text-left w-full cursor-pointer bg-transparent border-none outline-none focus-visible:outline-none py-1"
+                    >
+                      {/* Animated Active Indicator */}
+                      <div className="w-6 flex justify-end overflow-hidden shrink-0">
+                        <span className={`block w-4 h-[2px] bg-[#f04e00] origin-right transition-transform duration-500 ${isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-50"}`} />
+                      </div>
+
+                      <span
+                        className={`text-xl md:text-2xl xl:text-3xl tracking-wide transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] relative select-none ${isActive
+                          ? "text-white font-black scale-100 origin-left"
+                          : "text-white/40 font-medium scale-95 blur-[1px] origin-left group-hover:text-white/70 group-hover:blur-none group-hover:scale-[0.97]"
+                          }`}
+                      >
+                        {p.title}
+                        {/* Growing Underline for active state */}
+                        <div className={`absolute -bottom-1 left-0 h-[2px] bg-white transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] origin-left ${isActive ? "w-full scale-x-100" : "w-full scale-x-0 group-hover:scale-x-50"}`} />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           {/* ── RIGHT SHOWCASE COLUMN ── */}
-          <div className="showcase-container w-full md:w-[65%] lg:w-[70%] h-auto md:h-[60vh] lg:h-[70vh] flex items-center justify-center md:justify-end relative">
-
+          <div className="showcase-container w-full lg:w-[65%] xl:w-[70%] flex items-center justify-center relative [perspective:2000px] z-10">
             <div
               ref={showcaseRef}
-              className="relative w-full max-w-[900px] aspect-video group"
+              className="relative w-full max-w-[1000px] aspect-[4/3] lg:aspect-video group transform-gpu transition-all duration-700 ease-out hover:!transform-none"
+              style={{
+                transform: "rotateY(-16deg) rotateX(4deg) rotateZ(-1deg)",
+                transformStyle: "preserve-3d",
+                WebkitBoxReflect: "below 10px linear-gradient(transparent 75%, rgba(255,255,255,0.2))"
+              }}
               onMouseEnter={handleShowcaseMouseEnter}
               onMouseMove={handleShowcaseMouseMove}
               onMouseLeave={handleShowcaseMouseLeave}
             >
               {/* Layer 3: Soft Orange Ambient Glow */}
-              <div className="absolute inset-0 bg-[#f04e00] blur-[100px] opacity-10 group-hover:opacity-20 transition-opacity duration-700 scale-90 z-0 pointer-events-none" />
+              <div className="absolute inset-0 bg-[#f04e00] blur-[80px] md:blur-[120px] opacity-10 group-hover:opacity-20 transition-opacity duration-700 scale-90 z-0 pointer-events-none" />
 
               {/* Ghost Image Stacks (Creates physical depth) */}
-              <div className="absolute inset-0 bg-[#0a0a0a] border border-white/5 rounded-2xl scale-[0.97] translate-y-[20px] z-0 shadow-2xl" />
-              <div className="absolute inset-0 bg-[#080808] border border-white/5 rounded-2xl scale-[0.94] translate-y-[40px] -z-10 shadow-2xl" />
+              <div className="absolute inset-0 bg-[#0a0a0a] border border-white/5 rounded-2xl scale-[0.97] translate-y-[15px] lg:translate-y-[20px] z-0 shadow-2xl" />
+              <div className="absolute inset-0 bg-[#080808] border border-white/5 rounded-2xl scale-[0.94] translate-y-[30px] lg:translate-y-[40px] -z-10 shadow-2xl" />
 
               {/* The Cinematic Image Container wrapped in Custom Follower */}
-              <FollowerPointerCard title="View Project" className="absolute inset-0 w-full h-full z-10 rounded-2xl overflow-hidden">
+              <FollowerPointerCard title="View Project" className="absolute inset-0 w-full h-full z-10 rounded-2xl overflow-hidden shadow-2xl shadow-black/80">
                 <Link href={projects[activeIndex].link} className="absolute inset-0 cursor-none overflow-hidden rounded-2xl border border-white/10 group-hover:border-white/30 transition-colors duration-500 shadow-[0_0_50px_rgba(0,0,0,0.5)] block w-full h-full">
 
                   {/* Layer 2: Noise Texture Overlay */}
@@ -558,21 +508,32 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                           alt={p.title}
                           fill
                           className="object-contain object-center"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 900px"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 1000px"
                           priority={i === 0}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/90 via-transparent to-[#050505]/40" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/95 via-[#050505]/30 to-transparent pointer-events-none" />
                       </div>
 
                       {/* ── IMAGE CORNER DETAILS ── */}
-                      <div className="absolute inset-0 z-30 p-8 flex flex-col justify-between pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-500">
-                        <div className="text-white/60 font-mono text-[10px] tracking-[0.3em] uppercase">
-                          Project {p.id}
+                      <div className="absolute inset-0 z-30 p-6 md:p-8 flex flex-col justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                        <div className="flex justify-between items-start">
+                          <div className="text-white font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                            Project {p.id}
+                          </div>
+                          <div className="text-white font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                            {p.year}
+                          </div>
                         </div>
 
-                        <div className="flex justify-between items-end">
-                          <div className="text-white/60 font-mono text-[10px] tracking-[0.3em] uppercase">
-                            Year — {p.year}
+                        <div className="flex flex-col gap-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-700 ease-out">
+                          <h3 className="text-white text-2xl md:text-4xl font-black tracking-tight">{p.title}</h3>
+                          <p className="text-white/70 text-sm md:text-base font-medium max-w-sm">{p.subtitle}</p>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {p.tags.map((tag, idx) => (
+                              <span key={idx} className="text-[#f04e00] text-[10px] md:text-xs font-mono tracking-wider border border-[#f04e00]/30 px-2 py-1 rounded">
+                                {tag}
+                              </span>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -585,7 +546,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
               {projects.map((p, i) => (
                 <div
                   key={`visual-${p.id}`}
-                  className={`visual-${i} support-visual absolute -right-[8%] -top-[10%] z-20 pointer-events-none drop-shadow-[0_10px_20px_rgba(240,78,0,0.2)]`}
+                  className={`visual-${i} support-visual absolute -right-[4%] md:-right-[8%] -top-[6%] md:-top-[10%] z-20 pointer-events-none drop-shadow-[0_10px_20px_rgba(240,78,0,0.2)]`}
                   style={{ opacity: i === 0 ? 0.15 : 0 }}
                 >
                   {p.visual}

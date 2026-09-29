@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useLoader } from "@/context/LoaderContext";
+import Image from "next/image";
 
 const MODEL_URL = "/models/SetupDesk_draco.glb";
 
@@ -88,12 +89,13 @@ export default function SetupSection() {
     // or the Three.js renderer will not initialise correctly.
     gsap.set(".model-glow", { opacity: 0 });
 
-    // ── ENTRANCE TIMELINE ──
+    // ── ENTRANCE TIMELINE (Scrubbed on Scroll) ──
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
-        start: "top 40%",
-        toggleActions: "play none none none",
+        start: "top 85%",
+        end: "top 25%",
+        scrub: 1,
       }
     });
 
@@ -119,23 +121,6 @@ export default function SetupSection() {
         opacity: 1, scale: 1, duration: 0.6, stagger: 0.05, ease: "back.out(1.5)"
       }, "-=1.2");
 
-    // ── PARALLAX SHEET ANIMATION ──
-    gsap.fromTo(
-      sectionRef.current,
-      { clipPath: "polygon(0% 15%, 100% 0%, 100% 100%, 0% 100%)", y: 100 },
-      {
-        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-        y: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "top top",
-          scrub: 1,
-        }
-      }
-    );
-
     // ── PARALLAX BACKGROUND TEXT ──
     gsap.fromTo(".parallax-setup-bg",
       { y: 50 },
@@ -151,30 +136,27 @@ export default function SetupSection() {
       }
     );
 
-    // ── SHEET PARALLAX CONTENT ANIMATION ──
-    gsap.fromTo(".setup-parallax-content",
-      { y: 120 },
-      {
-        y: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "top top",
-          scrub: 1,
-        }
-      }
-    );
-
   }, { scope: sectionRef });
 
   return (
     <section
       ref={sectionRef}
       id="setup"
-      className="relative w-full min-h-screen bg-[#050505] text-white py-24 md:py-32 border-t border-white/10 rounded-t-[40px] md:rounded-t-[64px] shadow-[0_-50px_100px_rgba(0,0,0,0.9)] overflow-hidden flex items-center z-10 -mt-32"
+      className="relative w-full min-h-screen bg-[#050505] text-white py-24 md:py-32 overflow-hidden flex items-center z-10"
     >
       {/* ── BACKGROUND ELEMENTS ── */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <Image 
+          src="/Images/BG%20Images/WorkSpaceSectionBG.png"
+          alt="Workspace Background"
+          fill
+          className="setup-bg-image object-cover opacity-50"
+          priority
+        />
+        {/* Fade effects to blend image into the dark theme and improve readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 via-transparent to-[#050505]/80" />
+      </div>
       <div className="absolute inset-0 z-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('/noise.svg')]" />
       <div className="parallax-setup-bg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[18vw] font-black text-white/[0.02] pointer-events-none select-none tracking-tighter whitespace-nowrap z-0">
         WORKSPACE

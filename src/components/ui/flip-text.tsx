@@ -72,7 +72,7 @@ export function FlipText({
                                     "--flip-hover-delay": `${hoverDelay}s`,
                                 } as CSSProperties}
                             >
-                                {char}
+                                <span className="flip-char-inner inline-block">{char}</span>
                             </span>
                         );
                     })}

@@ -302,7 +302,7 @@ input:-webkit-autofill:active {
 .flip-text-wrapper.is-inview .flip-char {
   animation: flip-in var(--flip-duration, 1.2s) cubic-bezier(0.22, 1, 0.36, 1) var(--flip-delay, 0s) both;
 }
-.flip-text-wrapper.is-inview:hover .flip-char {
+.flip-text-wrapper.is-inview:hover .flip-char-inner {
   animation: flip-spin var(--flip-duration, 1.2s) ease-in-out var(--flip-hover-delay, 0s) forwards;
 }
 @keyframes flip-in {

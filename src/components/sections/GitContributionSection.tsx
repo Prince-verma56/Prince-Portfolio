@@ -56,22 +56,6 @@ export default function GitContributionSection() {
     useGSAP(() => {
         if (!isLoaderFinished || !sectionRef.current) return;
 
-        // ── NEW: Section Un-slanting (Sheet Effect) ──
-        gsap.fromTo(
-            sectionRef.current,
-            { clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)" },
-            {
-                clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-                ease: "none",
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top bottom",
-                    end: "top top",
-                    scrub: 1,
-                }
-            }
-        );
-
         gsap.set(".git-graph-card", { opacity: 0, y: 40, scale: 0.95 });
         gsap.set(".git-fade-item", { opacity: 0, y: 20 });
         gsap.set(".word-mask-inner", { y: "120%", opacity: 0, rotateZ: 4, transformOrigin: "left top" });
@@ -79,8 +63,9 @@ export default function GitContributionSection() {
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: sectionRef.current,
-                start: "top 75%",
-                once: true,
+                start: "top 85%",
+                end: "top 25%",
+                scrub: 1,
             }
         });
 
@@ -141,17 +126,31 @@ export default function GitContributionSection() {
 
     return (
         <div className="w-full relative z-20 drop-shadow-[0_-1px_1px_rgba(255,255,255,0.05)] drop-shadow-[0_-10px_30px_rgba(240,78,0,0.05)]">
+            {/* Minimal premium blurry separation top divider */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-30" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/4 h-[2px] bg-gradient-to-r from-transparent via-[#f04e00]/40 to-transparent z-30 blur-[2px]" />
             <section
                 ref={sectionRef}
                 className="relative w-full min-h-screen bg-[#050505] text-white py-24 md:py-32 flex items-center overflow-hidden will-change-transform"
-                style={{
-                    clipPath: "polygon(0% 12%, 100% 0%, 100% 100%, 0% 100%)",
-                }}
             >
+                {/* ── Background Image Layer ── */}
+                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                    <Image
+                        src="/Images/BG%20Images/GithubSectionBG.png"
+                        alt="Github Section Background"
+                        fill
+                        className="git-bg-image object-cover opacity-100"
+                        quality={100}
+                        priority
+                    />
+                    {/* Subtle darkening for text readability, but image remains clear */}
+                    <div className="absolute inset-0 bg-[#050505]/50" />
+                </div>
+
                 {/* ── Ultra Premium Edge Lighting (Left Focused) ── */}
-                <div className="absolute top-[-150px] left-[-10%] w-[50%] h-[300px] bg-[#f04e00] opacity-[0.15] blur-[120px] pointer-events-none rounded-[100%]" />
-                <div className="absolute top-[-50px] left-[-5%] w-[30%] h-[150px] bg-[#f04e00] opacity-[0.25] blur-[80px] pointer-events-none rounded-[100%]" />
-                <div className="absolute top-[-20px] left-0 w-[20%] h-[50px] bg-white opacity-[0.1] blur-[30px] pointer-events-none rounded-[100%]" />
+                <div className="absolute top-[-150px] left-[-10%] w-[50%] h-[300px] bg-[#f04e00] opacity-[0.15] blur-[120px] pointer-events-none rounded-[100%] z-0" />
+                <div className="absolute top-[-50px] left-[-5%] w-[30%] h-[150px] bg-[#f04e00] opacity-[0.25] blur-[80px] pointer-events-none rounded-[100%] z-0" />
+                <div className="absolute top-[-20px] left-0 w-[20%] h-[50px] bg-white opacity-[0.1] blur-[30px] pointer-events-none rounded-[100%] z-0" />
 
                 <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 relative z-10 w-full">
 
