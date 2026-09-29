@@ -16,7 +16,7 @@ const projects = [
     title: "Adhayaya",
     subtitle: "Indian Heritage & Travel Platform",
     tags: ["Next.js", "WebGL", "Travel"],
-    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1782910188/03f9965c-b113-4798-b35b-1b7ac88cfd06.png",
+    image: "/Images/works/adhayaya.webp",
     link: "/works/adhayaya",
     year: "2024",
     visual: (
@@ -31,7 +31,7 @@ const projects = [
     title: "Aurey",
     subtitle: "3D Korean Cosmetic Brand Site ",
     tags: ["React", "D3.js", "ML"],
-    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1782911204/Screenshot_2026-07-01_183449_dvahxx.png",
+    image: "/Images/works/aurey.webp",
     link: "/works/aurey",
     year: "2023",
     visual: (
@@ -43,10 +43,24 @@ const projects = [
   },
   {
     id: "03",
+    title: "Game-Changer",
+    subtitle: "Next-Gen Gaming Platform",
+    tags: ["React", "WebGL", "GSAP"],
+    image: "/Images/works/Game-Changer/hero.webp",
+    link: "/works/game-changer",
+    year: "2026",
+    visual: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" className="w-24 h-24 text-white">
+        <path d="M12 2L2 22M2 12h20M5 5l14 14M19 5L5 19" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  },
+  {
+    id: "04",
     title: "NeonScript",
     subtitle: "AI-Powered Desktop IDE",
     tags: ["Tauri", "React", "TypeScript"],
-    image: "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022516_z8c2db.png",
+    image: "/Images/works/neonscript.webp",
     link: "/works/neonscript",
     year: "2025",
     visual: (
@@ -255,9 +269,9 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
       );
     }
 
-    // ── OPTIMIZED: Adjusted scroll distance for both desktop and mobile ──
+    // ── OPTIMIZED: Adjusted scroll distance to be longer so transitions are slower ──
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const pinDistance = isTouchDevice ? projects.length * 100 : projects.length * 300;
+    const pinDistance = isTouchDevice ? projects.length * 200 : projects.length * 500;
 
     ScrollTrigger.create({
       trigger: sectionRef.current,
@@ -291,7 +305,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
           trigger: sectionRef.current,
           start: "top top",
           end: `+=${pinDistance}vh`,
-          scrub: true,
+          scrub: 2,
         }
       }
     );
@@ -305,13 +319,13 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
         inner,
         { yPercent: 0 },
         {
-          yPercent: -8,
+          yPercent: -4,
           ease: "none",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top top",
             end: `+=${pinDistance}vh`,
-            scrub: 1.5,
+            scrub: 2.5,
           },
         }
       );
@@ -347,17 +361,17 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
     gsap.set(`.img-container-${activeIndex}`, { zIndex: 10 });
     gsap.set(`.img-container-${prev}`, { zIndex: 5 });
 
-    tl.to(`.img-container-${prev}`, { opacity: 0, duration: 1, ease: "power3.inOut" }, 0);
-    tl.to(`.img-container-${prev} .parallax-inner`, { scale: 1.05, duration: 1, ease: "power3.inOut" }, 0);
+    tl.to(`.img-container-${prev}`, { opacity: 0, duration: 1.5, ease: "power3.inOut" }, 0);
+    tl.to(`.img-container-${prev} .parallax-inner`, { scale: 1.02, duration: 1.5, ease: "power3.inOut" }, 0);
 
     tl.fromTo(`.img-container-${activeIndex}`,
       { opacity: 0, clipPath: "inset(100% 0 0 0)" },
-      { opacity: 1, clipPath: "inset(0% 0 0 0)", duration: 1.2, ease: "power4.inOut" },
+      { opacity: 1, clipPath: "inset(0% 0 0 0)", duration: 1.5, ease: "power4.inOut" },
       0
     );
     tl.fromTo(`.img-container-${activeIndex} .parallax-inner`,
-      { scale: 1.05 },
-      { scale: 1, duration: 1.2, ease: "power4.inOut" },
+      { scale: 1.02 },
+      { scale: 1, duration: 1.5, ease: "power4.inOut" },
       0
     );
 
@@ -533,9 +547,9 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                       className={`img-container-${i} absolute inset-0 will-change-transform`}
                       style={{ opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 10 : 1 }}
                     >
-                      {/* parallax-inner: scaled to allow parallax shift without revealing edges */}
+                      {/* parallax-inner: modified to show full image without hard scale */}
                       <div
-                        className="parallax-inner w-full h-full relative scale-[1.1]"
+                        className="parallax-inner w-full h-full relative scale-[1.02]"
                         style={{ willChange: "transform" }}
                         ref={(el) => { parallaxInnerRefs.current[i] = el; }}
                       >
@@ -543,7 +557,7 @@ export default function WorkSection({ isStandalonePage = false }: WorkSectionPro
                           src={p.image}
                           alt={p.title}
                           fill
-                          className="object-cover object-center"
+                          className="object-contain object-center"
                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 70vw, 900px"
                           priority={i === 0}
                         />

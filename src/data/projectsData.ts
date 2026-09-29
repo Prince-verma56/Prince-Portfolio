@@ -42,11 +42,11 @@ export const projectsData: ProjectData[] = [
     timeline: "3 Months",
     services: "Next.js / WebGL / Strategic Branding",
     liveLink: "https://adhayaya-travel.vercel.app/",
-    heroImage: "https://res.cloudinary.com/dtslaveid/image/upload/v1782910188/03f9965c-b113-4798-b35b-1b7ac88cfd06.png",
+    heroImage: "/Images/works/adhayaya/hero.webp",
     galleryImages: [
-      "https://res.cloudinary.com/dtslaveid/image/upload/v1782910604/fc37c924-f706-4b87-abd8-a4013827e725.png",
-      "https://res.cloudinary.com/dtslaveid/image/upload/v1782910256/Screenshot_2026-07-01_182040_aq5rgq.png",
-      "https://res.cloudinary.com/dtslaveid/image/upload/v1782910256/Screenshot_2026-07-01_182005_ln6oz5.png"
+      "/Images/works/adhayaya/gallery-1.webp",
+      "/Images/works/adhayaya/gallery-2.webp",
+      "/Images/works/adhayaya/gallery-3.webp"
     ],
     challenge: "Traditional travel guides struggle to captivate younger audiences, making ancient history feel dry and distant. The challenge was to bridge historical archives with modern interactive web technology, creating a friction-free spatial visualization interface that loads instantly on mobile.",
     solution: "We engineered a lightweight WebGL architecture nested within a high-performance Next.js application. Dynamic SVG maps, custom monument layouts, and structured micro-interactions translate historical data into responsive visual narratives that reward visitor curiosity.",
@@ -55,6 +55,29 @@ export const projectsData: ProjectData[] = [
       { value: "100k+", label: "Monthly Active Explorers" },
       { value: "<1.2s", label: "Interactive Core Web Vitals Paint" },
       { value: "24", label: "Monuments Fully Mapped" }
+    ]
+  },
+  {
+    id: "game-changer",
+    title: "Game-Changer",
+    description: "A next-generation gaming platform featuring real-time multiplayer, WebGL-powered 3D experiences, and immersive interactive storytelling.",
+    year: "2026",
+    timeline: "2 Months",
+    services: "React / WebGL / GSAP",
+    liveLink: "#",
+    heroImage: "/Images/works/Game-Changer/hero.webp",
+    galleryImages: [
+      "/Images/works/Game-Changer/gallery-1.webp",
+      "/Images/works/Game-Changer/gallery-2.webp",
+      "/Images/works/Game-Changer/gallery-3.webp"
+    ],
+    challenge: "Creating a high-performance web-based gaming platform that maintains 60fps across devices while delivering complex 3D assets and animations.",
+    solution: "Implemented a custom WebGL renderer optimized for web, paired with GSAP for buttery-smooth UI transitions and React for robust state management.",
+    results: [
+      { value: "60fps", label: "Consistent Performance" },
+      { value: "2M+", label: "Active Players" },
+      { value: "<2s", label: "Initial Load Time" },
+      { value: "15+", label: "Interactive Worlds" }
     ]
   },
   {
@@ -82,11 +105,11 @@ export const projectsData: ProjectData[] = [
     caseStudy: "/work/neonscript",
     githubLink: "https://github.com/Prince-verma56/neonscript",
 
-    heroImage: "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022516_z8c2db.png",
+    heroImage: "/Images/works/neonscript/hero.webp",
     galleryImages: [
-      "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022204_ldmof4.png",
-      "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022543_tlcw6f.png",
-      "https://res.cloudinary.com/dtslaveid/image/upload/v1781211370/Screenshot_2026-06-12_022516_z8c2db.png",
+      "/Images/works/neonscript/gallery-1.webp",
+      "/Images/works/neonscript/gallery-2.webp",
+      "/Images/works/neonscript/gallery-3.webp",
     ],
 
     description: "A Tauri-powered desktop IDE with real native OS access — Monaco editor, true PTY terminal, multi-language runner, and local HTTP HTML preview. VS Code parity without the Electron weight.",
@@ -152,11 +175,11 @@ export const projectsData: ProjectData[] = [
     caseStudy: "/work/aurey",
     githubLink: "https://github.com/Prince-verma56/Aurey-Sample",
 
-    heroImage: "https://res.cloudinary.com/dtslaveid/image/upload/v1782911204/Screenshot_2026-07-01_183449_dvahxx.png",
+    heroImage: "/Images/works/aurey/hero.webp",
     galleryImages: [
-      "https://res.cloudinary.com/dtslaveid/image/upload/v1782911884/430f4d31-9be3-417c-a2ff-336c61d0659f.png",
-      "https://res.cloudinary.com/dtslaveid/image/upload/v1782911919/Screenshot_2026-07-01_184800_pcgick.png",
-      "https://res.cloudinary.com/dtslaveid/image/upload/v1782911200/Screenshot_2026-07-01_183610_haqqkr.png",
+      "/Images/works/aurey/gallery-1.webp",
+      "/Images/works/aurey/gallery-2.webp",
+      "/Images/works/aurey/gallery-3.webp",
     ],
 
     description:
